@@ -1,79 +1,183 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   IQBALLAZ V2 — design tokens (Tailwind v4 @theme)
+   Colours, type, radius, motion. See build.md DESIGN LAWS.
+   No pure #000 / #fff anywhere. Ember < 5% of any screen.
+   ============================================================ */
+@theme {
+  /* Colour — dark automotive */
+  --color-graphite: #17181a;
+  --color-surface: #1f2022;
+  --color-paper: #edeae2; /* light sections only */
+  --color-ink: #edebe6;
+  --color-muted: #8b8d90;
+  --color-line: #2a2b2e;
+  --color-ember: #d65a2e; /* accent — restraint is the signal */
+
+  /* Type */
+  --font-display: "General Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-text: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Radius — ONE system: media/cards 12, inputs 8, buttons full pill */
+  --radius-media: 12px;
+  --radius-input: 8px;
+
+  /* Motion */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Layout */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ---- Base --------------------------------------------------- */
+html {
+  overflow-x: clip;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
+  background: var(--color-graphite);
+  color: var(--color-ink);
+  font-family: var(--font-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
-
-.services{
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+::selection {
+  background: var(--color-ember);
+  color: var(--color-graphite);
 }
 
-.location{
-  background-image: url(../public//locationbanner.jpg);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+/* Display + mono label primitives ---------------------------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+  font-size: clamp(2.25rem, 6vw, 6.5rem);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+/* ---- Imagery grade — every build photo shares ONE grade ---- */
+.graded {
+  filter: contrast(1.06) brightness(0.97) saturate(1.05);
+}
+
+/* Media frame: 4% graphite overlay + grain over the graded image */
+.media-frame {
   position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-media);
+  /* graded placeholder — lazy images reveal over surface, never a shimmer */
+  background-color: var(--color-surface);
 }
-
-.location::before{
-  content: " ";
+.media-frame::after {
+  content: "";
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background-color: hsla(0, 0%, 0%, 0.5);
+  inset: 0;
+  background: rgba(23, 24, 26, 0.04);
+  pointer-events: none;
 }
 
-.location div{
-  z-index: 1;
+/* ---- Fine film grain (site-wide, subtle) ------------------- */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.service{
-  transition: scale 0.2s ;
-}
-
-.service:hover{
-  scale:1.02;
-}
-
-.servicebanner{
-  background-image: url(../public/service_backdrop_image.png);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+/* ---- Interaction primitives -------------------------------- */
+/* Links: underline draws left -> right */
+.link-underline {
   position: relative;
+  display: inline-block;
 }
-
-.servicebanner::before{
-  content: " ";
-  background-color: hsla(0, 0%, 0%, 0.5);
+.link-underline::after {
+  content: "";
   position: absolute;
   left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease-brand);
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
 }
 
-.servicebanner h1{
-  z-index: 1;
+/* Buttons: fill sweeps up from the bottom on hover, no scale */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px; /* full pill */
+  isolation: isolate;
+}
+.btn-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--sweep, var(--color-ember));
+  transform: translateY(101%);
+  transition: transform 0.4s var(--ease-brand);
+}
+.btn-sweep:hover::before {
+  transform: translateY(0);
+}
+
+/* Reveal line mask (RevealLines primitive) */
+.reveal-mask {
+  overflow: hidden;
+  display: block;
+}
+
+/* Reviews progress rule fill (section 7) */
+@keyframes grow {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* ---- Reduced motion: fully static + legible ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .grain::before {
+    display: none;
+  }
+  .graded {
+    filter: none;
+  }
+  .link-underline::after,
+  .btn-sweep::before {
+    transition: none;
+  }
+  /* Horizontal gallery track -> vertical stack, no pin, no track (build.md) */
+  .hscroll {
+    flex-direction: column !important;
+  }
+  .hscroll > * {
+    width: 100% !important;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
 }

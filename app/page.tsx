@@ -1,20 +1,26 @@
-import Hero from "@/components/Hero";
-import Location from "@/components/Location";
-import Services from "@/components/Services";
-import Testimonial from "@/components/Testimonial";
-import Whyus from "@/components/Why";
-import Image from "next/image";
+import Hero from "@/components/sections/Hero";
+import FeaturedServices from "@/components/sections/FeaturedServices";
+import Promotions from "@/components/sections/Promotions";
+import TeslaTeaser from "@/components/sections/TeslaTeaser";
+import GalleryPreview from "@/components/sections/GalleryPreview";
+import Reviews from "@/components/sections/Reviews";
+import InstagramFeed from "@/components/sections/InstagramFeed";
+import FinancingTeaser from "@/components/sections/FinancingTeaser";
+import CtaBand from "@/components/sections/CtaBand";
+import { builds } from "@/lib/builds";
 
 export default function Home() {
   return (
-    <div className=" items-center justify-items-center   pb-20 gap-16  font-[family-name:var(--font-Ahmet-Altun)] overflow-x-hidden">
-
+    <>
       <Hero />
-      <Services />
-      <Whyus />
-      <Testimonial />
-      <Location />
-
-    </div>
+      <FeaturedServices />
+      <Promotions />
+      <TeslaTeaser />
+      <GalleryPreview builds={builds} />
+      <Reviews />
+      <InstagramFeed />
+      <FinancingTeaser />
+      <CtaBand />
+    </>
   );
 }
