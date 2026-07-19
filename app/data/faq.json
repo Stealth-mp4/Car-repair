@@ -1,0 +1,22 @@
+[
+    {
+        "question":"What is PaySteeze?",
+        "answer":"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum minus cumque dolorem placeat non quibusdam. Quae autem officia dolore animi.",
+        "show":false
+    },
+    {
+        "question":"How secure is PaySteeze?",
+        "answer":"We utilize WhatsApp’s end-to-end encryption along with our own advanced security protocols to ensure your transactions are fully protected.",
+        "show":false
+    },
+    {
+        "question":"Can I send money to anyone?",
+        "answer":"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum minus cumque dolorem placeat non quibusdam. Quae autem officia dolore animi.",
+        "show":false
+    },
+    {
+        "question":"How do i get started?",
+        "answer":"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum minus cumque dolorem placeat non quibusdam. Quae autem officia dolore animi.",
+        "show":false
+    }
+]

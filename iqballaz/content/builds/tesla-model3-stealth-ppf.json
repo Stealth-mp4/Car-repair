@@ -1,0 +1,17 @@
+{
+  "slug": "tesla-model3-stealth-ppf",
+  "make": "Tesla",
+  "model": "Model 3",
+  "year": 2023,
+  "services": ["PPF", "Wraps"],
+  "wrapColor": "Satin Clear",
+  "finish": "Stealth",
+  "media": [
+    { "type": "image", "src": "/DSC_4458.jpeg", "alt": "Tesla Model 3 — stealth satin PPF, front" },
+    { "type": "image", "src": "/DSC_4465.jpeg", "alt": "Tesla Model 3 — stealth satin PPF, side profile" },
+    { "type": "image", "src": "/PPF.jpg", "alt": "Paint protection film edge wrap detail" }
+  ],
+  "summary": "Full-body stealth PPF turning gloss to satin while shielding against rock chips on the daily commute.",
+  "featured": true,
+  "date": "2025-01-22"
+}

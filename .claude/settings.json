@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk -F/ '{print $1\"/\"$2}')",
+      "Bash(git --version)",
+      "Bash(npm ping *)",
+      "Bash(git rm *)",
+      "Bash(echo \"=== tsc exit: $? ===\")",
+      "Bash(ls -la \"C:\\\\Users\\\\adewa\\\\.claude\\\\projects\\\\c--Users-adewa-Desktop-Car-repair\\\\memory\" 2>/dev/null && echo \"---MEMORY.md---\" && cat \"C:\\\\Users\\\\adewa\\\\.claude\\\\projects\\\\c--Users-adewa-Desktop-Car-repair\\\\memory\\\\MEMORY.md\" 2>/dev/null || echo \"\\(no MEMORY.md yet\\)\")",
+      "Read(//c/Users/adewa/.claude/projects/c--Users-adewa-Desktop-Car-repair/**)"
+    ]
+  }
+}
