@@ -162,7 +162,7 @@ export default function SiteNav() {
                 key={v.href}
                 href={v.href}
                 onClick={() => setOpen(false)}
-                className="media-frame group relative block aspect-[4/3] shrink-0"
+                className="media-frame group relative block aspect-[4/3] h-[49%] shrink-0"
               >
                 <Image
                   src={v.image}

@@ -168,6 +168,7 @@ export const menu = {
   visuals: [
     { label: "Tesla Hub", href: "/tesla", image: "/DSC_4434.webp", alt: "Tesla Cybertruck in satin black wrap" },
     { label: "The work", href: "/gallery", image: "/DSC_4458.webp", alt: "Tesla Model 3 with stealth satin PPF" },
+    
   ],
 } as const;
 
