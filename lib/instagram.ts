@@ -16,14 +16,14 @@ export type IgPost = {
 
 /** Real shop images (from /public) — honest placeholder until the token is added. */
 const FALLBACK_POSTS: IgPost[] = [
-  { id: "f1", src: "/DSC_4434.jpeg", alt: "Cybertruck satin black wrap", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
-  { id: "f2", src: "/DSC_4458.jpeg", alt: "Tesla Model 3 stealth PPF", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
-  { id: "f3", src: "/DSC_4468.jpeg", alt: "Ceramic tint on glass roof", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
-  { id: "f4", src: "/DSC_4443.jpeg", alt: "Wrap panel detail", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
-  { id: "f5", src: "/DSC_4465.jpeg", alt: "Satin PPF side profile", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
-  { id: "f6", src: "/DSC_4470.jpeg", alt: "Studio-lit build", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
-  { id: "f7", src: "/DSC_4489.jpeg", alt: "Finished wrap under studio light", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
-  { id: "f8", src: "/DSC_5212.jpeg", alt: "Completed Tesla build", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
+  { id: "f1", src: "/DSC_4434.webp", alt: "Cybertruck satin black wrap", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
+  { id: "f2", src: "/DSC_4458.webp", alt: "Tesla Model 3 stealth PPF", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
+  { id: "f3", src: "/DSC_4468.webp", alt: "Ceramic tint on glass roof", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
+  { id: "f4", src: "/DSC_4443.webp", alt: "Wrap panel detail", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
+  { id: "f5", src: "/DSC_4465.webp", alt: "Satin PPF side profile", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
+  { id: "f6", src: "/DSC_4470.webp", alt: "Studio-lit build", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
+  { id: "f7", src: "/DSC_4489.webp", alt: "Finished wrap under studio light", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "4/5" },
+  { id: "f8", src: "/DSC_5212.webp", alt: "Completed Tesla build", permalink: "https://www.instagram.com/iqballazcustoms", aspect: "1/1" },
 ];
 
 type GraphMedia = {

@@ -17,7 +17,7 @@ export default function AboutPage() {
       <section className="relative flex min-h-[70svh] flex-col justify-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/cover.jpeg"
+            src="/cover.webp"
             alt="Iqballaz Customs storefront on Richmond Ave at dusk"
             fill
             priority

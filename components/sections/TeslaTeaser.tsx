@@ -11,7 +11,7 @@ export default function TeslaTeaser() {
     <section className="relative flex min-h-[72svh] flex-col items-center justify-center overflow-hidden border-b border-line">
       <div className="absolute inset-0">
         <Image
-          src="/DSC_4436.jpeg"
+          src="/DSC_4436.webp"
           alt="Tesla Cybertruck in satin black wrap under studio light"
           fill
           sizes="100vw"

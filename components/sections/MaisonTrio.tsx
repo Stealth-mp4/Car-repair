@@ -5,19 +5,19 @@ const ITEMS = [
   {
     title: "About the shop",
     href: "/about",
-    image: "/cover.jpeg",
+    image: "/cover.webp",
     alt: "Iqballaz Customs storefront on Richmond Ave at dusk",
   },
   {
     title: "The work",
     href: "/gallery",
-    image: "/DSC_4434.jpeg",
+    image: "/DSC_4434.webp",
     alt: "Tesla Cybertruck finished in satin black wrap",
   },
   {
     title: "Financing",
     href: "/financing",
-    image: "/wheel_powder_coat.jpeg",
+    image: "/wheel_powder_coat.webp",
     alt: "Freshly powder-coated wheel",
   },
 ];

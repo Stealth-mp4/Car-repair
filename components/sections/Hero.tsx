@@ -56,7 +56,7 @@ export default function Hero() {
           loop
           playsInline
           preload="auto"
-          //poster="/DSC_4438.jpeg"
+          //poster="/DSC_4438.webp"
         >
           <source src="/videos/hero-reel.mp4" type="video/mp4" />
         </video>

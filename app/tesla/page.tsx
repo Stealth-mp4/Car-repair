@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const REASONS: ShowcaseItem[] = [
   {
     href: "/services/paint-protection-film",
-    image: "/PPF.jpg",
+    image: "/PPF.webp",
     alt: "Paint protection film applied to a Tesla's front end",
     eyebrow: "Paint protection film",
     title: "PPF for the chip zones",
@@ -27,7 +27,7 @@ const REASONS: ShowcaseItem[] = [
   },
   {
     href: "/services/ceramic-tint",
-    image: "/WINDOW_TINT.jpg",
+    image: "/WINDOW_TINT.webp",
     alt: "Ceramic window tint on a Tesla glass roof",
     eyebrow: "Ceramic tint",
     title: "Tint for range & heat",
@@ -36,7 +36,7 @@ const REASONS: ShowcaseItem[] = [
   },
   {
     href: "/services/vehicle-wraps",
-    image: "/VINYL_WRAP.jpg",
+    image: "/VINYL_WRAP.webp",
     alt: "Colour-change vinyl wrap on a Tesla",
     eyebrow: "Vehicle wraps",
     title: "Wraps sized to the model",
@@ -45,7 +45,7 @@ const REASONS: ShowcaseItem[] = [
   },
   {
     href: "/about",
-    image: "/DSC_4434.jpeg",
+    image: "/DSC_4434.webp",
     alt: "Tesla Cybertruck in satin black wrap in the Houston studio",
     eyebrow: "Iqballaz Customs",
     title: "One shop, by appointment",
@@ -88,7 +88,7 @@ export default function TeslaHubPage() {
       <section className="relative flex min-h-[80svh] flex-col justify-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/DSC_4434.jpeg"
+            src="/DSC_4434.webp"
             alt="Tesla Cybertruck in satin black wrap under studio light"
             fill
             priority

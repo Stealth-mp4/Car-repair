@@ -38,7 +38,7 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
       href: quoteHref,
       title: step.title,
       caption: step.body,
-      image: img?.src ?? "/VINYL_WRAP.jpg",
+      image: img?.src ?? "/VINYL_WRAP.webp",
       alt: img?.alt ?? step.title,
       eyebrow: `Step ${String(i + 1).padStart(2, "0")} of ${content.process.length}`,
       ctaLabel: "Start your quote",

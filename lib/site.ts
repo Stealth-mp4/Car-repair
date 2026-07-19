@@ -77,7 +77,7 @@ export const services: ServiceLink[] = [
     title: "Vehicle Wraps",
     short: "Full colour-change vinyl, precise, no lifted edges.",
     href: "/services/vehicle-wraps",
-    image: "/VINYL_WRAP.jpg",
+    image: "/VINYL_WRAP.webp",
     featured: true,
     filmBrand: "Avery Dennison",
   },
@@ -86,7 +86,7 @@ export const services: ServiceLink[] = [
     title: "Paint Protection Film",
     short: "Self-healing PPF against rock chips and swirl.",
     href: "/services/paint-protection-film",
-    image: "/PPF.jpg",
+    image: "/PPF.webp",
     featured: true,
     filmBrand: "XPEL",
   },
@@ -95,7 +95,7 @@ export const services: ServiceLink[] = [
     title: "Ceramic Tint",
     short: "Heat-rejecting film. Cooler cabin, protected interior.",
     href: "/services/ceramic-tint",
-    image: "/WINDOW_TINT.jpg",
+    image: "/WINDOW_TINT.webp",
     featured: true,
     filmBrand: "3M",
   },
@@ -104,14 +104,14 @@ export const services: ServiceLink[] = [
     title: "Starlight Headliners",
     short: "Fibre-optic headliner, mapped and dimmable.",
     href: "/services/starlight-headliners",
-    image: "/SS1.jpeg",
+    image: "/SS1.webp",
   },
   {
     slug: "wheels-tires",
     title: "Wheels & Tires",
     short: "Powder coat, refinish, fitment.",
     href: "/services/wheels-tires",
-    image: "/wheel_powder_coat.jpeg",
+    image: "/wheel_powder_coat.webp",
   },
 ];
 
@@ -127,7 +127,7 @@ export const promo = {
   label: "LIMITED — THROUGH AUG 31",
   headline: "Tesla tint + PPF front package",
   detail: "Ceramic tint all-around plus a full front PPF clip, booked as one build.",
-  image: "/VINYL_WRAP.jpg",
+  image: "/VINYL_WRAP.webp",
   cta: { label: "Claim this offer", href: "/quote" },
 } as const;
 
@@ -166,8 +166,8 @@ export const menu = {
   ],
   /** two stacked visual cards shown beside the menu on wide screens */
   visuals: [
-    { label: "Tesla Hub", href: "/tesla", image: "/DSC_4434.jpeg", alt: "Tesla Cybertruck in satin black wrap" },
-    { label: "The work", href: "/gallery", image: "/DSC_4458.jpeg", alt: "Tesla Model 3 with stealth satin PPF" },
+    { label: "Tesla Hub", href: "/tesla", image: "/DSC_4434.webp", alt: "Tesla Cybertruck in satin black wrap" },
+    { label: "The work", href: "/gallery", image: "/DSC_4458.webp", alt: "Tesla Model 3 with stealth satin PPF" },
   ],
 } as const;
 
