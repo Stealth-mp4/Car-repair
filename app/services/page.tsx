@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { services } from "@/lib/site";
+import ServiceShowcase, { type ShowcaseItem } from "@/components/ui/ServiceShowcase";
+import MagneticButton from "@/components/ui/MagneticButton";
+import { services, business } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -9,23 +10,34 @@ export const metadata: Metadata = {
 };
 
 export default function ServicesIndexPage() {
+  const items: ShowcaseItem[] = services.map((s) => ({
+    href: s.href,
+    title: s.title,
+    image: s.image,
+    alt: s.title,
+    eyebrow: s.filmBrand ? `${s.filmBrand} — certified install` : business.wordmark,
+    caption: s.short,
+  }));
+
   return (
     <section className="min-h-[70vh] pb-24 pt-36" style={{ paddingInline: "var(--gutter)" }}>
       <p className="mono-label">Services</p>
       <h1 className="display mt-4 max-w-3xl text-ink">What we do.</h1>
-      <ul className="mt-10 divide-y divide-line border-y border-line">
-        {services.map((s) => (
-          <li key={s.slug}>
-            <Link
-              href={s.href}
-              className="flex flex-col gap-1 py-6 md:flex-row md:items-baseline md:justify-between"
-            >
-              <span className="font-display text-2xl text-ink">{s.title}</span>
-              <span className="text-muted">{s.short}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <p className="mt-5 max-w-xl text-muted">
+        Every build starts with the same shop, the same hands, and the same film brands —
+        picked below by what you're here for.
+      </p>
+
+      <div className="mt-14">
+        <ServiceShowcase items={items} />
+      </div>
+
+      <div className="mt-16 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-line pt-12">
+        <MagneticButton href="/quote" variant="primary">
+          Get a Quote
+        </MagneticButton>
+        <p className="mono-label text-muted">{business.trust}</p>
+      </div>
     </section>
   );
 }

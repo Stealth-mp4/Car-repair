@@ -5,6 +5,7 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import BuildCard from "@/components/ui/BuildCard";
 import Faq, { type FaqItem } from "@/components/ui/Faq";
 import RevealLines from "@/components/ui/RevealLines";
+import ServiceShowcase, { type ShowcaseItem } from "@/components/ui/ServiceShowcase";
 import { filterBuilds } from "@/lib/builds";
 
 export const metadata: Metadata = {
@@ -14,22 +15,43 @@ export const metadata: Metadata = {
     "Tesla-specific wraps, ceramic tint, and paint protection film in Houston. PPF for panel gaps, tint for range and heat, colour-change for Model 3, Y, S, X and Cybertruck. Iqballaz Customs.",
 };
 
-const REASONS = [
+const REASONS: ShowcaseItem[] = [
   {
+    href: "/services/paint-protection-film",
+    image: "/PPF.webp",
+    alt: "Paint protection film applied to a Tesla's front end",
+    eyebrow: "Paint protection film",
     title: "PPF for the chip zones",
-    body: "Tesla frunk edges, rockers, and the low nose take chips fast. Film on the high-impact areas keeps resale paint clean.",
+    caption:
+      "Tesla frunk edges, rockers, and the low nose take chips fast. Film on the high-impact areas keeps resale paint clean.",
   },
   {
+    href: "/services/ceramic-tint",
+    image: "/WINDOW_TINT.webp",
+    alt: "Ceramic window tint on a Tesla glass roof",
+    eyebrow: "Ceramic tint",
     title: "Tint for range & heat",
-    body: "Ceramic tint cuts cabin and glass-roof heat, so the AC — and the battery behind it — works less in a Houston summer.",
+    caption:
+      "Ceramic tint cuts cabin and glass-roof heat, so the AC — and the battery behind it — works less in a Houston summer.",
   },
   {
+    href: "/services/vehicle-wraps",
+    image: "/VINYL_WRAP.webp",
+    alt: "Colour-change vinyl wrap on a Tesla",
+    eyebrow: "Vehicle wraps",
     title: "Wraps sized to the model",
-    body: "Colour-change cut for Model 3, Y, S, and X — and Cybertruck stainless, which we wrap so it reads as paint.",
+    caption:
+      "Colour-change cut for Model 3, Y, S, and X — and Cybertruck stainless, which we wrap so it reads as paint.",
   },
   {
+    href: "/about",
+    image: "/DSC_4434.webp",
+    alt: "Tesla Cybertruck in satin black wrap in the Houston studio",
+    eyebrow: "Iqballaz Customs",
     title: "One shop, by appointment",
-    body: "No franchise counter. The same hands that quote your Tesla do the install and check every edge.",
+    caption:
+      "No franchise counter. The same hands that quote your Tesla do the install and check every edge.",
+    ctaLabel: "About the shop",
   },
 ];
 
@@ -66,7 +88,7 @@ export default function TeslaHubPage() {
       <section className="relative flex min-h-[80svh] flex-col justify-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/DSC_4434.jpeg"
+            src="/DSC_4434.webp"
             alt="Tesla Cybertruck in satin black wrap under studio light"
             fill
             priority
@@ -74,11 +96,11 @@ export default function TeslaHubPage() {
             sizes="100vw"
             className="graded object-cover"
           />
-          <div className="absolute inset-0 bg-graphite/55" />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-graphite to-transparent" />
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black to-transparent" />
         </div>
         <div className="relative z-10 pb-16" style={{ paddingInline: "var(--gutter)" }}>
-          <p className="mono-label text-ember">Tesla Hub · Houston</p>
+          <p className="mono-label text-red">Tesla Hub · Houston</p>
           <RevealLines
             as="h1"
             trigger="load"
@@ -99,14 +121,8 @@ export default function TeslaHubPage() {
       {/* Why Tesla owners choose us */}
       <section className="py-20 md:py-28" style={{ paddingInline: "var(--gutter)" }}>
         <p className="mono-label">Why Tesla owners choose us</p>
-        <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {REASONS.map((r, i) => (
-            <div key={r.title}>
-              <p className="mono-label text-ember">{String(i + 1).padStart(2, "0")}</p>
-              <h3 className="mt-3 font-display text-xl text-ink">{r.title}</h3>
-              <p className="mt-2 text-muted">{r.body}</p>
-            </div>
-          ))}
+        <div className="mt-8">
+          <ServiceShowcase items={REASONS} />
         </div>
       </section>
 
@@ -132,7 +148,7 @@ export default function TeslaHubPage() {
 
       {/* CTA band */}
       <section
-        className="border-t border-line bg-surface py-24 md:py-28"
+        className="border-t border-line bg-black-raised py-24 md:py-28"
         style={{ paddingInline: "var(--gutter)" }}
       >
         <RevealLines

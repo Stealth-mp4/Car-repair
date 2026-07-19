@@ -14,7 +14,7 @@ const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 export default function ContactPage() {
   return (
     <section className="min-h-[70vh] pb-24 pt-36" style={{ paddingInline: "var(--gutter)" }}>
-      <p className="mono-label text-ember">Contact</p>
+      <p className="mono-label text-red">Contact</p>
       <h1 className="display mt-4 max-w-3xl text-ink">By appointment only.</h1>
       <p className="mt-6 max-w-2xl text-muted">
         Tell us about your vehicle and we&apos;ll set a time. The fastest way to a

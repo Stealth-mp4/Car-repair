@@ -1,22 +1,22 @@
-import Image from "next/image";
+import InstagramGrid from "@/components/sections/InstagramGrid";
 import { getInstagram } from "@/lib/instagram";
 import { social } from "@/lib/site";
 
 /**
- * Instagram feed (section 8) — live grid from @iqballazcustoms (Graph API when a
- * token is set, real shop photos otherwise). Masonry via CSS columns, mixed 4:5 /
- * 1:1, every tile graded to match the site's photo treatment. Tiles go through
- * next/image so both local fallbacks and live CDN URLs are resized/optimized.
+ * On Instagram (V4 — bugatti.com "BUGATTI LIVE" reference) — live grid from
+ * @iqballazcustoms (Graph API when a token is set, real shop photos otherwise).
+ * Fixed 3-col square grid via InstagramGrid, graded to match the site's photo
+ * treatment so it doesn't look like a bolted-on widget.
  */
 export default async function InstagramFeed() {
-  const posts = await getInstagram(8);
+  const posts = await getInstagram(9);
   if (posts.length === 0) return null;
 
   return (
     <section className="py-20 md:py-28" style={{ paddingInline: "var(--gutter)" }}>
       <div className="flex items-end justify-between gap-6">
         <div>
-          <p className="mono-label">On the grid</p>
+          <p className="mono-label">On Instagram</p>
           <h2 className="mt-3 font-display text-4xl font-semibold text-ink">
             Latest from the shop.
           </h2>
@@ -26,26 +26,7 @@ export default async function InstagramFeed() {
         </a>
       </div>
 
-      <div className="mt-10 columns-2 gap-4 md:columns-3 lg:columns-4">
-        {posts.map((p) => (
-          <a
-            key={p.id}
-            href={p.permalink}
-            target="_blank"
-            rel="noreferrer"
-            className="media-frame group relative mb-4 block break-inside-avoid"
-            style={{ aspectRatio: p.aspect }}
-          >
-            <Image
-              src={p.src}
-              alt={p.alt}
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="graded object-cover transition-transform duration-600 ease-brand group-hover:scale-[1.06]"
-            />
-          </a>
-        ))}
-      </div>
+      <InstagramGrid posts={posts} />
     </section>
   );
 }

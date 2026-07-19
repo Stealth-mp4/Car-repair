@@ -3,8 +3,11 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import BuildCard from "@/components/ui/BuildCard";
 import RevealLines from "@/components/ui/RevealLines";
 import Faq from "@/components/ui/Faq";
+import ServiceShowcase, { type ShowcaseItem } from "@/components/ui/ServiceShowcase";
 import { filterBuilds } from "@/lib/builds";
+import { services as siteServices } from "@/lib/site";
 import type { ServicePageContent } from "@/lib/servicePages";
+import { filmBrandFor } from "@/lib/servicePages";
 
 /**
  * ServiceLanding — shared LAYOUT for every /services/* page. Content is passed in
@@ -14,12 +17,39 @@ import type { ServicePageContent } from "@/lib/servicePages";
 export default function ServiceLanding({ content }: { content: ServicePageContent }) {
   const builds = filterBuilds({ service: content.facet });
   const quoteHref = `/quote?service=${content.slug}`;
+  const filmBrand = filmBrandFor(content.slug);
+
+  // Real build photos for this service first — falls back to the service's
+  // own hero image when there isn't gallery coverage yet.
+  const heroImage = siteServices.find((s) => s.slug === content.slug)?.image;
+  const galleryImages = builds.flatMap((b) =>
+    b.media.filter((m) => m.type === "image").map((m) => ({ src: m.src, alt: m.alt }))
+  );
+  const imagePool =
+    galleryImages.length > 0
+      ? galleryImages
+      : heroImage
+        ? [{ src: heroImage, alt: content.h1 }]
+        : [];
+
+  const processItems: ShowcaseItem[] = content.process.map((step, i) => {
+    const img = imagePool[i % Math.max(imagePool.length, 1)];
+    return {
+      href: quoteHref,
+      title: step.title,
+      caption: step.body,
+      image: img?.src ?? "/VINYL_WRAP.webp",
+      alt: img?.alt ?? step.title,
+      eyebrow: `Step ${String(i + 1).padStart(2, "0")} of ${content.process.length}`,
+      ctaLabel: "Start your quote",
+    };
+  });
 
   return (
     <article>
       {/* Hero */}
       <section className="pb-16 pt-36" style={{ paddingInline: "var(--gutter)" }}>
-        <p className="mono-label text-ember">{content.eyebrow}</p>
+        <p className="mono-label text-red">{content.eyebrow}</p>
         <h1 className="display mt-4 max-w-4xl text-ink">{content.h1}</h1>
         <p className="mt-6 max-w-2xl text-muted">{content.intro}</p>
         <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
@@ -29,22 +59,19 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
           {content.priceNote ? (
             <span className="mono-label">{content.priceNote}</span>
           ) : null}
+          {filmBrand ? (
+            <span className="mono-label rounded-full border border-line px-3 py-1.5">
+              Film — {filmBrand}
+            </span>
+          ) : null}
         </div>
       </section>
 
       {/* Process */}
-      <section className="py-16" style={{ paddingInline: "var(--gutter)" }}>
+      <section className="pb-16 pt-8 md:pt-16" style={{ paddingInline: "var(--gutter)" }}>
         <p className="mono-label">How it goes</p>
-        <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {content.process.map((step, i) => (
-            <div key={step.title}>
-              <p className="mono-label text-ember">
-                {String(i + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-3 font-display text-xl text-ink">{step.title}</h3>
-              <p className="mt-2 text-muted">{step.body}</p>
-            </div>
-          ))}
+        <div className="mt-8">
+          <ServiceShowcase items={processItems} />
         </div>
       </section>
 
@@ -73,7 +100,7 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
 
       {/* CTA band */}
       <section
-        className="border-t border-line bg-surface py-24 md:py-28"
+        className="border-t border-line bg-black-raised py-24 md:py-28"
         style={{ paddingInline: "var(--gutter)" }}
       >
         <RevealLines

@@ -2,13 +2,13 @@ import RevealLines from "@/components/ui/RevealLines";
 import MagneticButton from "@/components/ui/MagneticButton";
 
 /**
- * CTA band (section 10) — full-bleed, graphite-on-graphite (surface, not ink-black),
+ * CTA band (section 10) — full-bleed, black-on-black (raised, not pure ink-black),
  * huge RevealLines headline, magnetic inverted (paper) button into the Quote Builder.
  */
 export default function CtaBand() {
   return (
     <section
-      className="border-t border-line bg-surface py-28 md:py-36"
+      className="border-t border-line bg-black-raised py-28 md:py-36"
       style={{ paddingInline: "var(--gutter)" }}
     >
       <RevealLines

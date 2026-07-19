@@ -24,7 +24,7 @@ export default function FinancingPage() {
   return (
     <>
       <section className="pb-16 pt-36" style={{ paddingInline: "var(--gutter)" }}>
-        <p className="mono-label text-ember">Financing</p>
+        <p className="mono-label text-red">Financing</p>
         <h1 className="display mt-4 max-w-3xl text-ink">Financing available.</h1>
         <p className="mt-6 max-w-2xl text-muted">
           Build now, pay over time. We&apos;ll go over terms for your specific build
@@ -41,7 +41,7 @@ export default function FinancingPage() {
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-3">
           {POINTS.map((p, i) => (
             <div key={p.title}>
-              <p className="mono-label text-ember">{String(i + 1).padStart(2, "0")}</p>
+              <p className="mono-label text-red">{String(i + 1).padStart(2, "0")}</p>
               <h3 className="mt-3 font-display text-xl text-ink">{p.title}</h3>
               <p className="mt-2 text-muted">{p.body}</p>
             </div>

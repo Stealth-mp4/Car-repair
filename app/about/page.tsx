@@ -17,7 +17,7 @@ export default function AboutPage() {
       <section className="relative flex min-h-[70svh] flex-col justify-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/cover.jpeg"
+            src="/cover.webp"
             alt="Iqballaz Customs storefront on Richmond Ave at dusk"
             fill
             priority
@@ -25,11 +25,11 @@ export default function AboutPage() {
             sizes="100vw"
             className="graded object-cover"
           />
-          <div className="absolute inset-0 bg-graphite/55" />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-graphite to-transparent" />
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black to-transparent" />
         </div>
         <div className="relative z-10 pb-16" style={{ paddingInline: "var(--gutter)" }}>
-          <p className="mono-label text-ember">About</p>
+          <p className="mono-label text-red">About</p>
           <h1 className="display mt-4 max-w-4xl text-ink">A Houston shop, not a franchise.</h1>
         </div>
       </section>

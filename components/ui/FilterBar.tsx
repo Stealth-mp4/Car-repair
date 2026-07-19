@@ -23,7 +23,7 @@ function Pill({
       onClick={onClick}
       aria-pressed={active}
       className={`mono-label rounded-full border px-3 py-1.5 transition-colors ${
-        active ? "border-ember text-ember" : "border-line text-ink hover:border-ember"
+        active ? "border-red text-red" : "border-line text-ink hover:border-red"
       }`}
     >
       {children}
@@ -84,7 +84,7 @@ export default function FilterBar() {
         <button
           type="button"
           onClick={() => router.replace(pathname, { scroll: false })}
-          className="mono-label text-ember underline-offset-4 hover:underline"
+          className="mono-label text-red underline-offset-4 hover:underline"
         >
           Clear filters
         </button>

@@ -1,26 +1,24 @@
 import Hero from "@/components/sections/Hero";
-import FeaturedServices from "@/components/sections/FeaturedServices";
-import Promotions from "@/components/sections/Promotions";
 import TeslaTeaser from "@/components/sections/TeslaTeaser";
-import GalleryPreview from "@/components/sections/GalleryPreview";
+import MaisonTrio from "@/components/sections/MaisonTrio";
 import Reviews from "@/components/sections/Reviews";
+import FeaturedServices from "@/components/sections/FeaturedServices";
+import GalleryPreview from "@/components/sections/GalleryPreview";
+import Promotions from "@/components/sections/Promotions";
 import InstagramFeed from "@/components/sections/InstagramFeed";
-import FinancingTeaser from "@/components/sections/FinancingTeaser";
-import CtaBand from "@/components/sections/CtaBand";
 import { builds } from "@/lib/builds";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <FeaturedServices />
-      <Promotions />
       <TeslaTeaser />
-      <GalleryPreview builds={builds} />
+      <MaisonTrio />
       <Reviews />
+      <FeaturedServices />
+      <GalleryPreview builds={builds} />
+      <Promotions />
       <InstagramFeed />
-      <FinancingTeaser />
-      <CtaBand />
     </>
   );
 }

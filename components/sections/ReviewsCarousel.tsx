@@ -10,7 +10,7 @@ function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
   // Mono type, not icon graphics (build.md section 7).
   return (
-    <span className="mono-label text-ember">
+    <span className="mono-label text-red">
       {"★".repeat(full)}
       {"☆".repeat(Math.max(0, 5 - full))} · {rating.toFixed(1)}
     </span>
@@ -31,10 +31,10 @@ export default function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
   const review = reviews[active];
 
   return (
-    <div>
+    <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
       <Stars rating={review.rating} />
 
-      <blockquote className="mt-6 max-w-4xl font-display text-3xl font-semibold leading-[1.1] text-ink sm:text-4xl md:text-5xl">
+      <blockquote className="mt-6 font-display text-3xl font-semibold italic leading-[1.15] text-ink sm:text-4xl md:text-5xl">
         “{review.text}”
       </blockquote>
 

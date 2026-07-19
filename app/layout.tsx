@@ -28,7 +28,7 @@ const jsonLd = {
   "@type": ["AutoRepair", "LocalBusiness"],
   name: business.name,
   url: business.url,
-  image: `${business.url}/logo.jpg`,
+  image: `${business.url}/logo.webp`,
   telephone: "+18322081071",
   priceRange: business.priceRange,
   address: {

@@ -9,7 +9,7 @@ import { business, hours, services, social } from "@/lib/site";
 export default function SiteFooter() {
   return (
     <footer className="border-t border-line" style={{ paddingInline: "var(--gutter)" }}>
-      <div className="grid grid-cols-1 gap-10 py-16 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-10 py-16 md:grid-cols-3 lg:grid-cols-5">
         <div>
           <p className="font-display text-2xl font-semibold text-ink">
             {business.wordmark} <span className="mono-label">{business.wordmarkSub}</span>
@@ -35,6 +35,32 @@ export default function SiteFooter() {
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        <div>
+          <p className="mono-label">Company</p>
+          <ul className="mt-4 space-y-2">
+            <li>
+              <Link href="/about" className="link-underline text-ink">
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/financing" className="link-underline text-ink">
+                Financing
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="link-underline text-ink">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link href="/quote" className="link-underline text-red">
+                Get a Quote
+              </Link>
+            </li>
           </ul>
         </div>
 
@@ -77,7 +103,7 @@ export default function SiteFooter() {
 
       {/* Oversized wordmark — fits the width, bleeds subtly off the bottom edge */}
       <div className="pointer-events-none mt-8 overflow-hidden" aria-hidden="true">
-        <p className="translate-y-[15%] whitespace-nowrap font-display font-semibold leading-none tracking-[-0.03em] text-surface text-[clamp(2.5rem,15vw,13rem)]">
+        <p className="translate-y-[15%] whitespace-nowrap font-display font-semibold leading-none tracking-[-0.03em] text-black-raised text-[clamp(2.5rem,15vw,13rem)]">
           {business.wordmark}
         </p>
       </div>

@@ -10,6 +10,12 @@ export const business = {
   wordmarkSub: "CUSTOMS",
   tagline: "Wrapped in Houston. Built for Tesla.",
   cue: "HOUSTON, TX — BY APPOINTMENT",
+  /**
+   * Concrete trust/credibility line (structural parity §1) — short, mono-styled,
+   * understated. PLACEHOLDER figures: confirm exact founding year and lifetime
+   * vehicle count with the client before shipping; do not invent numbers.
+   */
+  trust: "EST. 2015 — 500+ VEHICLES WRAPPED IN HOUSTON",
   url: "https://iqballazcustoms.com",
   phone: "(832) 208-1071",
   phoneHref: "tel:+18322081071",
@@ -56,6 +62,12 @@ export type ServiceLink = {
   image: string;
   /** shown in the homepage featured strip */
   featured?: boolean;
+  /**
+   * Film/product brand actually carried for this service, shown as a spec-sheet
+   * mono tag (structural parity §2). PLACEHOLDER: confirm exact brand(s) carried
+   * with the client before shipping — do not guess in the final build.
+   */
+  filmBrand?: string;
 };
 
 /** The core services that get full SEO landing routes. */
@@ -65,38 +77,41 @@ export const services: ServiceLink[] = [
     title: "Vehicle Wraps",
     short: "Full colour-change vinyl, precise, no lifted edges.",
     href: "/services/vehicle-wraps",
-    image: "/VINYL_WRAP.jpg",
+    image: "/VINYL_WRAP.webp",
     featured: true,
+    filmBrand: "Avery Dennison",
   },
   {
     slug: "paint-protection-film",
     title: "Paint Protection Film",
     short: "Self-healing PPF against rock chips and swirl.",
     href: "/services/paint-protection-film",
-    image: "/PPF.jpg",
+    image: "/PPF.webp",
     featured: true,
+    filmBrand: "XPEL",
   },
   {
     slug: "ceramic-tint",
     title: "Ceramic Tint",
     short: "Heat-rejecting film. Cooler cabin, protected interior.",
     href: "/services/ceramic-tint",
-    image: "/WINDOW_TINT.jpg",
+    image: "/WINDOW_TINT.webp",
     featured: true,
+    filmBrand: "3M",
   },
   {
     slug: "starlight-headliners",
     title: "Starlight Headliners",
     short: "Fibre-optic headliner, mapped and dimmable.",
     href: "/services/starlight-headliners",
-    image: "/SS1.jpeg",
+    image: "/SS1.webp",
   },
   {
     slug: "wheels-tires",
     title: "Wheels & Tires",
     short: "Powder coat, refinish, fitment.",
     href: "/services/wheels-tires",
-    image: "/wheel_powder_coat.jpeg",
+    image: "/wheel_powder_coat.webp",
   },
 ];
 
@@ -112,7 +127,49 @@ export const promo = {
   label: "LIMITED — THROUGH AUG 31",
   headline: "Tesla tint + PPF front package",
   detail: "Ceramic tint all-around plus a full front PPF clip, booked as one build.",
+  image: "/VINYL_WRAP.webp",
   cta: { label: "Claim this offer", href: "/quote" },
+} as const;
+
+/**
+ * Full-screen overlay menu (build.md V4 nav — bugatti.com reference).
+ * Groups map to the same routes as `services` + core pages; edited here only.
+ */
+export const menu = {
+  groups: [
+    {
+      label: "What we do",
+      items: [
+        { label: "Tesla Hub", href: "/tesla", pinned: true },
+        { label: "Vehicle Wraps", href: "/services/vehicle-wraps" },
+        { label: "Paint Protection Film", href: "/services/paint-protection-film" },
+        { label: "Ceramic Tint", href: "/services/ceramic-tint" },
+        { label: "Starlight Headliners", href: "/services/starlight-headliners" },
+        { label: "Wheels & Tires", href: "/services/wheels-tires" },
+      ],
+    },
+    {
+      label: "The shop",
+      items: [
+        { label: "About", href: "/about" },
+        { label: "Gallery", href: "/gallery" },
+      ],
+    },
+    {
+      label: "Get started",
+      items: [
+        { label: "Get a Quote", href: "/quote" },
+        { label: "Financing", href: "/financing" },
+        { label: "Contact", href: "/contact" },
+      ],
+    },
+  ],
+  /** two stacked visual cards shown beside the menu on wide screens */
+  visuals: [
+    { label: "Tesla Hub", href: "/tesla", image: "/DSC_4434.webp", alt: "Tesla Cybertruck in satin black wrap" },
+    { label: "The work", href: "/gallery", image: "/DSC_4458.webp", alt: "Tesla Model 3 with stealth satin PPF" },
+    
+  ],
 } as const;
 
 /** Primary nav — Services opens a mega-panel; Tesla Hub pinned. */

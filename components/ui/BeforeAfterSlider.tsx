@@ -43,17 +43,17 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfter }) {
         className="pointer-events-none absolute inset-y-0 z-10 w-px bg-ink"
         style={{ left: `${pos}%` }}
       >
-        <span className="absolute top-1/2 left-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full border border-line bg-graphite">
+        <span className="absolute top-1/2 left-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 rounded-full border border-line bg-black">
           <span className="h-3 w-px bg-muted" />
           <span className="h-3 w-px bg-muted" />
         </span>
       </div>
 
       {/* Corner labels */}
-      <span className="mono-label absolute left-3 top-3 rounded-full border border-line bg-graphite/70 px-2 py-1">
+      <span className="mono-label absolute left-3 top-3 rounded-full border border-line bg-black/70 px-2 py-1">
         Before
       </span>
-      <span className="mono-label absolute right-3 top-3 rounded-full border border-line bg-graphite/70 px-2 py-1">
+      <span className="mono-label absolute right-3 top-3 rounded-full border border-line bg-black/70 px-2 py-1">
         After
       </span>
 

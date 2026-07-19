@@ -6,8 +6,8 @@
   "services": ["Tint"],
   "finish": "Ceramic 20%",
   "media": [
-    { "type": "image", "src": "/DSC_4468.jpeg", "alt": "Tesla Model Y — ceramic tint, glass roof" },
-    { "type": "image", "src": "/WINDOW_TINT.jpg", "alt": "Ceramic window tint film application" }
+    { "type": "image", "src": "/DSC_4468.webp", "alt": "Tesla Model Y — ceramic tint, glass roof" },
+    { "type": "image", "src": "/WINDOW_TINT.webp", "alt": "Ceramic window tint film application" }
   ],
   "summary": "Ceramic tint across all glass plus the panoramic roof — cuts cabin heat and protects the interior from Houston sun.",
   "featured": false,

@@ -4,18 +4,20 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
-type Variant = "primary" | "ghost" | "paper";
+type Variant = "primary" | "ghost" | "paper" | "outline";
 
 const base =
   "btn-sweep mono-label inline-flex items-center justify-center px-6 py-3 will-change-transform";
 
 const variants: Record<Variant, { className: string; sweep: string }> = {
-  // Ember fill — the primary "Get a Quote" CTA. Ember stays < 5% of screen.
-  primary: { className: "bg-ember text-graphite", sweep: "#b8481f" },
-  // Hairline ghost link — fills to surface on hover.
-  ghost: { className: "border border-line text-ink", sweep: "var(--color-surface)" },
+  // Red fill — the primary "Get a Quote" CTA. Red stays < 4% of screen.
+  primary: { className: "bg-red text-ink", sweep: "var(--color-red-deep)" },
+  // Hairline ghost link — fills to black-raised on hover.
+  ghost: { className: "border border-line text-ink", sweep: "var(--color-black-raised)" },
   // Inverted paper — for dark-on-dark CTA bands.
-  paper: { className: "bg-paper text-graphite", sweep: "var(--color-ink)" },
+  paper: { className: "bg-paper text-black", sweep: "var(--color-ink)" },
+  // Thin red-outline pill (bugatti.com hero cue) — fills red on hover, text flips to ink.
+  outline: { className: "border border-red text-red hover:text-ink", sweep: "var(--color-red)" },
 };
 
 /**

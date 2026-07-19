@@ -4,6 +4,8 @@
  * `facet` maps to the gallery service filter so each page pulls its own builds.
  */
 
+import { services as siteServices } from "@/lib/site";
+
 export type ServiceFaq = { q: string; a: string };
 export type ServiceStep = { title: string; body: string };
 
@@ -20,6 +22,10 @@ export type ServicePageContent = {
   process: ServiceStep[];
   faqs: ServiceFaq[];
 };
+
+/** Film/product brand carried for this service, read from lib/site (single source). */
+export const filmBrandFor = (slug: string): string | undefined =>
+  siteServices.find((s) => s.slug === slug)?.filmBrand;
 
 export const servicePages: Record<string, ServicePageContent> = {
   "vehicle-wraps": {

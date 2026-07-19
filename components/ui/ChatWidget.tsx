@@ -129,7 +129,7 @@ export default function ChatWidget() {
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
       {open ? (
-        <div className="mb-3 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-media border border-line bg-surface">
+        <div className="mb-3 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-media border border-line bg-black-raised">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <span className="mono-label">Iqballaz Assistant</span>
@@ -149,8 +149,8 @@ export default function ChatWidget() {
                 key={i}
                 className={`max-w-[85%] rounded-media px-3 py-2 text-sm ${
                   m.from === "bot"
-                    ? "border border-line bg-graphite text-ink"
-                    : "ml-auto border border-ember/60 text-ink"
+                    ? "border border-line bg-black text-ink"
+                    : "ml-auto border border-red/60 text-ink"
                 }`}
               >
                 {m.text}
@@ -168,7 +168,7 @@ export default function ChatWidget() {
                     key={id}
                     type="button"
                     onClick={() => pick(id)}
-                    className="mono-label rounded-full border border-line px-3 py-1.5 text-ink transition-colors hover:border-ember"
+                    className="mono-label rounded-full border border-line px-3 py-1.5 text-ink transition-colors hover:border-red"
                   >
                     {optionLabel(id)}
                   </button>
@@ -190,12 +190,12 @@ export default function ChatWidget() {
                   onChange={(e) => setDraft(e.target.value)}
                   inputMode={step === "phone" ? "tel" : "text"}
                   placeholder={step === "name" ? "Your name" : "(832) 208-1071"}
-                  className="w-full rounded-input border border-line bg-graphite px-3 py-2 text-sm text-ink placeholder:text-muted outline-none focus:border-ember"
+                  className="w-full rounded-input border border-line bg-black px-3 py-2 text-sm text-ink placeholder:text-muted outline-none focus:border-red"
                 />
                 <button
                   type="submit"
-                  style={{ ["--sweep" as string]: "#b8481f" } as React.CSSProperties}
-                  className="btn-sweep mono-label bg-ember px-4 py-2 text-graphite"
+                  style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
+                  className="btn-sweep mono-label bg-red px-4 py-2 text-ink"
                 >
                   Send
                 </button>
@@ -215,13 +215,26 @@ export default function ChatWidget() {
         </div>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => (open ? setOpen(false) : openPanel())}
-        className="mono-label rounded-full border border-line bg-surface px-4 py-2 text-ink transition-colors hover:border-ember"
-      >
-        {open ? "Close" : "Ask Iqballaz"}
-      </button>
+      {!open ? (
+        <button
+          type="button"
+          onClick={openPanel}
+          className="group flex w-56 flex-col gap-3 rounded-media border border-line bg-black-raised p-4 text-left"
+        >
+          <span className="text-sm text-ink">Got a build in mind?</span>
+          <span className="mono-label inline-flex items-center gap-1.5 text-red transition-colors group-hover:text-ink">
+            Ask Iqballaz <span aria-hidden="true">→</span>
+          </span>
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="mono-label rounded-full border border-line bg-black-raised px-4 py-2 text-ink transition-colors hover:border-red"
+        >
+          Close
+        </button>
+      )}
     </div>
   );
 }

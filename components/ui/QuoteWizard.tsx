@@ -18,7 +18,7 @@ const TIMELINES = ["ASAP", "2–4 weeks", "Flexible", "Just pricing"];
 const CONTACT_METHODS: ContactMethod[] = ["phone", "text", "email"];
 
 const inputClass =
-  "w-full rounded-input border border-line bg-surface px-4 py-3 text-ink placeholder:text-muted outline-none transition-colors focus:border-ember";
+  "w-full rounded-input border border-line bg-black-raised px-4 py-3 text-ink placeholder:text-muted outline-none transition-colors focus:border-red";
 
 /* Buttons — sweep fill, no scale (build.md hover law). Actions, so <button> not Link. */
 function PrimaryButton({
@@ -37,8 +37,8 @@ function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      style={{ ["--sweep" as string]: "#b8481f" } as React.CSSProperties}
-      className="btn-sweep mono-label bg-ember px-6 py-3 text-graphite disabled:cursor-not-allowed disabled:opacity-40"
+      style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
+      className="btn-sweep mono-label bg-red px-6 py-3 text-ink disabled:cursor-not-allowed disabled:opacity-40"
     >
       {children}
     </button>
@@ -56,7 +56,7 @@ function GhostButton({
     <button
       type="button"
       onClick={onClick}
-      style={{ ["--sweep" as string]: "var(--color-surface)" } as React.CSSProperties}
+      style={{ ["--sweep" as string]: "var(--color-black-raised)" } as React.CSSProperties}
       className="btn-sweep mono-label border border-line px-6 py-3 text-ink"
     >
       {children}
@@ -162,7 +162,7 @@ export default function QuoteWizard() {
   if (status === "done") {
     return (
       <div className="rounded-media border border-line p-8">
-        <p className="mono-label text-ember">Request received</p>
+        <p className="mono-label text-red">Request received</p>
         <h2 className="mt-3 font-display text-3xl text-ink">
           Thanks, {lead.contact.name.split(" ")[0] || "we're on it"}.
         </h2>
@@ -258,7 +258,7 @@ export default function QuoteWizard() {
                   onClick={() => toggleService(s.title)}
                   aria-pressed={selected}
                   className={`media-frame group relative block aspect-4/5 text-left ${
-                    selected ? "ring-2 ring-ember" : ""
+                    selected ? "ring-2 ring-red" : ""
                   }`}
                 >
                   <Image
@@ -266,12 +266,12 @@ export default function QuoteWizard() {
                     alt={s.title}
                     fill
                     sizes="(max-width: 640px) 50vw, 30vw"
-                    className="graded object-cover transition-transform duration-600 ease-brand group-hover:scale-[1.04]"
+                    className="graded object-cover transition-transform duration-[600ms] ease-brand group-hover:scale-[1.04]"
                   />
-                  <span className="absolute inset-0 bg-linear-to-t from-graphite/85 to-transparent" />
+                  <span className="absolute inset-0 bg-linear-to-t from-black/85 to-transparent" />
                   <span className="absolute inset-x-3 bottom-3">
                     <span className="block font-display text-lg text-ink">{s.title}</span>
-                    <span className="mono-label text-ember">
+                    <span className="mono-label text-red">
                       {selected ? "Selected" : "Tap to add"}
                     </span>
                   </span>
@@ -303,7 +303,7 @@ export default function QuoteWizard() {
                       type="button"
                       onClick={() => setDetails({ timeline: t })}
                       className={`mono-label rounded-full border px-3 py-1.5 transition-colors ${
-                        active ? "border-ember text-ember" : "border-line text-ink hover:border-ember"
+                        active ? "border-red text-red" : "border-line text-ink hover:border-red"
                       }`}
                     >
                       {t}
@@ -330,7 +330,7 @@ export default function QuoteWizard() {
               }}
               onClick={() => fileInput.current?.click()}
               className={`flex cursor-pointer flex-col items-center justify-center rounded-media border border-dashed px-6 py-14 text-center transition-colors ${
-                dragOver ? "border-ember bg-surface" : "border-line"
+                dragOver ? "border-red bg-black-raised" : "border-line"
               }`}
             >
               <p className="mono-label">Drop photos here</p>
@@ -357,7 +357,7 @@ export default function QuoteWizard() {
                     <button
                       type="button"
                       onClick={() => setFiles((p) => p.filter((_, j) => j !== i))}
-                      className="text-ember"
+                      className="text-red"
                       aria-label={`Remove ${f.name}`}
                     >
                       remove
@@ -413,7 +413,7 @@ export default function QuoteWizard() {
                       type="button"
                       onClick={() => setContact({ method: m })}
                       className={`mono-label rounded-full border px-3 py-1.5 capitalize transition-colors ${
-                        active ? "border-ember text-ember" : "border-line text-ink hover:border-ember"
+                        active ? "border-red text-red" : "border-line text-ink hover:border-red"
                       }`}
                     >
                       {m}
@@ -456,10 +456,10 @@ export default function QuoteWizard() {
 
       {/* Inline errors */}
       {step === 4 && contactError ? (
-        <p className="mono-label mt-4 text-ember">{contactError}</p>
+        <p className="mono-label mt-4 text-red">{contactError}</p>
       ) : null}
       {status === "error" && error ? (
-        <p className="mono-label mt-4 text-ember">{error}</p>
+        <p className="mono-label mt-4 text-red">{error}</p>
       ) : null}
 
       {/* Navigation */}

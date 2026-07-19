@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 /* ============================================================
-   IQBALLAZ V2 — design tokens (Tailwind v4 @theme)
-   Colours, type, radius, motion. See build.md DESIGN LAWS.
-   No pure #000 / #fff anywhere. Ember < 5% of any screen.
+   IQBALLAZ V3 — design tokens (Tailwind v4 @theme)
+   Black + red supercar-tier palette. See build.md DESIGN LAWS.
+   No pure #000 / #fff anywhere. Red < 4% of any screen.
    ============================================================ */
 @theme {
-  /* Colour — dark automotive */
-  --color-graphite: #17181a;
-  --color-surface: #1f2022;
-  --color-paper: #edeae2; /* light sections only */
-  --color-ink: #edebe6;
-  --color-muted: #8b8d90;
-  --color-line: #2a2b2e;
-  --color-ember: #d65a2e; /* accent — restraint is the signal */
+  /* Colour — black stage, red as material accent */
+  --color-black: #0a0a0b; /* near-black stage — a hair of warmth, not pure #000 */
+  --color-black-raised: #141416; /* cards/surfaces one step up from stage */
+  --color-paper: #f2f0ec; /* light sections only */
+  --color-ink: #f5f3ef;
+  --color-muted: #8a8a8d;
+  --color-line: #2b2b2e;
+  --color-red: #c81e2c; /* the ONE accent — brake-caliper red, not neon */
+  --color-red-deep: #7a1119; /* pressed/hover states */
 
   /* Type */
   --font-display: "General Sans", ui-sans-serif, system-ui, sans-serif;
@@ -37,7 +38,7 @@ html {
 }
 
 body {
-  background: var(--color-graphite);
+  background: var(--color-black);
   color: var(--color-ink);
   font-family: var(--font-text);
   font-size: 1.0625rem;
@@ -47,8 +48,8 @@ body {
 }
 
 ::selection {
-  background: var(--color-ember);
-  color: var(--color-graphite);
+  background: var(--color-red);
+  color: var(--color-ink);
 }
 
 /* Display + mono label primitives ---------------------------- */
@@ -57,7 +58,8 @@ body {
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 0.98;
-  font-size: clamp(2.25rem, 6vw, 6.5rem);
+  /* Pushed more confidently oversized (Ferrari/Bugatti scale) */
+  font-size: clamp(2.5rem, 7vw, 7.5rem);
 }
 
 .mono-label {
@@ -69,23 +71,24 @@ body {
 }
 
 /* ---- Imagery grade — every build photo shares ONE grade ---- */
+/* Retuned for the near-black background: slightly higher contrast, cooler warmth. */
 .graded {
-  filter: contrast(1.06) brightness(0.97) saturate(1.05);
+  filter: contrast(1.09) brightness(0.96) saturate(1.02);
 }
 
-/* Media frame: 4% graphite overlay + grain over the graded image */
+/* Media frame: 4% black overlay + grain over the graded image */
 .media-frame {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-media);
-  /* graded placeholder — lazy images reveal over surface, never a shimmer */
-  background-color: var(--color-surface);
+  /* graded placeholder — lazy images reveal over black-raised, never a shimmer */
+  background-color: var(--color-black-raised);
 }
 .media-frame::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(23, 24, 26, 0.04);
+  background: rgba(10, 10, 11, 0.04);
   pointer-events: none;
 }
 
@@ -98,6 +101,18 @@ body {
   pointer-events: none;
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- Scrollbar-less scroll areas (nav overlay) -------------- */
+/* Scrolls natively, just never paints a scrollbar track/thumb. */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge/IE */
+}
+.scrollbar-none::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome/Safari/new Edge */
 }
 
 /* ---- Interaction primitives -------------------------------- */
@@ -134,7 +149,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--sweep, var(--color-ember));
+  background: var(--sweep, var(--color-red));
   transform: translateY(101%);
   transition: transform 0.4s var(--ease-brand);
 }

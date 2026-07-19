@@ -40,8 +40,8 @@ export default function RevealLines({
     const play = () =>
       gsap.to(targets, {
         yPercent: 0,
-        duration: 0.9,
-        stagger: 0.09,
+        duration: 1.05,
+        stagger: 0.12,
         ease: "power3.out",
       });
 
