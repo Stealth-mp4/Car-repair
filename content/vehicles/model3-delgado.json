@@ -1,0 +1,20 @@
+{
+  "id": "veh-001",
+  "customerId": "cust-001",
+  "make": "Tesla",
+  "model": "Model 3",
+  "year": 2023,
+  "vin": "5YJ3E1EB4PF119284",
+  "wrapColor": "Satin Clear",
+  "tint": {
+    "shade": "20% Ceramic",
+    "brand": "3M",
+    "areas": ["Front 2", "Rear 3", "Windshield strip"]
+  },
+  "ppf": { "coverage": "Full front", "brand": "XPEL" },
+  "media": [
+    { "type": "image", "src": "/DSC_4458.webp", "alt": "Tesla Model 3 — stealth satin PPF, front" },
+    { "type": "image", "src": "/DSC_4465.webp", "alt": "Tesla Model 3 — stealth satin PPF, side profile" },
+    { "type": "image", "src": "/PPF.webp", "alt": "Paint protection film edge wrap detail" }
+  ]
+}

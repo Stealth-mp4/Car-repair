@@ -1,0 +1,9 @@
+{
+  "id": "sr-004",
+  "vehicleId": "veh-002",
+  "service": "Wheels",
+  "date": "2024-06-01",
+  "warrantyExpires": "2025-06-01",
+  "invoiceUrl": "/invoices/inv-004.pdf",
+  "notes": "35-inch wheels, satin black powder coat."
+}

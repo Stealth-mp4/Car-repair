@@ -1,0 +1,9 @@
+{
+  "id": "sr-002",
+  "vehicleId": "veh-001",
+  "service": "Ceramic Tint",
+  "date": "2025-01-22",
+  "warrantyExpires": "2030-01-22",
+  "invoiceUrl": "/invoices/inv-002.pdf",
+  "notes": "20% all around, windshield strip."
+}
