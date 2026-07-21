@@ -153,6 +153,7 @@ export const menu = {
       items: [
         { label: "About", href: "/about" },
         { label: "Gallery", href: "/gallery" },
+        { label: "Vehicle Passport", href: "/passport" },
       ],
     },
     {

@@ -36,10 +36,21 @@ export type Build = {
 };
 
 /* ---------------------------------------------------------------------------
- * PHASE 2 — Customer Vehicle Passport (data model reserved, UI not built).
- * A public `Build` is a strict subset of `ServiceRecord`'s public fields.
+ * PHASE 2 — Customer Vehicle Passport. A public `Build` is a strict subset of
+ * `ServiceRecord`'s public fields — these types are additive extensions of the
+ * Phase-1 reservation above, not a fork. See lib/passport.ts for loaders and
+ * content/{customers,vehicles,warranties,invoices,service-records}/*.json for
+ * seed data (hand-authored for now, same pattern as content/builds).
  * ------------------------------------------------------------------------- */
-export type Customer = { id: string; name: string; phone: string; email: string };
+export type Customer = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  /** short code the customer uses to open their passport — no full auth system yet */
+  accessCode: string;
+};
+
 export type Vehicle = {
   id: string;
   customerId: string;
@@ -47,7 +58,36 @@ export type Vehicle = {
   model: string;
   year: number;
   vin?: string;
+  wrapColor?: string;
+  tint?: { shade: string; brand?: string; areas: string[] };
+  /** coverage e.g. "Full front", "Track pack", "Full body" */
+  ppf?: { coverage: string; brand?: string };
+  /** build photos — reuses the public gallery's MediaItem shape */
+  media: MediaItem[];
 };
+
+export type Warranty = {
+  id: string;
+  vehicleId: string;
+  /** matches serviceFacets in lib/site.ts, e.g. "PPF", "Ceramic Tint", "Wraps" */
+  service: string;
+  /** film brand, e.g. "XPEL" */
+  provider?: string;
+  startDate: string;
+  expires: string;
+  /** one short line, spec-sheet tone, no marketing fluff */
+  terms?: string;
+};
+
+export type Invoice = {
+  id: string;
+  vehicleId: string;
+  date: string;
+  description: string;
+  amount: number;
+  fileUrl: string;
+};
+
 export type ServiceRecord = {
   id: string;
   vehicleId: string;
@@ -57,6 +97,7 @@ export type ServiceRecord = {
   invoiceUrl?: string;
   /** links this private record to a public gallery Build */
   buildSlug?: string;
+  notes?: string;
 };
 
 /* ---- Seed data (Phase 1). Phase 2 migrates this to a DB. ---------------- */
