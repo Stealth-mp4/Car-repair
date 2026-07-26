@@ -5,6 +5,7 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import BuildCard from "@/components/ui/BuildCard";
 import Faq, { type FaqItem } from "@/components/ui/Faq";
 import RevealLines from "@/components/ui/RevealLines";
+import Reveal from "@/components/ui/Reveal";
 import ServiceShowcase, { type ShowcaseItem } from "@/components/ui/ServiceShowcase";
 import { filterBuilds } from "@/lib/builds";
 
@@ -120,7 +121,9 @@ export default function TeslaHubPage() {
 
       {/* Why Tesla owners choose us */}
       <section className="py-20 md:py-28" style={{ paddingInline: "var(--gutter)" }}>
-        <p className="mono-label">Why Tesla owners choose us</p>
+        <Reveal>
+          <p className="mono-label">Why Tesla owners choose us</p>
+        </Reveal>
         <div className="mt-8">
           <ServiceShowcase items={REASONS} />
         </div>
@@ -130,7 +133,11 @@ export default function TeslaHubPage() {
       {teslas.length > 0 ? (
         <section className="pb-8" style={{ paddingInline: "var(--gutter)" }}>
           <div className="flex items-end justify-between gap-6">
-            <h2 className="font-display text-4xl font-semibold text-ink">Tesla builds.</h2>
+            <RevealLines
+              as="h2"
+              lines={["Tesla builds."]}
+              className="font-display text-4xl font-semibold text-ink"
+            />
             <Link href="/gallery?make=tesla" className="link-underline text-sm text-muted">
               View all
             </Link>

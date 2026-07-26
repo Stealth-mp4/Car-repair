@@ -1,20 +1,39 @@
 @import "tailwindcss";
 
 /* ============================================================
-   IQBALLAZ V3 — design tokens (Tailwind v4 @theme)
-   Black + red supercar-tier palette. See build.md DESIGN LAWS.
-   No pure #000 / #fff anywhere. Red < 4% of any screen.
+   IQBALLAZ V5 — design tokens (Tailwind v4 @theme)
+   ------------------------------------------------------------
+   DIRECTION CONTRACT (see DESIGN.md for the full record)
+   THESIS: Mansory-modeled atelier, not a tuner shop — black stage,
+   burgundy/maroon carry the "more color" mandate, red stays the
+   rarest accent instead of inflating.
+   OWN-WORLD: near-black #0B0B0B stage, burgundy #38080E + maroon
+   #5C0F16 raised surfaces, cream #F5EFE5 + white #FFFFFF text only
+   (no gray body copy), caliper red #E10600 as single flourish.
+   STORY: a first-time visitor reads restraint + real craft, not
+   hype — and finds a short teaser + CTA into every major page.
+   FIRST VIEWPORT: full-bleed graded hero video, centered stack,
+   small star cue above an oversized "BUILT DIFFERENT" headline
+   (DIFFERENT in red), subcopy, two CTAs.
+   FORM: brief-pinned redesign (client-supplied palette, logo, nav
+   reference, homepage wireframe) — no concept-seed roll performed.
+   ------------------------------------------------------------
+   Black does the heavy lifting; burgundy/maroon give it depth and
+   warmth; red is punctuation. No pure #000 / #fff. Red < 4% of screen.
    ============================================================ */
 @theme {
-  /* Colour — black stage, red as material accent */
-  --color-black: #0a0a0b; /* near-black stage — a hair of warmth, not pure #000 */
-  --color-black-raised: #141416; /* cards/surfaces one step up from stage */
-  --color-paper: #f2f0ec; /* light sections only */
-  --color-ink: #f5f3ef;
-  --color-muted: #8a8a8d;
-  --color-line: #2b2b2e;
-  --color-red: #c81e2c; /* the ONE accent — brake-caliper red, not neon */
-  --color-red-deep: #7a1119; /* pressed/hover states */
+  /* Colour — black stage, burgundy/maroon as the warm system, red as rare accent */
+  --color-black: #0b0b0b; /* near-black stage — a hair of warmth, not pure #000 */
+  --color-black-raised: #171012; /* cards/surfaces — black warmed toward burgundy, never neutral gray */
+  --color-burgundy: #38080e; /* deep accent — panels that need real weight (promo, footer plate, CTA band) */
+  --color-maroon: #5c0f16; /* secondary accent — hover/pressed states, tags, active nav underline */
+  --color-paper: #f5efe5; /* light sections + cream text */
+  --color-cream: #f5efe5; /* body copy on dark surfaces (alias of paper) */
+  --color-ink: #ffffff; /* display/headline text — pure white per brand direction */
+  --color-muted: #8a8a8d; /* tertiary/de-emphasized text ONLY — never body copy */
+  --color-line: #2b2320; /* warm-line hairline — burgundy-tinted, not neutral gray */
+  --color-red: #e10600; /* the ONE accent — caliper red, not neon */
+  --color-red-deep: #5c0f16; /* pressed/hover state — resolves to maroon, not a separate red */
 
   /* Type */
   --font-display: "General Sans", ui-sans-serif, system-ui, sans-serif;
@@ -33,134 +52,162 @@
 }
 
 /* ---- Base --------------------------------------------------- */
-html {
-  overflow-x: clip;
+@layer base {
+  html {
+    overflow-x: clip;
+  }
+
+  body {
+    background: var(--color-black);
+    color: var(--color-ink);
+    font-family: var(--font-text);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-red);
+    color: var(--color-ink);
+  }
 }
 
-body {
-  background: var(--color-black);
-  color: var(--color-ink);
-  font-family: var(--font-text);
-  font-size: 1.0625rem;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
-}
+/*
+ * Component classes live in Tailwind's `components` layer so that any
+ * `text-*` (or other) utility placed alongside one of these classes always
+ * wins the cascade — unlayered CSS beats layered CSS regardless of source
+ * order, which previously made e.g. `mono-label text-ink` silently render
+ * as the muted default color instead of ink. See DESIGN.md's nav component.
+ */
+@layer components {
+  /* Display + mono label primitives ---------------------------- */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+    /* Pushed more confidently oversized (Ferrari/Bugatti scale) */
+    font-size: clamp(2.5rem, 7vw, 7.5rem);
+  }
 
-::selection {
-  background: var(--color-red);
-  color: var(--color-ink);
-}
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+  }
 
-/* Display + mono label primitives ---------------------------- */
-.display {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 0.98;
-  /* Pushed more confidently oversized (Ferrari/Bugatti scale) */
-  font-size: clamp(2.5rem, 7vw, 7.5rem);
-}
+  /* ---- Imagery grade — every build photo shares ONE grade ---- */
+  /* Retuned for the near-black background: slightly higher contrast, cooler warmth. */
+  .graded {
+    filter: contrast(1.09) brightness(0.96) saturate(1.02);
+  }
 
-.mono-label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-muted);
-}
+  /* Media frame: 4% black overlay + grain over the graded image */
+  .media-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-media);
+    /* graded placeholder — lazy images reveal over black-raised, never a shimmer */
+    background-color: var(--color-black-raised);
+  }
+  .media-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 11, 0.04);
+    pointer-events: none;
+  }
 
-/* ---- Imagery grade — every build photo shares ONE grade ---- */
-/* Retuned for the near-black background: slightly higher contrast, cooler warmth. */
-.graded {
-  filter: contrast(1.09) brightness(0.96) saturate(1.02);
-}
+  /* ---- Fine film grain (site-wide, subtle) ------------------- */
+  .grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
 
-/* Media frame: 4% black overlay + grain over the graded image */
-.media-frame {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-media);
-  /* graded placeholder — lazy images reveal over black-raised, never a shimmer */
-  background-color: var(--color-black-raised);
-}
-.media-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 10, 11, 0.04);
-  pointer-events: none;
-}
+  /* ---- Scrollbar-less scroll areas (nav overlay) -------------- */
+  /* Scrolls natively, just never paints a scrollbar track/thumb. */
+  .scrollbar-none {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* old Edge/IE */
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none; /* Chrome/Safari/new Edge */
+  }
 
-/* ---- Fine film grain (site-wide, subtle) ------------------- */
-.grain::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+  /* ---- Interaction primitives -------------------------------- */
+  /* Links: underline draws left -> right */
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-brand);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+  }
 
-/* ---- Scrollbar-less scroll areas (nav overlay) -------------- */
-/* Scrolls natively, just never paints a scrollbar track/thumb. */
-.scrollbar-none {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* old Edge/IE */
-}
-.scrollbar-none::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none; /* Chrome/Safari/new Edge */
-}
+  /* Buttons: fill sweeps up from the bottom on hover, no scale */
+  .btn-sweep {
+    position: relative;
+    overflow: hidden;
+    border-radius: 9999px; /* full pill */
+    isolation: isolate;
+  }
+  .btn-sweep::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--sweep, var(--color-red));
+    transform: translateY(101%);
+    transition: transform 0.4s var(--ease-brand);
+  }
+  .btn-sweep:hover::before {
+    transform: translateY(0);
+  }
 
-/* ---- Interaction primitives -------------------------------- */
-/* Links: underline draws left -> right */
-.link-underline {
-  position: relative;
-  display: inline-block;
-}
-.link-underline::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s var(--ease-brand);
-}
-.link-underline:hover::after {
-  transform: scaleX(1);
-}
+  /* Reveal line mask (RevealLines primitive) */
+  .reveal-mask {
+    overflow: hidden;
+    display: block;
+  }
 
-/* Buttons: fill sweeps up from the bottom on hover, no scale */
-.btn-sweep {
-  position: relative;
-  overflow: hidden;
-  border-radius: 9999px; /* full pill */
-  isolation: isolate;
-}
-.btn-sweep::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--sweep, var(--color-red));
-  transform: translateY(101%);
-  transition: transform 0.4s var(--ease-brand);
-}
-.btn-sweep:hover::before {
-  transform: translateY(0);
-}
+  /* Splash screen gleam sweep */
+  .splash-gleam {
+    background-image: linear-gradient(
+      100deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.9) 50%,
+      transparent 65%
+    );
+    background-size: 300% 100%;
+    animation: splash-gleam 1.6s ease-in-out infinite;
+  }
 
-/* Reveal line mask (RevealLines primitive) */
-.reveal-mask {
-  overflow: hidden;
-  display: block;
+  /* Featured Builds preview swap — a quick crossfade, not a hard cut */
+  .build-fade-in {
+    animation: build-fade-in 350ms var(--ease-brand);
+  }
 }
 
 /* Reviews progress rule fill (section 7) */
@@ -170,6 +217,26 @@ body {
   }
   to {
     width: 100%;
+  }
+}
+
+/* Splash screen gleam — a light sweep masked to the logo's own silhouette */
+@keyframes splash-gleam {
+  0% {
+    background-position: -60% 0;
+  }
+  100% {
+    background-position: 160% 0;
+  }
+}
+
+/* Featured Builds preview swap — a quick crossfade, not a hard cut */
+@keyframes build-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -184,6 +251,13 @@ body {
   .link-underline::after,
   .btn-sweep::before {
     transition: none;
+  }
+  .splash-gleam {
+    animation: none;
+    display: none;
+  }
+  .build-fade-in {
+    animation: none;
   }
   /* Horizontal gallery track -> vertical stack, no pin, no track (build.md) */
   .hscroll {

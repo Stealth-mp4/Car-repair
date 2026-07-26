@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { services } from "@/lib/site";
+import RevealLines from "@/components/ui/RevealLines";
+import Reveal from "@/components/ui/Reveal";
 
 /**
  * Our Services (V4 — bugatti.com "OUR HYPER SPORTS CARS" grid reference) —
@@ -64,68 +66,50 @@ export default function FeaturedServices() {
       className="border-y border-line bg-black-raised py-20 md:py-28"
       style={{ paddingInline: "var(--gutter)" }}
     >
-      <div className="flex items-end justify-between gap-6">
-        <p className="mono-label">Our services</p>
-        <Link href="/services" className="link-underline text-sm text-muted">
-          All services
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <Reveal>
+            <p className="mono-label">Our services</p>
+          </Reveal>
+          <RevealLines
+            as="h2"
+            lines={["Five disciplines, one standard."]}
+            className="mt-3 max-w-md font-display text-2xl text-ink sm:text-3xl"
+          />
+        </div>
+        <Link href="/services" className="link-underline text-sm text-cream">
+          All services →
         </Link>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {a ? (
-          <PosterCard
-            href={a.href}
-            title={a.title}
-            short={a.short}
-            image={a.image}
-            alt={`${a.title} — Iqballaz Customs`}
-            filmBrand={a.filmBrand}
-            className="aspect-[4/5]"
-          />
-        ) : null}
-        {b ? (
-          <PosterCard
-            href={b.href}
-            title={b.title}
-            short={b.short}
-            image={b.image}
-            alt={`${b.title} — Iqballaz Customs`}
-            filmBrand={b.filmBrand}
-            className="aspect-[4/5]"
-          />
-        ) : null}
-        {c ? (
-          <PosterCard
-            href={c.href}
-            title={c.title}
-            short={c.short}
-            image={c.image}
-            alt={`${c.title} — Iqballaz Customs`}
-            filmBrand={c.filmBrand}
-            className="aspect-[4/5]"
-          />
-        ) : null}
-        {d ? (
-          <PosterCard
-            href={d.href}
-            title={d.title}
-            short={d.short}
-            image={d.image}
-            alt={`${d.title} — Iqballaz Customs`}
-            filmBrand={d.filmBrand}
-            className="aspect-[4/5]"
-          />
-        ) : null}
+        {[a, b, c, d].map((item, i) =>
+          item ? (
+            <Reveal key={item.href} delay={i * 0.08} className="aspect-[4/5]">
+              <PosterCard
+                href={item.href}
+                title={item.title}
+                short={item.short}
+                image={item.image}
+                alt={`${item.title} — Iqballaz Customs`}
+                filmBrand={item.filmBrand}
+                className="h-full"
+              />
+            </Reveal>
+          ) : null
+        )}
         {e ? (
-          <PosterCard
-            href={e.href}
-            title={e.title}
-            short={e.short}
-            image={e.image}
-            alt={`${e.title} — Iqballaz Customs`}
-            filmBrand={e.filmBrand}
-            className="aspect-[16/9] md:col-span-2"
-          />
+          <Reveal delay={0.32} className="aspect-[16/9] md:col-span-2">
+            <PosterCard
+              href={e.href}
+              title={e.title}
+              short={e.short}
+              image={e.image}
+              alt={`${e.title} — Iqballaz Customs`}
+              filmBrand={e.filmBrand}
+              className="h-full"
+            />
+          </Reveal>
         ) : null}
       </div>
     </section>

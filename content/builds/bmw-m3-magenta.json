@@ -1,0 +1,26 @@
+{
+  "slug": "bmw-m3-magenta",
+  "make": "BMW",
+  "model": "M3",
+  "year": 2022,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Magenta",
+  "finish": "Gloss",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m3-magenta-1.webp",
+      "alt": "BMW M3 — Magenta wrap, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m3-magenta-2.webp",
+      "alt": "BMW M3 — Magenta wrap, engine bay"
+    }
+  ],
+  "summary": "Gloss magenta colour-change on an M3 — a full loud-colour build, engine bay detailed to match the standard.",
+  "featured": true,
+  "date": "2026-06-18"
+}

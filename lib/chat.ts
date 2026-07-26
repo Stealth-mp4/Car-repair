@@ -5,6 +5,8 @@
  * Pricing is given as RANGES, never exact quotes.
  */
 
+import { business } from "@/lib/site";
+
 export type ChatTopic = {
   id: string;
   label: string;
@@ -51,7 +53,7 @@ export const chatTopics: Record<string, ChatTopic> = {
     id: "hours",
     label: "Hours & location",
     answer:
-      "We're at 5819 Richmond Ave, Houston, TX 77057. Mon–Fri 10–6, Saturday by appointment, closed Sunday. By appointment only — (832) 208-1071.",
+      `We're at ${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}. Mon–Fri 10–6, Saturday by appointment, closed Sunday. By appointment only — ${business.phone}.`,
     followups: [HANDOFF, "services"],
   },
   "wrap-faq": {

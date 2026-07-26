@@ -1,0 +1,31 @@
+{
+  "slug": "rolls-royce-wraith-pearl-white",
+  "make": "Rolls-Royce",
+  "model": "Wraith",
+  "year": 2021,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Pearl White",
+  "finish": "Gloss",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/rolls-royce-wraith-white-1.webp",
+      "alt": "Rolls-Royce Wraith — Pearl White wrap, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/rolls-royce-wraith-white-2.webp",
+      "alt": "Rolls-Royce Wraith — Pearl White wrap, front"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/rolls-royce-wraith-white-3.webp",
+      "alt": "Rolls-Royce Wraith — Pearl White wrap, rear three-quarter"
+    }
+  ],
+  "summary": "Full gloss colour-change on a Wraith coupe — pearl white over the factory black, panel gaps kept tight through the grille and mirrors.",
+  "featured": true,
+  "date": "2026-02-11"
+}

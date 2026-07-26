@@ -1,0 +1,31 @@
+{
+  "slug": "ram-trx-desert-tan",
+  "make": "RAM",
+  "model": "TRX",
+  "year": 2022,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Desert Tan",
+  "finish": "Matte",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/ram-trx-tan-1.webp",
+      "alt": "RAM TRX — Desert Tan wrap, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/ram-trx-tan-2.webp",
+      "alt": "RAM TRX — Desert Tan wrap, rear bed"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/ram-trx-tan-3.webp",
+      "alt": "RAM TRX — Desert Tan wrap, front"
+    }
+  ],
+  "summary": "Matte desert tan colour-change on a TRX — full body including the bed and tailgate.",
+  "featured": true,
+  "date": "2026-06-03"
+}

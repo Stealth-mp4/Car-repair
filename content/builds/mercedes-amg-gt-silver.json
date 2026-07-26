@@ -1,0 +1,21 @@
+{
+  "slug": "mercedes-amg-gt-silver",
+  "make": "Mercedes-Benz",
+  "model": "AMG GT",
+  "year": 2020,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Satin Silver",
+  "finish": "Satin",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/mercedes-amg-gt-silver-1.webp",
+      "alt": "Mercedes-AMG GT — Satin Silver wrap, front three-quarter"
+    }
+  ],
+  "summary": "Satin silver colour-change on an AMG GT, photographed on delivery day.",
+  "featured": false,
+  "date": "2026-05-15"
+}

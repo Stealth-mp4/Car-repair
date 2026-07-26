@@ -10,6 +10,10 @@ export const business = {
   wordmarkSub: "CUSTOMS",
   tagline: "Wrapped in Houston. Built for Tesla.",
   cue: "HOUSTON, TX — BY APPOINTMENT",
+  /** Hero star-line (V5) — small, legible, sits above the "Built Different" headline. */
+  heroCue: "★ We Wrap Private Jets, Aircraft & Marine Vessels Too. ★",
+  /** Hero subcopy (V5), sits under the "Built Different" headline. */
+  heroSubcopy: "Premium vehicle customization for those who expect more.",
   /**
    * Concrete trust/credibility line (structural parity §1) — short, mono-styled,
    * understated. PLACEHOLDER figures: confirm exact founding year and lifetime
@@ -21,10 +25,10 @@ export const business = {
   phoneHref: "tel:+18322081071",
   email: "info@iqballazcustoms.com",
   address: {
-    street: "5819 Richmond Ave",
+    street: "10950 Stancliff Rd",
     locality: "Houston",
     region: "TX",
-    postalCode: "77057",
+    postalCode: "77099",
     country: "US",
   },
   priceRange: "$$",
@@ -50,6 +54,16 @@ export const social = {
   instagram: "https://www.instagram.com/iqballazcustoms",
   instagramHandle: "@iqballazcustoms",
   facebook: "https://www.facebook.com/iqballazcustoms",
+  tiktok: "https://www.tiktok.com/@_iqballazcustoms",
+  tiktokHandle: "@_iqballazcustoms",
+} as const;
+
+/** Brand mark assets (V5) — see DESIGN.md "Centered-Logo Nav" + "Splash Screen". */
+export const brand = {
+  /** Tightly-cropped transparent mark — use wherever height is constrained (nav, splash, footer plate). */
+  markTight: "/brand/iqballaz-mark-tight.png",
+  /** Full-canvas transparent mark — use where natural padding is wanted. */
+  mark: "/brand/iqballaz-mark.png",
 } as const;
 
 export type ServiceLink = {
@@ -173,11 +187,18 @@ export const menu = {
   ],
 } as const;
 
-/** Primary nav — Services opens a mega-panel; Tesla Hub pinned. */
+/**
+ * Primary nav (V5 — Mansory reference): split link clusters flank the centered
+ * logo mark on desktop (>=1024px). "Menu" + full-screen overlay still covers
+ * mobile and carries the full grouped link set (see `menu` above).
+ */
 export const nav = {
-  primary: [
+  left: [
+    { label: "Services", href: "/services" },
     { label: "Gallery", href: "/gallery" },
     { label: "Tesla", href: "/tesla" },
+  ],
+  right: [
     { label: "Financing", href: "/financing" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
@@ -186,5 +207,16 @@ export const nav = {
 } as const;
 
 /** Service filter facets used by the gallery filter bar. */
-export const makes = ["Tesla", "BMW", "Mercedes", "Audi", "Ford", "Other"] as const;
+export const makes = [
+  "Tesla",
+  "Rolls-Royce",
+  "BMW",
+  "Lamborghini",
+  "Mercedes-Benz",
+  "Porsche",
+  "Ferrari",
+  "Cadillac",
+  "RAM",
+  "Land Rover",
+] as const;
 export const serviceFacets = ["Wraps", "Tint", "PPF", "Starlights", "Wheels"] as const;

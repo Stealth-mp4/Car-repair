@@ -18,7 +18,8 @@ export default function RevealLines({
   className = "",
   lineClassName = "",
 }: {
-  lines: string[];
+  /** Each entry renders as its own reveal line — plain strings or a node (e.g. to color one word). */
+  lines: React.ReactNode[];
   as?: Tag;
   trigger?: "load" | "scroll";
   className?: string;

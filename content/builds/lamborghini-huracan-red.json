@@ -1,0 +1,26 @@
+{
+  "slug": "lamborghini-huracan-red",
+  "make": "Lamborghini",
+  "model": "Huracán",
+  "year": 2021,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Rosso Mars",
+  "finish": "Gloss",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/lamborghini-huracan-red-1.webp",
+      "alt": "Lamborghini Huracán — Rosso Mars wrap, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/lamborghini-huracan-red-2.webp",
+      "alt": "Lamborghini Huracán — Rosso Mars wrap, front detail"
+    }
+  ],
+  "summary": "Gloss red colour-change on a widebody Huracán — aggressive front fascia finished to a mirror edge.",
+  "featured": true,
+  "date": "2026-05-02"
+}

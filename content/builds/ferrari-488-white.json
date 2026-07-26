@@ -1,0 +1,26 @@
+{
+  "slug": "ferrari-488-white",
+  "make": "Ferrari",
+  "model": "488 GTB",
+  "year": 2019,
+  "services": [
+    "PPF"
+  ],
+  "wrapColor": "Bianco Avus",
+  "finish": "Gloss",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/ferrari-488-white-1.webp",
+      "alt": "Ferrari 488 GTB — white, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/ferrari-488-white-2.webp",
+      "alt": "Ferrari 488 GTB — PPF install, hood detail"
+    }
+  ],
+  "summary": "Full-front paint protection film on a Bianco 488 GTB — hood, bumper, and mirrors covered and cut invisible.",
+  "featured": true,
+  "date": "2026-06-25"
+}
