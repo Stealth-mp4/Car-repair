@@ -1,0 +1,35 @@
+{
+  "slug": "bmw-m3-rose-gold-satin",
+  "make": "BMW",
+  "model": "M3",
+  "year": 2021,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Rose Gold Satin",
+  "finish": "Satin",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m3-rosegold-1.webp",
+      "alt": "BMW M3 — Rose Gold Satin wrap, finished, front"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m3-rosegold-2.webp",
+      "alt": "BMW M3 — Rose Gold Satin wrap, rear detail"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m3-rosegold-3.webp",
+      "alt": "BMW M3 — stripped to bare panels before rewrap"
+    }
+  ],
+  "beforeAfter": {
+    "before": "/gallery/bmw-m3-rosegold-3.webp",
+    "after": "/gallery/bmw-m3-rosegold-1.webp"
+  },
+  "summary": "Satin rose gold colour-change on an M3 — stripped back to bare panels before the new finish went on.",
+  "featured": true,
+  "date": "2026-04-30"
+}

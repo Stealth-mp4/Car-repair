@@ -12,6 +12,7 @@ import WarrantyList from "@/components/passport/WarrantyList";
 import ServiceTimeline from "@/components/passport/ServiceTimeline";
 import InvoiceList from "@/components/passport/InvoiceList";
 import PassportPhotoGrid from "@/components/passport/PassportPhotoGrid";
+import Reveal from "@/components/ui/Reveal";
 
 type Params = Promise<{ vehicleId: string }>;
 
@@ -83,22 +84,22 @@ export default async function VehiclePassportPage({ params }: { params: Params }
       </header>
 
       <section className="mt-16 border-t border-line pt-12">
-        <p className="mono-label mb-6">Warranties</p>
+        <Reveal><p className="mono-label mb-6">Warranties</p></Reveal>
         <WarrantyList warranties={warranties} />
       </section>
 
       <section className="mt-16 border-t border-line pt-12">
-        <p className="mono-label mb-6">Service history</p>
+        <Reveal><p className="mono-label mb-6">Service history</p></Reveal>
         <ServiceTimeline records={records} />
       </section>
 
       <section className="mt-16 border-t border-line pt-12">
-        <p className="mono-label mb-6">Invoices</p>
+        <Reveal><p className="mono-label mb-6">Invoices</p></Reveal>
         <InvoiceList invoices={invoices} />
       </section>
 
       <section className="mt-16 border-t border-line pt-12">
-        <p className="mono-label mb-6">Build photos</p>
+        <Reveal><p className="mono-label mb-6">Build photos</p></Reveal>
         <PassportPhotoGrid vehicle={vehicle} linkedBuilds={linkedBuilds} />
       </section>
     </article>

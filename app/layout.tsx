@@ -4,6 +4,7 @@ import SmoothScroll from "@/components/ui/SmoothScroll";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import ChatWidget from "@/components/ui/ChatWidget";
+import SplashScreen from "@/components/ui/SplashScreen";
 import { business, openingHours } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -72,6 +73,7 @@ export default function RootLayout({
         />
       </head>
       <body className="grain">
+        <SplashScreen />
         <SmoothScroll>
           <SiteNav />
           <main>{children}</main>

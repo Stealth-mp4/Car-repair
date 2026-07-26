@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { business, menu, social } from "@/lib/site";
+import { brand, business, menu, nav, social } from "@/lib/site";
 
 /**
- * SiteNav (V4 — bugatti.com reference) — thin transparent bar over the hero,
- * solidifies past 40px scroll. "MENU" opens a full-screen overlay: a paper
- * panel sliding in from the left with grouped links, plus two stacked visual
- * cards on wide screens. Replaces the old hover mega-panel entirely.
+ * SiteNav (V5 — Mansory reference) — thin transparent bar over the hero,
+ * solidifies past 40px scroll. Desktop (>=1024px): link clusters split left
+ * and right, the real logo mark centered between them, matching Mansory's
+ * own nav layout. Below 1024px the hamburger + full-screen overlay (with the
+ * grouped link set) is the whole nav, as before.
  */
 export default function SiteNav() {
   const [solid, setSolid] = useState(false);
@@ -42,39 +43,66 @@ export default function SiteNav() {
         }`}
       >
         <nav
-          className="grid grid-cols-3 items-center py-5"
+          className="grid grid-cols-3 items-center py-4"
           style={{ paddingInline: "var(--gutter)" }}
         >
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="group flex items-center gap-2.5 justify-self-start"
-            aria-expanded={open}
-            aria-label="Open menu"
-          >
-            <span className="flex flex-col gap-[3px]">
-              <span className="block h-px w-4 bg-ink transition-transform duration-300 group-hover:translate-x-0.5" />
-              <span className="block h-px w-4 bg-ink" />
-            </span>
-            <span className="mono-label text-ink">Menu</span>
-          </button>
+          {/* Left cluster — hamburger (all sizes) + primary links (desktop) */}
+          <div className="flex items-center gap-8 justify-self-start">
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="group flex items-center gap-2.5"
+              aria-expanded={open}
+              aria-label="Open menu"
+            >
+              <span className="flex flex-col gap-[3px]">
+                <span className="block h-px w-4 bg-ink transition-transform duration-300 group-hover:translate-x-0.5" />
+                <span className="block h-px w-4 bg-ink" />
+              </span>
+              <span className="mono-label text-ink">Menu</span>
+            </button>
+            <div className="hidden items-center gap-7 lg:flex">
+              {nav.left.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="link-underline mono-label text-ink"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
 
-          <Link
-            href="/"
-            className="flex items-baseline justify-center gap-1.5 justify-self-center"
-          >
-            <span className="font-display text-lg font-semibold tracking-tight text-ink">
-              {business.wordmark}
-            </span>
-            <span className="mono-label hidden sm:inline">{business.wordmarkSub}</span>
+          {/* Centered logo mark (Mansory reference) */}
+          <Link href="/" className="relative h-9 w-24 justify-self-center sm:h-10 sm:w-28">
+            <Image
+              src={brand.markTight}
+              alt={`${business.name} — home`}
+              fill
+              sizes="120px"
+              priority
+              className="object-contain"
+            />
           </Link>
 
-          <Link
-            href="/quote"
-            className="link-underline mono-label justify-self-end text-ink"
-          >
-            Get a Quote
-          </Link>
+          {/* Right cluster — secondary links (desktop) + CTA (all sizes) */}
+          <div className="flex items-center gap-7 justify-self-end">
+            <div className="hidden items-center gap-7 lg:flex">
+              {nav.right.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="link-underline mono-label text-ink"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            <Link href={nav.cta.href} className="link-underline mono-label text-ink">
+              {nav.cta.label}
+            </Link>
+          </div>
         </nav>
       </header>
 
@@ -148,6 +176,9 @@ export default function SiteNav() {
               </a>
               <a href={social.facebook} className="mono-label text-black/60 hover:text-black">
                 Facebook
+              </a>
+              <a href={social.tiktok} className="mono-label text-black/60 hover:text-black">
+                TikTok
               </a>
             </div>
           </div>

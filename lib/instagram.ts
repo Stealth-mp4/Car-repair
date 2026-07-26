@@ -12,6 +12,8 @@ export type IgPost = {
   permalink: string;
   /** grid aspect — mixed 4:5 / 1:1 masonry */
   aspect: "4/5" | "1/1";
+  /** true for a video/reel post — shows a play glyph over the tile */
+  isVideo?: boolean;
 };
 
 /** Real shop images (from /public) — honest placeholder until the token is added. */
@@ -54,6 +56,7 @@ export async function getInstagram(limit = 8): Promise<IgPost[]> {
       alt: m.caption?.slice(0, 120) ?? "Iqballaz Customs build",
       permalink: m.permalink,
       aspect: i % 3 === 0 ? ("4/5" as const) : ("1/1" as const),
+      isVideo: m.media_type === "VIDEO",
     }));
   } catch {
     return FALLBACK_POSTS.slice(0, limit);

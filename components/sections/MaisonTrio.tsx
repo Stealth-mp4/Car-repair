@@ -6,7 +6,7 @@ const ITEMS = [
     title: "About the shop",
     href: "/about",
     image: "/cover.webp",
-    alt: "Iqballaz Customs storefront on Richmond Ave at dusk",
+    alt: "Iqballaz Customs storefront at dusk",
   },
   {
     title: "The work",

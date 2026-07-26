@@ -1,0 +1,31 @@
+{
+  "slug": "bmw-m4-satin-grey",
+  "make": "BMW",
+  "model": "M4",
+  "year": 2022,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Satin Grey",
+  "finish": "Satin",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m4-grey-1.webp",
+      "alt": "BMW M4 — Satin Grey wrap, front"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m4-grey-2.webp",
+      "alt": "BMW M4 — Satin Grey wrap, rear three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m4-grey-3.webp",
+      "alt": "BMW M4 — Satin Grey wrap, evening exterior"
+    }
+  ],
+  "summary": "Satin grey colour-change on an M4 — kidney grille and quad exhaust finished clean, shot in-shop and at dusk.",
+  "featured": true,
+  "date": "2026-03-27"
+}

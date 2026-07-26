@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-25T00:00:00Z",
+  "title": "Design System: Iqballaz Customs — V5 (Mansory Redesign)",
+  "extensions": {
+    "colorMeta": {
+      "black": { "role": "primary", "displayName": "Near-Black Stage", "canonical": "#0B0B0B" },
+      "black-raised": { "role": "neutral", "displayName": "Raised Stage", "canonical": "#171012" },
+      "burgundy": { "role": "secondary", "displayName": "Deep Burgundy", "canonical": "#38080E" },
+      "maroon": { "role": "secondary", "displayName": "Maroon", "canonical": "#5C0F16" },
+      "red": { "role": "tertiary", "displayName": "Caliper Red", "canonical": "#E10600" },
+      "cream": { "role": "neutral", "displayName": "Cream", "canonical": "#F5EFE5" },
+      "white": { "role": "neutral", "displayName": "White", "canonical": "#FFFFFF" },
+      "ash": { "role": "neutral", "displayName": "Ash", "canonical": "#8A8A8D" },
+      "line": { "role": "neutral", "displayName": "Warm Line", "canonical": "#2B2320" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero and section headlines only, short and declarative." },
+      "body": { "displayName": "Body", "purpose": "Paragraph copy, cream on dark surfaces." },
+      "label": { "displayName": "Mono Label", "purpose": "The single recurring eyebrow/spec-tag device — captions, kickers, nav sub-label." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-brand", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "All hover/reveal easing site-wide." },
+      { "name": "splash-fade-in", "value": "opacity 400ms cubic-bezier(0.22,1,0.36,1)", "purpose": "Splash screen logo fade-in." },
+      { "name": "splash-fade-out", "value": "opacity 500ms cubic-bezier(0.22,1,0.36,1)", "purpose": "Splash screen exit into homepage." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "480px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Pill CTA, red fill sweeping to maroon on hover, no scale transform.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">GET A QUOTE</a>",
+      "css": ".ds-btn-primary { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; border-radius: 9999px; background: #E10600; color: #FFFFFF; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; isolation: isolate; transition: color 0.2s; } .ds-btn-primary::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #5C0F16; transform: translateY(101%); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); } .ds-btn-primary:hover::before { transform: translateY(0); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Hairline outline button, fills to raised stage on hover.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">SEE THE WORK</a>",
+      "css": ".ds-btn-ghost { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; border-radius: 9999px; border: 1px solid #2B2320; color: #FFFFFF; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; isolation: isolate; } .ds-btn-ghost::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #171012; transform: translateY(101%); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); } .ds-btn-ghost:hover::before { transform: translateY(0); }"
+    },
+    {
+      "name": "Mono Label",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "The site's single recurring eyebrow/spec-tag device.",
+      "html": "<p class=\"ds-mono-label\">HOUSTON, TX — BY APPOINTMENT</p>",
+      "css": ".ds-mono-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8A8A8D; }"
+    },
+    {
+      "name": "Centered-Logo Nav",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Mansory-style nav: link cluster left, logo mark dead center, link cluster + CTA right.",
+      "html": "<header class=\"ds-nav\"><nav class=\"ds-nav-left\"><a href=\"#\">Services</a><a href=\"#\">Gallery</a></nav><a href=\"#\" class=\"ds-nav-logo\"><img src=\"/brand/iqballaz-mark.png\" alt=\"Iqballaz Customs\"/></a><nav class=\"ds-nav-right\"><a href=\"#\">About</a><a href=\"#\" class=\"ds-btn-primary\">Get a Quote</a></nav></header>",
+      "css": ".ds-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background: transparent; padding: 20px clamp(1.25rem, 4vw, 4rem); } .ds-nav-left { display: flex; gap: 24px; justify-self: start; } .ds-nav-right { display: flex; align-items: center; gap: 24px; justify-self: end; } .ds-nav-logo { justify-self: center; } .ds-nav-logo img { height: 40px; width: auto; }"
+    },
+    {
+      "name": "Splash Screen",
+      "kind": "custom",
+      "refersTo": "splash",
+      "description": "Full-screen black splash with centered logo mark, fades in then out once per session.",
+      "html": "<div class=\"ds-splash\"><img src=\"/brand/iqballaz-mark.png\" alt=\"Iqballaz Customs\"/></div>",
+      "css": ".ds-splash { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: #0B0B0B; } .ds-splash img { width: min(40vw, 220px); opacity: 0; animation: ds-splash-in 400ms cubic-bezier(0.22,1,0.36,1) forwards; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Atelier, Not the Tuner Shop",
+    "overview": "Iqballaz Customs V5 replaces the black/graphite-and-single-red-accent system with a warmer, richer black-burgundy-maroon world modeled on Mansory's own site: a centered wordmark commanding the nav, generous black stage, and a restrained but deliberate red used the way a calliper or a stitch line is used — as one detail, never a wash. This is a redesign, not a new product: structure, motion engine, and type family carry forward from the incumbent system.",
+    "keyCharacteristics": [
+      "Near-black stage with warm burgundy-tinted raised surfaces, never neutral gray-black.",
+      "Red stays the rarest color on the page; burgundy and maroon absorb the 'more color' mandate.",
+      "Cream and white are the only body/display text colors — no gray body text on dark surfaces.",
+      "Nav: links split left/right, real logo mark dead center.",
+      "A 2-3s black splash screen with the centered logo mark precedes first paint, once per session."
+    ],
+    "rules": [
+      { "name": "The Red Rarity Rule", "body": "Red's screen coverage does not grow in V5 — burgundy and maroon absorb the client's 'use more color' direction.", "section": "colors" },
+      { "name": "The No-Gray-Body Rule", "body": "Body text on any dark surface is cream, not ash and not a mid-gray.", "section": "colors" },
+      { "name": "The One Eyebrow Rule", "body": "The mono-label device is the site's single recurring kicker; do not introduce a second label style.", "section": "typography" },
+      { "name": "The Hairline-Not-Shadow Rule", "body": "Separation comes from a warm-line hairline or a tonal shift, never box-shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Deep Burgundy and Maroon as real surface/accent colors.",
+      "Do keep all body copy cream or white on dark surfaces.",
+      "Do center the real logo mark in the nav on desktop.",
+      "Do keep the mono-label eyebrow as the one recurring kicker device."
+    ],
+    "donts": [
+      "Don't let red's screen coverage grow past the incumbent <4% ceiling.",
+      "Don't reintroduce neutral gray-black surfaces.",
+      "Don't add drop shadows, glassmorphism, or glowing edges anywhere.",
+      "Don't invent commercial claims not confirmed in PRODUCT.md."
+    ]
+  }
+}

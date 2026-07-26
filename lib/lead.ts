@@ -7,7 +7,7 @@
 export type ContactMethod = "phone" | "text" | "email";
 
 export type Lead = {
-  source: "quote" | "chat";
+  source: "quote" | "chat" | "contact";
   vehicle: { year?: string; make?: string; model?: string; vin?: string };
   services: string[];
   details: { colorFinish?: string; timeline?: string };

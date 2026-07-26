@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   }
 
   const lead: Lead & { id: string } = {
-    source: body.source === "chat" ? "chat" : "quote",
+    source: body.source === "chat" ? "chat" : body.source === "contact" ? "contact" : "quote",
     vehicle: body.vehicle ?? {},
     services: Array.isArray(body.services) ? body.services : [],
     details: body.details ?? {},

@@ -8,11 +8,10 @@ import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import { business } from "@/lib/site";
 
 /**
- * Hero (V4 — bugatti.com reference) — full-bleed graded media, centered
- * content stack (cue → headline → caption → outline CTA → ghost link), slow
- * parallax on the media layer. Looping muted background video with the shop
- * photo as poster/fallback — drop the exported clip at
- * /public/videos/hero-reel.mp4.
+ * Hero (V5 — same full-bleed graded media + parallax as before, new V5 copy):
+ * small legible star cue → "BUILT DIFFERENT" ("DIFFERENT" in caliper red) →
+ * subcopy → two CTAs. Looping muted background video with the shop photo as
+ * poster/fallback — drop the exported clip at /public/videos/hero-reel.mp4.
  */
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -66,19 +65,21 @@ export default function Hero() {
 
       {/* Centered content stack */}
       <div className="relative z-10 flex flex-col items-center px-6 text-center">
-        <p className="mono-label">{business.cue}</p>
+        <p className="font-mono text-[0.8rem] uppercase tracking-[0.08em] text-cream sm:text-sm">
+          {business.heroCue}
+        </p>
 
         <RevealLines
           as="h1"
           trigger="load"
           className="display mt-5 text-ink"
           lineClassName="text-center"
-          lines={["Wrapped in Houston.", "Built for Tesla."]}
+          lines={["Built", <span key="different" className="text-red">Different</span>]}
         />
 
-        <p className="mono-label mt-6 text-ink/70">{business.trust}</p>
+        <p className="mt-6 max-w-lg text-lg text-cream sm:text-xl">{business.heroSubcopy}</p>
 
-        <div className="mt-9 flex flex-col items-center gap-5">
+        <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row sm:gap-8">
           <MagneticButton href="/quote" variant="outline">
             Get a Quote
           </MagneticButton>

@@ -104,11 +104,59 @@ export type ServiceRecord = {
 import cybertruck from "@/content/builds/tesla-cybertruck-satin-black.json";
 import model3ppf from "@/content/builds/tesla-model3-stealth-ppf.json";
 import modelYTint from "@/content/builds/tesla-modely-ceramic-tint.json";
+import lamborghiniAventadorBlack from "@/content/builds/lamborghini-aventador-black.json";
+import lamborghiniAventadorBlue from "@/content/builds/lamborghini-aventador-blue.json";
+import lamborghiniHuracanRed from "@/content/builds/lamborghini-huracan-red.json";
+import lamborghiniUrusMatteBlack from "@/content/builds/lamborghini-urus-matte-black.json";
+import ferrari488White from "@/content/builds/ferrari-488-white.json";
+import porsche911MatteBlack from "@/content/builds/porsche-911-matte-black.json";
+import mercedesAmgGtSilver from "@/content/builds/mercedes-amg-gt-silver.json";
+import cadillacEscaladeMatteBlack from "@/content/builds/cadillac-escalade-matte-black.json";
+import ramTrxDesertTan from "@/content/builds/ram-trx-desert-tan.json";
+import rangeRoverMatteGrey from "@/content/builds/range-rover-matte-grey.json";
+import rollsRoyceWraithPearlWhite from "@/content/builds/rolls-royce-wraith-pearl-white.json";
+import rollsRoyceWraithGlossBlack from "@/content/builds/rolls-royce-wraith-gloss-black.json";
+import rollsRoyceWraithCobaltBlue from "@/content/builds/rolls-royce-wraith-cobalt-blue.json";
+import rollsRoyceGhostPearlWhite from "@/content/builds/rolls-royce-ghost-pearl-white.json";
+import rollsRoyceGhostGraphiteSatin from "@/content/builds/rolls-royce-ghost-graphite-satin.json";
+import rollsRoyceGhostRoseSatin from "@/content/builds/rolls-royce-ghost-rose-satin.json";
+import bmwM4SatinGrey from "@/content/builds/bmw-m4-satin-grey.json";
+import bmwM4MatteBlack from "@/content/builds/bmw-m4-matte-black.json";
+import bmwM4AlpineWhite from "@/content/builds/bmw-m4-alpine-white.json";
+import bmwM4GranCoupeGraphite from "@/content/builds/bmw-m4-gran-coupe-graphite.json";
+import bmwM3Magenta from "@/content/builds/bmw-m3-magenta.json";
+import bmwM3RoseGoldSatin from "@/content/builds/bmw-m3-rose-gold-satin.json";
+import bmwM3MaroonSatin from "@/content/builds/bmw-m3-maroon-satin.json";
+import bmwX5mMatteBlack from "@/content/builds/bmw-x5m-matte-black.json";
 
 export const builds: Build[] = [
-  cybertruck as Build,
-  model3ppf as Build,
+  lamborghiniAventadorBlack as Build,
+  bmwM4GranCoupeGraphite as Build,
+  lamborghiniHuracanRed as Build,
+  bmwM3Magenta as Build,
+  ramTrxDesertTan as Build,
+  ferrari488White as Build,
+  rollsRoyceGhostRoseSatin as Build,
+  bmwM3MaroonSatin as Build,
+  bmwM4AlpineWhite as Build,
   modelYTint as Build,
+  bmwM3RoseGoldSatin as Build,
+  rollsRoyceGhostPearlWhite as Build,
+  mercedesAmgGtSilver as Build,
+  rollsRoyceGhostGraphiteSatin as Build,
+  bmwM4MatteBlack as Build,
+  porsche911MatteBlack as Build,
+  bmwM4SatinGrey as Build,
+  lamborghiniUrusMatteBlack as Build,
+  cybertruck as Build,
+  bmwX5mMatteBlack as Build,
+  rollsRoyceWraithCobaltBlue as Build,
+  lamborghiniAventadorBlue as Build,
+  rangeRoverMatteGrey as Build,
+  rollsRoyceWraithPearlWhite as Build,
+  cadillacEscaladeMatteBlack as Build,
+  rollsRoyceWraithGlossBlack as Build,
+  model3ppf as Build,
 ];
 
 /* ---- Query helpers (drive grid + detail + tesla hub) ------------------- */

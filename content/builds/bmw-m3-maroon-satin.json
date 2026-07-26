@@ -1,0 +1,21 @@
+{
+  "slug": "bmw-m3-maroon-satin",
+  "make": "BMW",
+  "model": "M3",
+  "year": 2022,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Deep Maroon Satin",
+  "finish": "Satin",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/bmw-m3-maroon-1.webp",
+      "alt": "BMW M3 — Deep Maroon Satin wrap, rear three-quarter"
+    }
+  ],
+  "summary": "Satin deep maroon colour-change on an M3, photographed outside the studio.",
+  "featured": false,
+  "date": "2026-05-22"
+}

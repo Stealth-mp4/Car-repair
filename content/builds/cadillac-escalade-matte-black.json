@@ -1,0 +1,26 @@
+{
+  "slug": "cadillac-escalade-matte-black",
+  "make": "Cadillac",
+  "model": "Escalade",
+  "year": 2023,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Matte Black",
+  "finish": "Matte",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/cadillac-escalade-black-1.webp",
+      "alt": "Cadillac Escalade — Matte Black wrap, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/cadillac-escalade-black-2.webp",
+      "alt": "Cadillac Escalade — Matte Black wrap, front"
+    }
+  ],
+  "summary": "Full matte black colour-change on an Escalade — photographed outside the studio on delivery.",
+  "featured": false,
+  "date": "2026-01-15"
+}

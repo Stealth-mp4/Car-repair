@@ -1,0 +1,21 @@
+{
+  "slug": "lamborghini-urus-matte-black",
+  "make": "Lamborghini",
+  "model": "Urus",
+  "year": 2022,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Matte Black",
+  "finish": "Matte",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/lamborghini-urus-black-1.webp",
+      "alt": "Lamborghini Urus — Matte Black wrap, front three-quarter"
+    }
+  ],
+  "summary": "Full matte black colour-change on an Urus, shot fresh off the install run.",
+  "featured": false,
+  "date": "2026-03-19"
+}

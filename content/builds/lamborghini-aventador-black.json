@@ -1,0 +1,31 @@
+{
+  "slug": "lamborghini-aventador-black",
+  "make": "Lamborghini",
+  "model": "Aventador",
+  "year": 2019,
+  "services": [
+    "Wraps"
+  ],
+  "wrapColor": "Nero Nemesis",
+  "finish": "Satin",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/lamborghini-aventador-black-1.webp",
+      "alt": "Lamborghini Aventador — Nero Nemesis wrap, front three-quarter"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/lamborghini-aventador-black-2.webp",
+      "alt": "Lamborghini Aventador — scissor door and sill detail"
+    },
+    {
+      "type": "image",
+      "src": "/gallery/lamborghini-aventador-black-3.webp",
+      "alt": "Lamborghini Aventador — scissor door and interior detail"
+    }
+  ],
+  "summary": "Satin black colour-change on an Aventador — sill and door-jamb detail shot mid-install with the scissor doors up.",
+  "featured": false,
+  "date": "2026-07-08"
+}

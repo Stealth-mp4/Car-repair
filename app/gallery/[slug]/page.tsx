@@ -6,6 +6,8 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import BuildCard from "@/components/ui/BuildCard";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { builds, getBuild, relatedBuilds } from "@/lib/builds";
+import RevealLines from "@/components/ui/RevealLines";
+import Reveal from "@/components/ui/Reveal";
 
 type Params = Promise<{ slug: string }>;
 
@@ -45,52 +47,62 @@ export default async function BuildPage({ params }: { params: Params }) {
           <p className="mono-label">
             {build.year} {build.make} {build.model}
           </p>
-          <h1 className="display mt-3 text-ink">{build.wrapColor ?? build.services[0]}.</h1>
-          <p className="mt-6 max-w-2xl text-muted">{build.summary}</p>
+          <RevealLines
+            as="h1"
+            trigger="load"
+            className="display mt-3 text-ink"
+            lines={[`${build.wrapColor ?? build.services[0]}.`]}
+          />
+          <Reveal delay={0.15}>
+            <p className="mt-6 max-w-2xl text-cream">{build.summary}</p>
+          </Reveal>
         </div>
 
         {/* Spec list — mono, VIN-style tags */}
-        <dl className="mono-label flex flex-col gap-3 md:col-span-4 md:items-end">
-          <div className="flex gap-3">
-            <dt className="text-muted">Services</dt>
-            <dd className="text-ink">{build.services.join(" / ")}</dd>
-          </div>
-          {build.finish ? (
+        <Reveal delay={0.25} className="md:col-span-4">
+          <dl className="mono-label flex flex-col gap-3 md:items-end">
             <div className="flex gap-3">
-              <dt className="text-muted">Finish</dt>
-              <dd className="text-ink">{build.finish}</dd>
+              <dt className="text-muted">Services</dt>
+              <dd className="text-ink">{build.services.join(" / ")}</dd>
             </div>
-          ) : null}
-          {build.wrapColor ? (
-            <div className="flex gap-3">
-              <dt className="text-muted">Colour</dt>
-              <dd className="text-ink">{build.wrapColor}</dd>
-            </div>
-          ) : null}
-        </dl>
+            {build.finish ? (
+              <div className="flex gap-3">
+                <dt className="text-muted">Finish</dt>
+                <dd className="text-ink">{build.finish}</dd>
+              </div>
+            ) : null}
+            {build.wrapColor ? (
+              <div className="flex gap-3">
+                <dt className="text-muted">Colour</dt>
+                <dd className="text-ink">{build.wrapColor}</dd>
+              </div>
+            ) : null}
+          </dl>
+        </Reveal>
       </header>
 
       {/* Before / after — only when the build has a pair */}
       {build.beforeAfter ? (
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <p className="mono-label mb-4">Before / after</p>
           <BeforeAfterSlider data={build.beforeAfter} />
-        </div>
+        </Reveal>
       ) : null}
 
       {/* Media gallery (image + video) */}
       <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-        {build.media.map((m) =>
+        {build.media.map((m, i) =>
           m.type === "video" ? (
-            <video
-              key={m.src}
-              src={m.src}
-              controls
-              playsInline
-              className="media-frame graded aspect-[4/5] w-full object-cover"
-            />
+            <Reveal key={m.src} delay={(i % 4) * 0.08}>
+              <video
+                src={m.src}
+                controls
+                playsInline
+                className="media-frame graded aspect-[4/5] w-full object-cover"
+              />
+            </Reveal>
           ) : (
-            <div key={m.src} className="media-frame relative aspect-[4/5]">
+            <Reveal key={m.src} delay={(i % 4) * 0.08} className="media-frame relative aspect-[4/5]">
               <Image
                 src={m.src}
                 alt={m.alt}
@@ -98,7 +110,7 @@ export default async function BuildPage({ params }: { params: Params }) {
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="graded object-cover"
               />
-            </div>
+            </Reveal>
           )
         )}
       </div>
@@ -116,7 +128,9 @@ export default async function BuildPage({ params }: { params: Params }) {
       {/* Related builds strip */}
       {related.length > 0 ? (
         <section className="mt-20 border-t border-line pt-12">
-          <p className="mono-label">Related builds</p>
+          <Reveal>
+            <p className="mono-label">Related builds</p>
+          </Reveal>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((b, i) => (
               <BuildCard key={b.slug} build={b} index={i} />

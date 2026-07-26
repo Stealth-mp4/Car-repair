@@ -2,6 +2,7 @@ import Link from "next/link";
 import MagneticButton from "@/components/ui/MagneticButton";
 import BuildCard from "@/components/ui/BuildCard";
 import RevealLines from "@/components/ui/RevealLines";
+import Reveal from "@/components/ui/Reveal";
 import Faq from "@/components/ui/Faq";
 import ServiceShowcase, { type ShowcaseItem } from "@/components/ui/ServiceShowcase";
 import { filterBuilds } from "@/lib/builds";
@@ -50,9 +51,16 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
       {/* Hero */}
       <section className="pb-16 pt-36" style={{ paddingInline: "var(--gutter)" }}>
         <p className="mono-label text-red">{content.eyebrow}</p>
-        <h1 className="display mt-4 max-w-4xl text-ink">{content.h1}</h1>
-        <p className="mt-6 max-w-2xl text-muted">{content.intro}</p>
-        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <RevealLines
+          as="h1"
+          trigger="load"
+          className="display mt-4 max-w-4xl text-ink"
+          lines={[content.h1]}
+        />
+        <Reveal delay={0.15}>
+          <p className="mt-6 max-w-2xl text-cream">{content.intro}</p>
+        </Reveal>
+        <Reveal delay={0.25} className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
           <MagneticButton href={quoteHref} variant="primary">
             Get a Quote
           </MagneticButton>
@@ -64,12 +72,14 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
               Film — {filmBrand}
             </span>
           ) : null}
-        </div>
+        </Reveal>
       </section>
 
       {/* Process */}
       <section className="pb-16 pt-8 md:pt-16" style={{ paddingInline: "var(--gutter)" }}>
-        <p className="mono-label">How it goes</p>
+        <Reveal>
+          <p className="mono-label">How it goes</p>
+        </Reveal>
         <div className="mt-8">
           <ServiceShowcase items={processItems} />
         </div>
@@ -79,7 +89,9 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
       {builds.length > 0 ? (
         <section className="py-16" style={{ paddingInline: "var(--gutter)" }}>
           <div className="flex items-end justify-between gap-6">
-            <p className="mono-label">Recent {content.facet.toLowerCase()} builds</p>
+            <Reveal>
+              <p className="mono-label">Recent {content.facet.toLowerCase()} builds</p>
+            </Reveal>
             <Link
               href={`/gallery?service=${content.facet.toLowerCase()}`}
               className="link-underline text-sm text-muted"
