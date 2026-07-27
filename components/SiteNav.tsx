@@ -1,20 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { brand, business, menu, nav, social } from "@/lib/site";
+import MagneticButton from "@/components/ui/MagneticButton";
+import { brand, business, menu, nav, serviceNavItems, social } from "@/lib/site";
+
+/**
+ * Services dropdown (desktop only, >=1024px) — hover-opens a panel listing
+ * every service page (Tesla Hub + the 5 landing pages) with a one-line spec
+ * description each, in place of the old full-screen-menu-only access.
+ *
+ * The gap between the trigger and the panel is padding (part of the same
+ * hoverable box), not margin — margin would leave a dead strip the pointer
+ * has to cross where neither element is "hovered", closing the panel before
+ * the pointer ever reaches it. A short close delay on top of that forgives
+ * fast/diagonal pointer moves, matching the habibi-tires-and-wheels reference.
+ */
+function ServicesDropdown() {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpen(false), 250);
+  };
+
+  useEffect(() => cancelClose, []);
+
+  return (
+    <div
+      className="relative flex items-center"
+      onMouseEnter={() => {
+        cancelClose();
+        setOpen(true);
+      }}
+      onMouseLeave={scheduleClose}
+    >
+      <Link
+        href="/services"
+        onClick={() => setOpen(false)}
+        className="link-underline mono-label inline-flex items-center gap-1.5 text-ink"
+        aria-expanded={open}
+      >
+        Services
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          className={`h-3 w-3 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        >
+          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </Link>
+
+      <div
+        className={`absolute left-0 top-full z-10 w-[22rem] pt-4 transition-all duration-300 ease-brand ${
+          open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
+        }`}
+      >
+        <div className="rounded-2xl border border-line bg-black-raised p-3 shadow-2xl">
+          {serviceNavItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className="block rounded-xl px-4 py-3 transition-colors hover:bg-black/40"
+            >
+              <span className="block font-display text-base text-ink">{item.label}</span>
+              <span className="mt-0.5 block text-sm text-muted">{item.short}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * SiteNav (V5 — Mansory reference) — thin transparent bar over the hero,
  * solidifies past 40px scroll. Desktop (>=1024px): link clusters split left
- * and right, the real logo mark centered between them, matching Mansory's
- * own nav layout. Below 1024px the hamburger + full-screen overlay (with the
- * grouped link set) is the whole nav, as before.
+ * and right, the real logo mark centered between them, "Services" opens a
+ * hover dropdown of every service page. Below 1024px a menu button opens a
+ * dark, full-height slide-out panel carrying the full link set.
  */
 export default function SiteNav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 40);
@@ -35,6 +115,8 @@ export default function SiteNav() {
     };
   }, [open]);
 
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname?.startsWith(href));
+
   return (
     <>
       <header
@@ -46,31 +128,35 @@ export default function SiteNav() {
           className="grid grid-cols-3 items-center py-4"
           style={{ paddingInline: "var(--gutter)" }}
         >
-          {/* Left cluster — hamburger (all sizes) + primary links (desktop) */}
+          {/* Left cluster — menu button (mobile/tablet only) + primary links (desktop) */}
           <div className="flex items-center gap-8 justify-self-start">
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="group flex items-center gap-2.5"
+              className="flex items-center justify-center lg:hidden"
               aria-expanded={open}
               aria-label="Open menu"
             >
-              <span className="flex flex-col gap-[3px]">
-                <span className="block h-px w-4 bg-ink transition-transform duration-300 group-hover:translate-x-0.5" />
-                <span className="block h-px w-4 bg-ink" />
+              <span className="flex flex-col gap-[5px]">
+                <span className="block h-px w-5 bg-ink" />
+                <span className="block h-px w-5 bg-ink" />
+                <span className="block h-px w-5 bg-ink" />
               </span>
-              <span className="mono-label text-ink">Menu</span>
             </button>
             <div className="hidden items-center gap-7 lg:flex">
-              {nav.left.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="link-underline mono-label text-ink"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {nav.left.map((item) =>
+                item.label === "Services" ? (
+                  <ServicesDropdown key={item.href} />
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="link-underline mono-label text-ink"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
             </div>
           </div>
 
@@ -106,9 +192,11 @@ export default function SiteNav() {
         </nav>
       </header>
 
-      {/* Full-screen overlay menu */}
+      {/* Mobile/tablet menu — dark slide-out panel from the right. z-[60]
+          (above the z-50 ChatWidget bubble) so the open panel isn't
+          obscured by it. */}
       <div
-        className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-[60] ${open ? "" : "pointer-events-none"}`}
         aria-hidden={!open}
       >
         {/* Backdrop */}
@@ -121,93 +209,100 @@ export default function SiteNav() {
 
         {/* Panel */}
         <div
-          className={`absolute inset-y-0 left-0 flex h-full w-full max-w-[560px] bg-paper text-black transition-transform duration-500 ease-brand md:max-w-none md:w-[80%] xl:w-[85%] ${
+          className={`absolute inset-y-0 left-0 flex h-full w-full max-w-[380px] flex-col overflow-hidden rounded-r-3xl border-r border-line bg-black text-ink transition-transform duration-500 ease-brand sm:max-w-[420px] ${
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div
             data-lenis-prevent
-            className="scrollbar-none flex h-full w-full flex-col overflow-y-auto overscroll-contain px-8 py-8 sm:px-12 sm:py-10"
+            className="scrollbar-none flex h-full w-full flex-col overflow-y-auto overscroll-contain px-7 py-7 sm:px-9 sm:py-9"
           >
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close menu"
-              className="mb-10 flex h-8 w-8 items-center justify-center self-start"
-            >
-              <span className="relative block h-4 w-4">
-                <span className="absolute left-0 top-1/2 h-px w-4 -translate-y-1/2 rotate-45 bg-black" />
-                <span className="absolute left-0 top-1/2 h-px w-4 -translate-y-1/2 -rotate-45 bg-black" />
-              </span>
-            </button>
-
-            <div className="flex-1 space-y-10 md:grid md:grid-cols-3 md:gap-x-10 md:gap-y-0 md:space-y-0">
-              {menu.groups.map((group) => (
-                <div key={group.label}>
-                  <p className="mono-label text-black/50">{group.label}</p>
-                  <ul className="mt-3 space-y-1">
-                    {group.items.map((item) => (
-                      <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          onClick={() => setOpen(false)}
-                          className={`group flex items-baseline gap-2 py-1.5 font-display text-xl ${
-                            "pinned" in item && item.pinned
-                              ? "font-semibold text-red"
-                              : "text-black"
-                          }`}
-                        >
-                          {item.label}
-                          <span className="text-sm opacity-0 transition-opacity group-hover:opacity-100">
-                            →
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom utility row */}
-            <div className="mt-10 flex items-center justify-between border-t border-black/10 pt-6">
-              <a href={social.instagram} className="mono-label text-black/60 hover:text-black">
-                Instagram
-              </a>
-              <a href={social.facebook} className="mono-label text-black/60 hover:text-black">
-                Facebook
-              </a>
-              <a href={social.tiktok} className="mono-label text-black/60 hover:text-black">
-                TikTok
-              </a>
-            </div>
-          </div>
-
-          {/* Visual cards — wide screens only */}
-          <div
-            data-lenis-prevent
-            className="scrollbar-none hidden w-[340px] shrink-0 flex-col gap-4 overflow-y-auto overscroll-contain border-l border-black/10 bg-black p-4 lg:flex"
-          >
-            {menu.visuals.map((v) => (
+            {/* Header row — brand mark + close */}
+            <div className="mb-10 flex items-center justify-between">
               <Link
-                key={v.href}
-                href={v.href}
+                href="/"
                 onClick={() => setOpen(false)}
-                className="media-frame group relative block aspect-[4/3] h-[49%] shrink-0"
+                className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-line bg-black-raised"
               >
                 <Image
-                  src={v.image}
-                  alt={v.alt}
+                  src={brand.markTight}
+                  alt={business.name}
                   fill
-                  sizes="340px"
-                  className="graded object-cover transition-transform duration-[600ms] ease-brand group-hover:scale-[1.05]"
+                  sizes="40px"
+                  className="object-contain p-1.5"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
-                <span className="absolute inset-x-4 bottom-4 font-display text-lg text-ink">
-                  {v.label}
-                </span>
               </Link>
-            ))}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink transition-colors hover:border-red"
+              >
+                <span className="relative block h-3.5 w-3.5">
+                  <span className="absolute left-0 top-1/2 h-px w-3.5 -translate-y-1/2 rotate-45 bg-ink" />
+                  <span className="absolute left-0 top-1/2 h-px w-3.5 -translate-y-1/2 -rotate-45 bg-ink" />
+                </span>
+              </button>
+            </div>
+
+            <div className="flex-1">
+              {/* Flat top-level links */}
+              <ul className="space-y-1">
+                {menu.top.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={`block py-1.5 font-display text-2xl ${
+                        isActive(item.href) ? "font-semibold text-red" : "text-ink"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Grouped sections */}
+              <div className="mt-8 space-y-8">
+                {menu.groups.map((group) => (
+                  <div key={group.label}>
+                    <p className="mono-label text-muted">{group.label}</p>
+                    <ul className="mt-3 space-y-1">
+                      {group.items.map((item) => (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            onClick={() => setOpen(false)}
+                            className="block py-1 font-display text-lg text-ink/85 transition-colors hover:text-ink"
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom CTA + socials */}
+            <div className="mt-10 space-y-6">
+              <MagneticButton href={nav.cta.href} variant="primary" className="w-full">
+                {nav.cta.label}
+              </MagneticButton>
+              <div className="flex items-center justify-between border-t border-line pt-5">
+                <a href={social.instagram} className="mono-label text-muted hover:text-ink">
+                  Instagram
+                </a>
+                <a href={social.facebook} className="mono-label text-muted hover:text-ink">
+                  Facebook
+                </a>
+                <a href={social.tiktok} className="mono-label text-muted hover:text-ink">
+                  TikTok
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
