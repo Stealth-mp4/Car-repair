@@ -132,6 +132,22 @@ export const services: ServiceLink[] = [
 export const featuredServices = (): ServiceLink[] =>
   services.filter((s) => s.featured);
 
+export type ServiceNavItem = { label: string; href: string; short: string };
+
+/**
+ * Services dropdown (navbar + mobile menu) — Tesla Hub plus every service
+ * landing page, each with a one-line spec description. Single source so the
+ * desktop dropdown and the mobile menu "Services" group never drift apart.
+ */
+export const serviceNavItems: ServiceNavItem[] = [
+  {
+    label: "Tesla Hub",
+    href: "/tesla",
+    short: "Wraps, tint & PPF built for Tesla — 3, Y, S, X, Cybertruck.",
+  },
+  ...services.map((s) => ({ label: s.title, href: s.href, short: s.short })),
+];
+
 /**
  * Current promotion — one live offer at a time (build.md section 4).
  * Editable here without touching components. Set `active: false` to hide the band.
@@ -146,61 +162,48 @@ export const promo = {
 } as const;
 
 /**
- * Full-screen overlay menu (build.md V4 nav — bugatti.com reference).
- * Groups map to the same routes as `services` + core pages; edited here only.
+ * Mobile menu overlay (<1024px only — desktop nav shows every link + the
+ * Services dropdown directly, see `nav` below). `top` is the flat, ungrouped
+ * link list; `groups` are the labelled sections underneath it.
  */
 export const menu = {
+  top: [
+    { label: "Home", href: "/" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ],
   groups: [
     {
-      label: "What we do",
-      items: [
-        { label: "Tesla Hub", href: "/tesla", pinned: true },
-        { label: "Vehicle Wraps", href: "/services/vehicle-wraps" },
-        { label: "Paint Protection Film", href: "/services/paint-protection-film" },
-        { label: "Ceramic Tint", href: "/services/ceramic-tint" },
-        { label: "Starlight Headliners", href: "/services/starlight-headliners" },
-        { label: "Wheels & Tires", href: "/services/wheels-tires" },
-      ],
-    },
-    {
-      label: "The shop",
-      items: [
-        { label: "About", href: "/about" },
-        { label: "Gallery", href: "/gallery" },
-        { label: "Vehicle Passport", href: "/passport" },
-      ],
+      label: "Services",
+      items: serviceNavItems.map((item) => ({ label: item.label, href: item.href })),
     },
     {
       label: "Get started",
       items: [
-        { label: "Get a Quote", href: "/quote" },
+        { label: "Vehicle Passport", href: "/passport" },
         { label: "Financing", href: "/financing" },
-        { label: "Contact", href: "/contact" },
       ],
     },
-  ],
-  /** two stacked visual cards shown beside the menu on wide screens */
-  visuals: [
-    { label: "Tesla Hub", href: "/tesla", image: "/DSC_4434.webp", alt: "Tesla Cybertruck in satin black wrap" },
-    { label: "The work", href: "/gallery", image: "/DSC_4458.webp", alt: "Tesla Model 3 with stealth satin PPF" },
-    
   ],
 } as const;
 
 /**
  * Primary nav (V5 — Mansory reference): split link clusters flank the centered
- * logo mark on desktop (>=1024px). "Menu" + full-screen overlay still covers
- * mobile and carries the full grouped link set (see `menu` above).
+ * logo mark on desktop (>=1024px). "Services" opens a dropdown of every
+ * service page instead of linking straight through. Below 1024px, a menu
+ * button opens the full-screen overlay (see `menu` above) instead.
  */
 export const nav = {
   left: [
     { label: "Services", href: "/services" },
     { label: "Gallery", href: "/gallery" },
     { label: "Tesla", href: "/tesla" },
+    { label: "About", href: "/about" },
   ],
   right: [
     { label: "Financing", href: "/financing" },
-    { label: "About", href: "/about" },
+    { label: "Passport", href: "/passport" },
     { label: "Contact", href: "/contact" },
   ],
   cta: { label: "Get a Quote", href: "/quote" },
