@@ -22,7 +22,7 @@ export default function Promotions() {
         <div className="media-frame relative aspect-[4/3] md:col-span-5">
           <Image
             src={promo.image}
-            alt="Vinyl wrap detail — current promotion"
+            alt="Vinyl wrap detail: current promotion"
             fill
             sizes="(max-width: 768px) 100vw, 42vw"
             className="graded object-cover"

@@ -1,5 +1,7 @@
 import ReviewsCarousel from "@/components/sections/ReviewsCarousel";
 import { getReviews } from "@/lib/reviews";
+import { business } from "@/lib/site";
+import MagneticButton from "@/components/ui/MagneticButton";
 import RevealLines from "@/components/ui/RevealLines";
 import Reveal from "@/components/ui/Reveal";
 
@@ -16,12 +18,11 @@ export default async function Reviews() {
   const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
   return (
-    <section
-      id="reviews"
-      className="scroll-mt-24 border-y border-line py-24 md:py-32"
-      style={{ paddingInline: "var(--gutter)" }}
-    >
-      <div className="flex flex-col items-center text-center">
+    <section id="reviews" className="scroll-mt-24 border-y border-line py-24 md:py-32">
+      <div
+        className="flex flex-col items-center text-center"
+        style={{ paddingInline: "var(--gutter)" }}
+      >
         <Reveal>
           <p className="mono-label">What customers say</p>
         </Reveal>
@@ -36,6 +37,11 @@ export default async function Reviews() {
       </div>
       <Reveal delay={0.15} className="mt-10">
         <ReviewsCarousel reviews={reviews} />
+      </Reveal>
+      <Reveal delay={0.2} className="mt-10 flex justify-center">
+        <MagneticButton href={business.googleReviewsUrl} variant="ghost">
+          View All Reviews
+        </MagneticButton>
       </Reveal>
     </section>
   );

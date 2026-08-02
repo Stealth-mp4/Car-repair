@@ -3,14 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import MagneticButton from "@/components/ui/MagneticButton";
 import ContactForm from "@/components/ui/ContactForm";
-import IconFeatureRow from "@/components/ui/IconFeatureRow";
 import RevealLines from "@/components/ui/RevealLines";
 import Reveal from "@/components/ui/Reveal";
 import {
-  CalendarIcon,
-  ShieldCheckIcon,
-  DiamondIcon,
-  GaugeIcon,
   MapPinIcon,
   PhoneIcon,
   MailIcon,
@@ -20,7 +15,7 @@ import { business, hours, social } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Contact Iqballaz Customs — ${business.address.street}, ${business.address.locality}, ${business.address.region}. ${business.phone}. By appointment.`,
+  description: `Contact Iqballaz Customs at ${business.address.street}, ${business.address.locality}, ${business.address.region}. ${business.phone}. By appointment.`,
 };
 
 const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
@@ -31,24 +26,6 @@ const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
   `${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}`
 )}&output=embed`;
 
-const TRUST = [
-  { icon: <CalendarIcon />, title: "By appointment only", body: "We focus on quality, not volume — every visit gets a scheduled slot." },
-  { icon: <ShieldCheckIcon />, title: "Expert team", body: "Skilled installers who care about the details as much as you do." },
-  { icon: <DiamondIcon />, title: "Premium quality", body: "Top materials, flawless results — every time, no shortcuts." },
-  { icon: <GaugeIcon />, title: "Fast response", body: "We get back to you quickly with real answers, not a form letter." },
-];
-
-const FACILITY_IMAGES = [
-  { src: "/cover.webp", alt: "Iqballaz Customs storefront on Stancliff Rd" },
-  { src: "/gallery/cadillac-escalade-black-1.webp", alt: "Cadillac Escalade finished in a matte black wrap" },
-  { src: "/gallery/porsche-911-black-1.webp", alt: "Porsche 911 finished in a matte black wrap" },
-  { src: "/gallery/mercedes-amg-gt-silver-1.webp", alt: "Mercedes-AMG GT finished in a satin silver wrap" },
-  { src: "/gallery/rolls-royce-wraith-black-2.webp", alt: "Rolls-Royce Wraith finished in a gloss black wrap" },
-  { src: "/gallery/lamborghini-urus-black-1.webp", alt: "Lamborghini Urus finished in a matte black wrap" },
-  { src: "/gallery/range-rover-grey-1.webp", alt: "Range Rover finished in a matte grey wrap" },
-  { src: "/gallery/bmw-x5m-black-1.webp", alt: "BMW X5 M finished in a matte black wrap" },
-];
-
 export default function ContactPage() {
   return (
     <>
@@ -56,8 +33,8 @@ export default function ContactPage() {
       <section className="relative flex min-h-[82svh] flex-col justify-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/DSC_4434.webp"
-            alt="Tesla Cybertruck in satin black wrap under studio light"
+            src="/client/contact-hero.webp"
+            alt="Two Iqballaz installers laying blue vinyl over a front bumper"
             fill
             priority
             quality={90}
@@ -194,58 +171,6 @@ export default function ContactPage() {
               />
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* Trust row */}
-      <section className="border-y border-line py-16" style={{ paddingInline: "var(--gutter)" }}>
-        <IconFeatureRow items={TRUST} columns={4} />
-      </section>
-
-      {/* Facility photos */}
-      <section className="py-20 md:py-28" style={{ paddingInline: "var(--gutter)" }}>
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
-          <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
-            <Reveal>
-              <p className="mono-label">Visit our facility</p>
-            </Reveal>
-            <RevealLines
-              as="h2"
-              lines={["Where precision comes to life."]}
-              className="display mt-4 text-3xl text-ink sm:text-4xl"
-            />
-            <Reveal delay={0.1}>
-              <p className="mt-4 max-w-sm text-cream/80">
-                Our studio is set up for one purpose: the highest level of customization and
-                protection. By appointment only, so every vehicle gets our full attention.
-              </p>
-            </Reveal>
-            <Reveal delay={0.2} className="mt-7">
-              <MagneticButton href="/quote" variant="ghost">
-                Schedule a visit
-              </MagneticButton>
-            </Reveal>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 lg:col-span-8">
-            {FACILITY_IMAGES.map((img, i) => (
-              <Reveal
-                key={img.src}
-                delay={(i % 4) * 0.08}
-                className={`media-frame relative ${
-                  i === 0 ? "col-span-2 aspect-[16/9]" : i % 2 === 0 ? "aspect-[3/4]" : "aspect-[4/3]"
-                }`}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  sizes="(max-width: 1024px) 50vw, 25vw"
-                  className="graded object-cover"
-                />
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 

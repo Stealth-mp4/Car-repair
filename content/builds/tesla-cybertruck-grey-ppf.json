@@ -1,0 +1,21 @@
+{
+  "slug": "tesla-cybertruck-grey-ppf",
+  "make": "Tesla",
+  "model": "Cybertruck",
+  "year": 2025,
+  "services": [
+    "PPF"
+  ],
+  "wrapColor": "Metallic Grey Colored PPF",
+  "finish": "Gloss",
+  "media": [
+    {
+      "type": "image",
+      "src": "/gallery/tesla-cybertruck-grey-ppf-1.webp",
+      "alt": "Tesla Cybertruck: metallic grey coloured PPF, front three-quarter"
+    }
+  ],
+  "summary": "Metallic grey coloured paint protection film over stainless, colour and protection in one layer, cut clean around every panel edge.",
+  "featured": true,
+  "date": "2026-07-20"
+}

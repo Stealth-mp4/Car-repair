@@ -240,6 +240,16 @@
   }
 }
 
+/* Brands band — continuous logo marquee (section moves the same on mobile + desktop) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* ---- Reduced motion: fully static + legible ---------------- */
 @media (prefers-reduced-motion: reduce) {
   .grain::before {
@@ -258,6 +268,9 @@
   }
   .build-fade-in {
     animation: none;
+  }
+  .marquee-track {
+    animation: none !important;
   }
   /* Horizontal gallery track -> vertical stack, no pin, no track (build.md) */
   .hscroll {

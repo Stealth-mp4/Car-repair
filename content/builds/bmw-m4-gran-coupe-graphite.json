@@ -1,21 +1,21 @@
 {
   "slug": "bmw-m4-gran-coupe-graphite",
   "make": "BMW",
-  "model": "M4 Gran Coupe",
+  "model": "M5 Comp",
   "year": 2023,
   "services": [
     "Wraps"
   ],
-  "wrapColor": "Graphite Matte",
-  "finish": "Matte",
+  "wrapColor": "Satin Black",
+  "finish": "Satin",
   "media": [
     {
       "type": "image",
       "src": "/gallery/bmw-m4-gc-graphite-1.webp",
-      "alt": "BMW M4 Gran Coupe — Graphite Matte wrap, front three-quarter"
+      "alt": "BMW M5 Comp: Satin Black wrap, front three-quarter"
     }
   ],
-  "summary": "Matte graphite colour-change on an M4 Gran Coupe, finished and staged in the studio.",
+  "summary": "Satin black colour-change on an M5 Competition, finished and staged in the studio.",
   "featured": false,
   "date": "2026-06-30"
 }

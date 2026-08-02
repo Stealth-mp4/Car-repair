@@ -45,7 +45,7 @@ export default async function VehiclePassportPage({ params }: { params: Params }
         <div className="md:col-span-8">
           <p className="mono-label">
             {vehicle.year} {vehicle.make} {vehicle.model}
-            {vehicle.vin ? ` — ${vehicle.vin}` : ""}
+            {vehicle.vin ? ` · ${vehicle.vin}` : ""}
           </p>
           <h1 className="display mt-3 text-ink">
             {vehicle.wrapColor ?? vehicle.ppf?.coverage ?? vehicle.tint?.shade ?? "Passport"}.
@@ -64,7 +64,7 @@ export default async function VehiclePassportPage({ params }: { params: Params }
             <div className="flex gap-3">
               <dt className="text-muted">Tint</dt>
               <dd className="text-ink">
-                {vehicle.tint.shade} — {vehicle.tint.areas.join(", ")}
+                {vehicle.tint.shade} on {vehicle.tint.areas.join(", ")}
               </dd>
             </div>
           ) : null}

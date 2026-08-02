@@ -13,17 +13,18 @@ export default function ContactCta() {
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
         <RevealLines
           as="h2"
-          lines={["Ready to build something extraordinary?"]}
+          lines={["Your Next Build Starts Here."]}
           className="display text-3xl text-ink sm:text-4xl md:text-5xl"
         />
         <Reveal delay={0.1}>
           <p className="mt-4 text-cream">
-            Get in touch and tell us what you're driving — we'll take it from there.
+            Tell us what you're driving and what you're envisioning. We'll handle the
+            rest.
           </p>
         </Reveal>
         <Reveal delay={0.2} className="mt-8">
           <MagneticButton href="/contact" variant="paper">
-            Contact us
+            Contact Us
           </MagneticButton>
         </Reveal>
       </div>

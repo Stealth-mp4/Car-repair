@@ -1,130 +1,69 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import type { Review } from "@/lib/reviews";
-import { prefersReducedMotion } from "@/lib/gsap";
-
-const ADVANCE_MS = 7000;
-const FADE_MS = 350;
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
   return (
     <span className="mono-label text-maroon">
       {"★".repeat(full)}
-      {"☆".repeat(Math.max(0, 5 - full))} · {rating.toFixed(1)}
+      {"☆".repeat(Math.max(0, 5 - full))}
     </span>
   );
 }
 
+function ReviewCard({ review }: { review: Review }) {
+  return (
+    <div className="media-frame w-[85vw] shrink-0 border border-line bg-black-raised p-6 sm:w-[380px]">
+      <Stars rating={review.rating} />
+      <blockquote className="mt-4 text-sm leading-relaxed text-cream">
+        &ldquo;{review.text}&rdquo;
+      </blockquote>
+      <p className="mono-label mt-5 text-ink/80">
+        {review.author}, Google review
+        {review.relativeTime ? ` · ${review.relativeTime}` : ""}
+      </p>
+    </div>
+  );
+}
+
 /**
- * ReviewsCarousel — one review at a time, cross-fading out then in (not a
- * scroll track). Auto-advances on a timer, plus explicit prev/next buttons;
- * both paths go through the same fade. Static under prefers-reduced-motion.
+ * ReviewsCarousel — two continuously auto-scrolling marquee rows (no fake
+ * review-photo backgrounds, no invented reviews — real on-record text only),
+ * each row scrolling opposite directions and pausing on hover. Rows repeat
+ * the review set so the loop reads as endless regardless of how few reviews
+ * exist. Static under prefers-reduced-motion (handled globally in CSS).
  */
 export default function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
-  const [active, setActive] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const count = reviews.length;
-  const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  if (reviews.length === 0) return null;
 
-  const goTo = useCallback(
-    (next: number) => {
-      const target = ((next % count) + count) % count;
-      if (target === active) return;
-
-      if (prefersReducedMotion()) {
-        setActive(target);
-        return;
-      }
-
-      setVisible(false);
-      if (fadeTimer.current) clearTimeout(fadeTimer.current);
-      fadeTimer.current = setTimeout(() => {
-        setActive(target);
-        setVisible(true);
-      }, FADE_MS);
-    },
-    [active, count]
-  );
-
-  useEffect(() => {
-    if (count <= 1 || prefersReducedMotion()) return;
-    const t = setInterval(() => goTo(active + 1), ADVANCE_MS);
-    return () => clearInterval(t);
-  }, [active, count, goTo]);
-
-  useEffect(() => () => {
-    if (fadeTimer.current) clearTimeout(fadeTimer.current);
-  }, []);
-
-  if (count === 0) return null;
-  const review = reviews[active];
+  const row = [...reviews, ...reviews, ...reviews, ...reviews];
+  const reversed = [...reviews].reverse();
+  const rowB = [...reversed, ...reversed, ...reversed, ...reversed];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-      <div
-        className="transition-opacity"
-        style={{ opacity: visible ? 1 : 0, transitionDuration: `${FADE_MS}ms` }}
-      >
-        <Stars rating={review.rating} />
-
-        <blockquote className="mt-6 max-w-[65ch] font-display text-xl italic leading-[1.4] text-ink sm:text-2xl">
-          &ldquo;{review.text}&rdquo;
-        </blockquote>
-
-        <p className="mono-label mt-6">
-          {review.author} — Google review
-          {review.relativeTime ? ` · ${review.relativeTime}` : ""}
-        </p>
+    <div className="flex flex-col gap-4 [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
+      <div className="group overflow-hidden">
+        <div
+          className="marquee-track flex w-max gap-4 group-hover:[animation-play-state:paused]"
+          style={{ animation: "marquee 50s linear infinite" }}
+        >
+          {row.map((review, i) => (
+            <ReviewCard key={`a-${review.author}-${i}`} review={review} />
+          ))}
+        </div>
       </div>
 
-      {count > 1 ? (
-        <div className="mt-10 flex items-center gap-6">
-          <button
-            type="button"
-            aria-label="Previous review"
-            onClick={() => goTo(active - 1)}
-            className="btn-sweep mono-label flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink"
-            style={{ ["--sweep" as string]: "var(--color-black-raised)" }}
+      {reviews.length > 1 ? (
+        <div className="group overflow-hidden">
+          <div
+            className="marquee-track flex w-max gap-4 group-hover:[animation-play-state:paused]"
+            style={{ animation: "marquee 50s linear infinite reverse" }}
           >
-            ←
-          </button>
-
-          {/* Thin progress rules (not dots) that fill on the active review */}
-          <div className="flex gap-3">
-            {reviews.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Show review ${i + 1}`}
-                onClick={() => goTo(i)}
-                className="h-px w-12 bg-line sm:w-16"
-              >
-                <span
-                  key={`${active}-${i}`}
-                  className="block h-px bg-ink"
-                  style={{
-                    width: i === active ? "100%" : "0%",
-                    animation:
-                      i === active && !prefersReducedMotion()
-                        ? `grow ${ADVANCE_MS}ms linear forwards`
-                        : undefined,
-                  }}
-                />
-              </button>
+            {rowB.map((review, i) => (
+              <ReviewCard key={`b-${review.author}-${i}`} review={review} />
             ))}
           </div>
-
-          <button
-            type="button"
-            aria-label="Next review"
-            onClick={() => goTo(active + 1)}
-            className="btn-sweep mono-label flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink"
-            style={{ ["--sweep" as string]: "var(--color-black-raised)" }}
-          >
-            →
-          </button>
         </div>
       ) : null}
     </div>

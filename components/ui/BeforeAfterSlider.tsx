@@ -18,7 +18,7 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfter }) {
       {/* After (full frame) */}
       <Image
         src={data.after}
-        alt={`${label} — after`}
+        alt={`${label}, after`}
         fill
         sizes="100vw"
         className="graded object-cover"
@@ -31,7 +31,7 @@ export default function BeforeAfterSlider({ data }: { data: BeforeAfter }) {
       >
         <Image
           src={data.before}
-          alt={`${label} — before`}
+          alt={`${label}, before`}
           fill
           sizes="100vw"
           className="graded object-cover"

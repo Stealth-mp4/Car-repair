@@ -23,13 +23,13 @@ const FALLBACK_REVIEWS: Review[] = [
     author: "Mike Maknojia",
     rating: 5,
     source: "google",
-    text: "Zarak knows how to wrap professionally and listens to the customer thoroughly. He recently did my Cybertruck and it came out perfect — no peeling corners, no visible stainless whatsoever. People think it's paint. Reasonably priced too. Highly recommend Iqballaz Customs.",
+    text: "Zarak knows how to wrap professionally and listens to the customer thoroughly. He recently did my Cybertruck and it came out perfect, no peeling corners, no visible stainless whatsoever. People think it's paint. Reasonably priced too. Highly recommend Iqballaz Customs.",
   },
   {
     author: "Md Shahbaaz Uddin",
     rating: 5,
     source: "google",
-    text: "I had a fantastic experience wrapping my vehicle at Iqballaz Customs. From the initial consultation, Mr. Zarak was incredibly helpful with selecting the perfect color, design, and explaining the entire process. The installation is flawless — the edges are completely tucked and it looks like a custom paint job. I highly recommend them if you want quality work and great customer service.",
+    text: "I had a fantastic experience wrapping my vehicle at Iqballaz Customs. From the initial consultation, Mr. Zarak was incredibly helpful with selecting the perfect color, design, and explaining the entire process. The installation is flawless, the edges are completely tucked and it looks like a custom paint job. I highly recommend them if you want quality work and great customer service.",
   },
   {
     author: "Ruben Lopez",

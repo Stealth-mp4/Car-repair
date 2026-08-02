@@ -19,7 +19,7 @@ export default function Placeholder({
       <p className="mono-label">{label}</p>
       <h1 className="display mt-4 max-w-4xl text-ink">{title}</h1>
       {children ? <div className="mt-6 max-w-2xl text-muted">{children}</div> : null}
-      <p className="mono-label mt-12 text-muted/60">Scaffold — section build pending</p>
+      <p className="mono-label mt-12 text-muted/60">Scaffold: section build pending</p>
     </section>
   );
 }

@@ -79,7 +79,7 @@ export default function SiteFooter() {
             />
           </div>
           <p className="mt-5 max-w-xs text-cream">
-            Houston&apos;s premium vehicle customization shop — wraps, tint, PPF,
+            Houston&apos;s premium vehicle customization shop. Wraps, tint, PPF,
             wheels, and Tesla-specific builds. By appointment.
           </p>
 
@@ -166,7 +166,7 @@ export default function SiteFooter() {
             </li>
             <li>
               <Link href="/quote" className="link-underline text-red">
-                Get a Quote
+                Book Appointment
               </Link>
             </li>
           </ul>
@@ -186,12 +186,24 @@ export default function SiteFooter() {
       </div>
 
       {/* Credits row */}
-      <div className="flex flex-col justify-between gap-2 border-t border-line py-6 text-sm text-muted md:flex-row">
+      <div className="flex flex-col items-start justify-between gap-4 border-t border-line py-6 text-sm text-muted md:flex-row md:items-center">
         <span>
-          © {new Date().getFullYear()} {business.name}. {business.address.locality},{" "}
-          {business.address.region}.
+          © {new Date().getFullYear()} {business.name}. All Rights Reserved.
         </span>
-        <span className="mono-label">By appointment only</span>
+        <a
+          href="https://webwidesolutions.com"
+          target="_blank"
+          rel="noreferrer"
+          className="opacity-80 transition-opacity hover:opacity-100"
+        >
+          <Image
+            src="/client/powered-by-wws.png"
+            alt="Powered by Web Wide Solutions"
+            width={160}
+            height={81}
+            className="h-9 w-auto"
+          />
+        </a>
       </div>
 
       {/* Oversized wordmark — Deep Burgundy plate, bleeds subtly off the bottom edge */}

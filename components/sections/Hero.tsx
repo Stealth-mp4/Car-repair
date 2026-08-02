@@ -65,8 +65,16 @@ export default function Hero() {
 
       {/* Centered content stack */}
       <div className="relative z-10 flex flex-col items-center px-6 text-center">
-        <p className="font-mono text-[0.8rem] uppercase tracking-[0.08em] text-cream sm:text-sm">
-          {business.heroCue}
+        {/*
+          Star cue stays on ONE line at every width so the closing star sits
+          horizontally level with the opening one (client note). Font size is
+          fluid rather than fixed: it shrinks with the viewport instead of
+          wrapping. The vw coefficient is calibrated to the rendered mono
+          width of this exact string — re-measure it if the copy changes.
+        */}
+        <p className="whitespace-nowrap font-mono text-[clamp(0.4rem,2.15vw,0.875rem)] uppercase tracking-[0.08em] text-cream">
+          <span className="text-yellow-400">★</span> {business.heroCue}{" "}
+          <span className="text-yellow-400">★</span>
         </p>
 
         <RevealLines
@@ -81,7 +89,7 @@ export default function Hero() {
 
         <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row sm:gap-8">
           <MagneticButton href="/quote" variant="outline">
-            Get a Quote
+            Book Appointment
           </MagneticButton>
           <Link href="/gallery" className="link-underline text-sm text-ink/80">
             See the work

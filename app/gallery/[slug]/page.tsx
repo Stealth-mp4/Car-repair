@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const build = getBuild(slug);
   if (!build) return { title: "Build not found" };
   return {
-    title: `${build.year} ${build.make} ${build.model} — ${build.services.join(", ")}`,
+    title: `${build.year} ${build.make} ${build.model} | ${build.services.join(", ")}`,
     description: build.summary,
     openGraph: { images: [build.media[0]?.src].filter(Boolean) as string[] },
   };

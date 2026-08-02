@@ -101,9 +101,7 @@ export type ServiceRecord = {
 };
 
 /* ---- Seed data (Phase 1). Phase 2 migrates this to a DB. ---------------- */
-import cybertruck from "@/content/builds/tesla-cybertruck-satin-black.json";
-import model3ppf from "@/content/builds/tesla-model3-stealth-ppf.json";
-import modelYTint from "@/content/builds/tesla-modely-ceramic-tint.json";
+import cybertruckGreyPpf from "@/content/builds/tesla-cybertruck-grey-ppf.json";
 import lamborghiniAventadorBlack from "@/content/builds/lamborghini-aventador-black.json";
 import lamborghiniAventadorBlue from "@/content/builds/lamborghini-aventador-blue.json";
 import lamborghiniHuracanRed from "@/content/builds/lamborghini-huracan-red.json";
@@ -131,6 +129,7 @@ import bmwX5mMatteBlack from "@/content/builds/bmw-x5m-matte-black.json";
 
 export const builds: Build[] = [
   lamborghiniAventadorBlack as Build,
+  cybertruckGreyPpf as Build,
   bmwM4GranCoupeGraphite as Build,
   lamborghiniHuracanRed as Build,
   bmwM3Magenta as Build,
@@ -139,7 +138,6 @@ export const builds: Build[] = [
   rollsRoyceGhostRoseSatin as Build,
   bmwM3MaroonSatin as Build,
   bmwM4AlpineWhite as Build,
-  modelYTint as Build,
   bmwM3RoseGoldSatin as Build,
   rollsRoyceGhostPearlWhite as Build,
   mercedesAmgGtSilver as Build,
@@ -148,7 +146,6 @@ export const builds: Build[] = [
   porsche911MatteBlack as Build,
   bmwM4SatinGrey as Build,
   lamborghiniUrusMatteBlack as Build,
-  cybertruck as Build,
   bmwX5mMatteBlack as Build,
   rollsRoyceWraithCobaltBlue as Build,
   lamborghiniAventadorBlue as Build,
@@ -156,7 +153,6 @@ export const builds: Build[] = [
   rollsRoyceWraithPearlWhite as Build,
   cadillacEscaladeMatteBlack as Build,
   rollsRoyceWraithGlossBlack as Build,
-  model3ppf as Build,
 ];
 
 /* ---- Query helpers (drive grid + detail + tesla hub) ------------------- */

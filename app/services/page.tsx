@@ -53,7 +53,7 @@ export default function ServicesIndexPage() {
       title: s.title,
       image: s.image,
       alt: s.title,
-      eyebrow: s.filmBrand ? `${s.filmBrand} — certified install` : business.wordmark,
+      eyebrow: s.filmBrand ? `${s.filmBrand} certified install` : business.wordmark,
       caption: s.short,
     })),
   ];
@@ -116,7 +116,7 @@ export default function ServicesIndexPage() {
           <Reveal delay={0.1}>
             <p className="max-w-sm text-cream/80">
               Every build starts with the same shop, the same hands, and the same film
-              brands — picked below by what you&apos;re here for.
+              brands, picked below by what you&apos;re here for.
             </p>
           </Reveal>
         </div>
@@ -162,7 +162,7 @@ export default function ServicesIndexPage() {
           </Reveal>
           <Reveal delay={0.2} className="mt-8">
             <MagneticButton href="/quote" variant="paper">
-              Get a Quote
+              Book Appointment
             </MagneticButton>
           </Reveal>
         </div>

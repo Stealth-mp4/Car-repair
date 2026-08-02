@@ -62,14 +62,14 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
         </Reveal>
         <Reveal delay={0.25} className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
           <MagneticButton href={quoteHref} variant="primary">
-            Get a Quote
+            Book Appointment
           </MagneticButton>
           {content.priceNote ? (
             <span className="mono-label">{content.priceNote}</span>
           ) : null}
           {filmBrand ? (
             <span className="mono-label rounded-full border border-line px-3 py-1.5">
-              Film — {filmBrand}
+              Film: {filmBrand}
             </span>
           ) : null}
         </Reveal>
@@ -99,7 +99,7 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
               View all
             </Link>
           </div>
-          <div className="mt-6 columns-1 gap-4 sm:columns-2 lg:columns-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {builds.map((b, i) => (
               <BuildCard key={b.slug} build={b} index={i} />
             ))}

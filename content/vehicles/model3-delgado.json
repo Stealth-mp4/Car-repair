@@ -13,8 +13,8 @@
   },
   "ppf": { "coverage": "Full front", "brand": "XPEL" },
   "media": [
-    { "type": "image", "src": "/DSC_4458.webp", "alt": "Tesla Model 3 — stealth satin PPF, front" },
-    { "type": "image", "src": "/DSC_4465.webp", "alt": "Tesla Model 3 — stealth satin PPF, side profile" },
+    { "type": "image", "src": "/DSC_4458.webp", "alt": "Tesla Model 3: stealth satin PPF, front" },
+    { "type": "image", "src": "/DSC_4465.webp", "alt": "Tesla Model 3: stealth satin PPF, side profile" },
     { "type": "image", "src": "/PPF.webp", "alt": "Paint protection film edge wrap detail" }
   ]
 }

@@ -10,8 +10,8 @@ import { business, openingHours } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(business.url),
   title: {
-    default: "Iqballaz Customs — Vehicle Wraps, Tint & PPF in Houston",
-    template: "%s — Iqballaz Customs",
+    default: "Iqballaz Customs | Vehicle Wraps, Tint & PPF in Houston",
+    template: "%s | Iqballaz Customs",
   },
   description:
     "Houston's premium vehicle customization shop. Vinyl wraps, ceramic tint, paint protection film, and Tesla-specific builds. By appointment.",

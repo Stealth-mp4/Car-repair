@@ -7,8 +7,9 @@ import Reveal from "@/components/ui/Reveal";
  * BuildCard — one gallery card, styled to match the bugatti.com model-grid
  * reference: full-bleed graded photo, eyebrow + title pinned near the top,
  * a centered "View build" pinned near the bottom, dark gradients for
- * legibility. Mixed aspect (4:5 / 1:1) so the grid reads as masonry, not a
- * uniform bento. Inner image scales to 1.06 on hover (never the card).
+ * legibility. One fixed 4:5 aspect so every card lines up on a shared row
+ * baseline — an earlier mixed 4:5 / 1:1 rhythm left the last row of the
+ * gallery staggered. Inner image scales to 1.06 on hover (never the card).
  */
 export default function BuildCard({
   build,
@@ -19,17 +20,14 @@ export default function BuildCard({
   index: number;
   priority?: boolean;
 }) {
-  // deterministic mixed rhythm — every third card is a touch shorter
-  const aspect = index % 3 === 1 ? "1 / 1" : "4 / 5";
   const cover = build.media[0];
-  const spec = `${build.services.join(" / ")}${build.wrapColor ? ` — ${build.wrapColor}` : ""}`;
+  const spec = `${build.services.join(" / ")}${build.wrapColor ? ` · ${build.wrapColor}` : ""}`;
 
   return (
-    <Reveal delay={(index % 6) * 0.06} className="mb-4">
+    <Reveal delay={(index % 6) * 0.06}>
       <Link
         href={`/gallery/${build.slug}`}
-        className="media-frame group relative flex flex-col justify-between overflow-hidden"
-        style={{ aspectRatio: aspect }}
+        className="media-frame group relative flex aspect-[4/5] flex-col justify-between overflow-hidden"
       >
         <Image
           src={cover.src}
