@@ -52,8 +52,8 @@ const FINANCING_OPTIONS = [
 ];
 
 const STEPS = [
-  { title: "Request a quote", body: "Tell us the vehicle and the build. No commitment yet.", icon: <CalendarIcon /> },
-  { title: "Talk financing", body: "Mention it when you quote and we'll walk through real options together.", icon: <HandshakeIcon /> },
+  { title: "Book an appointment", body: "Tell us the vehicle and the build. No commitment yet.", icon: <CalendarIcon /> },
+  { title: "Talk financing", body: "Mention it when you book and we'll walk through real options together.", icon: <HandshakeIcon /> },
   { title: "Confirm your plan", body: "Terms are set before anything is booked. No surprises on the day.", icon: <CheckCircleIcon /> },
   { title: "Start your build", body: "Once confirmed, your vehicle goes on the schedule.", icon: <WrenchIcon /> },
 ];
@@ -73,10 +73,10 @@ const LENDERS = [
 ];
 
 const FAQS = [
-  { q: "What can I finance?", a: "Most builds — full wraps, PPF packages, tint, and larger multi-service jobs." },
-  { q: "How do I apply?", a: "Start a quote and let us know you'd like to finance. We'll walk you through the options that fit your build." },
-  { q: "Can I combine financing with a promotion?", a: "Yes — financing applies to the full build, so any current offer still counts." },
-  { q: "Do I need to decide before my appointment?", a: "No — bring it up when you request your quote and we'll go over the options together, no obligation to start." },
+  { q: "What can I finance?", a: "Most builds: full wraps, PPF packages, tint, and larger multi-service jobs." },
+  { q: "How do I apply?", a: "Book an appointment and let us know you'd like to finance. We'll walk you through the options that fit your build." },
+  { q: "Can I combine financing with a promotion?", a: "Yes. Financing applies to the full build, so any current offer still counts." },
+  { q: "Do I need to decide before my appointment?", a: "No. Bring it up when you request your quote and we'll go over the options together, no obligation to start." },
 ];
 
 export default function FinancingPage() {
@@ -111,7 +111,7 @@ export default function FinancingPage() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-4">
             <MagneticButton href="/quote" variant="primary">
-              Start a quote
+              Book Appointment
             </MagneticButton>
             <MagneticButton href="#options" variant="ghost">
               View options
@@ -194,7 +194,7 @@ export default function FinancingPage() {
             </p>
             <div className="mt-6">
               <MagneticButton href="/quote" variant="ghost">
-                Start a quote
+                Book Appointment
               </MagneticButton>
             </div>
           </Reveal>
@@ -264,7 +264,7 @@ export default function FinancingPage() {
           </Reveal>
           <Reveal delay={0.2} className="mt-8">
             <MagneticButton href="/quote" variant="paper">
-              Start a quote
+              Book Appointment
             </MagneticButton>
           </Reveal>
         </div>

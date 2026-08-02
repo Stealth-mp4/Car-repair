@@ -93,7 +93,7 @@ export default function ChatWidget() {
       if (value.replace(/\D/g, "").length < 10) {
         say([
           { from: "user", text: value },
-          { from: "bot", text: "That doesn't look like a full number — mind trying again?" },
+          { from: "bot", text: "That doesn't look like a full number. Mind trying again?" },
         ]);
         setDraft("");
         return;
@@ -110,7 +110,7 @@ export default function ChatWidget() {
         say([
           {
             from: "bot",
-            text: `Got it — someone from Iqballaz will reach out about your ${interest.toLowerCase()}. For anything urgent, call (832) 208-1071.`,
+            text: `Got it. Someone from Iqballaz will reach out about your ${interest.toLowerCase()}. For anything urgent, call (832) 208-1071.`,
           },
         ]);
         setStep("done");
@@ -118,7 +118,7 @@ export default function ChatWidget() {
         say([
           {
             from: "bot",
-            text: "Couldn't send that just now — please call (832) 208-1071 and we'll take care of you.",
+            text: "Couldn't send that just now. Please call (832) 208-1071 and we'll take care of you.",
           },
         ]);
         setStep("done");
@@ -208,7 +208,7 @@ export default function ChatWidget() {
 
             {step === "done" ? (
               <a href="/quote" className="link-underline mono-label text-ink">
-                Or build a full quote →
+                Or book an appointment →
               </a>
             ) : null}
           </div>

@@ -5,7 +5,7 @@ import Reveal from "@/components/ui/Reveal";
 const STEPS = [
   {
     title: "Consult",
-    body: "Tell us the vehicle and the services you're after — wraps, tint, PPF, wheels, or a full build.",
+    body: "Tell us the vehicle and the services you're after: wraps, tint, PPF, wheels, or a full build.",
   },
   {
     title: "Plan",
@@ -13,7 +13,7 @@ const STEPS = [
   },
   {
     title: "Build",
-    body: "One car at a time, by appointment, under studio light — every edge finished, not just fast.",
+    body: "One car at a time, by appointment, under studio light. Every edge finished, not just fast.",
   },
   {
     title: "Deliver",
@@ -41,7 +41,7 @@ export default function Process() {
           />
         </div>
         <Link href="/quote" className="link-underline text-sm text-cream">
-          Start a quote →
+          Book an appointment →
         </Link>
       </div>
 

@@ -1,6 +1,6 @@
 /**
  * lib/lead.ts — the ONE lead schema + pipeline (build.md QUOTE BUILDER + AI CHAT).
- * Both the Quote Builder and the Chat Assistant submit this shape to /api/lead —
+ * Both the appointment form and the Chat Assistant submit this shape to /api/lead —
  * do not build two separate contact pipelines.
  */
 
@@ -11,6 +11,8 @@ export type Lead = {
   vehicle: { year?: string; make?: string; model?: string; vin?: string };
   services: string[];
   details: { colorFinish?: string; timeline?: string };
+  /** requested slot from the appointment form (shop confirms it) */
+  appointment?: { date?: string; time?: string };
   /** filenames only for now — binary upload wires to storage later */
   photos: string[];
   contact: { name: string; phone: string; email?: string; method?: ContactMethod };
@@ -55,6 +57,6 @@ export async function submitLead(
     if (!res.ok) return { ok: false, error: data?.error ?? "Submission failed." };
     return { ok: true, id: data?.id };
   } catch {
-    return { ok: false, error: "Network error — try again, or call us." };
+    return { ok: false, error: "Network error. Try again, or call us." };
   }
 }

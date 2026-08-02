@@ -11,7 +11,7 @@ import { filterBuilds } from "@/lib/builds";
 
 export const metadata: Metadata = {
   // Targets "Tesla Wrap Houston" specifically (build.md SEO).
-  title: "Tesla Wrap Houston — Wraps, Tint & PPF for Model 3/Y/S/X",
+  title: "Tesla Wrap Houston | Wraps, Tint & PPF for Model 3/Y/S/X",
   description:
     "Tesla-specific wraps, ceramic tint, and paint protection film in Houston. PPF for panel gaps, tint for range and heat, colour-change for Model 3, Y, S, X and Cybertruck. Iqballaz Customs.",
 };
@@ -33,7 +33,7 @@ const REASONS: ShowcaseItem[] = [
     eyebrow: "Ceramic tint",
     title: "Tint for range & heat",
     caption:
-      "Ceramic tint cuts cabin and glass-roof heat, so the AC — and the battery behind it — works less in a Houston summer.",
+      "Ceramic tint cuts cabin and glass-roof heat, so the AC, and the battery behind it, works less in a Houston summer.",
   },
   {
     href: "/services/vehicle-wraps",
@@ -42,7 +42,7 @@ const REASONS: ShowcaseItem[] = [
     eyebrow: "Vehicle wraps",
     title: "Wraps sized to the model",
     caption:
-      "Colour-change cut for Model 3, Y, S, and X — and Cybertruck stainless, which we wrap so it reads as paint.",
+      "Colour-change cut for Model 3, Y, S, and X, plus Cybertruck stainless, which we wrap so it reads as paint.",
   },
   {
     href: "/about",
@@ -71,7 +71,7 @@ const TESLA_FAQS: FaqItem[] = [
   },
   {
     q: "Can you wrap a Cybertruck?",
-    a: "Yes — regularly. Stainless is one of our specialties, and we wrap edges so there's no visible steel and it reads as a painted finish.",
+    a: "Yes, regularly. Stainless is one of our specialties, and we wrap edges so there's no visible steel and it reads as a painted finish.",
   },
   {
     q: "Which finish suits a Model 3 or Y best?",
@@ -142,7 +142,7 @@ export default function TeslaHubPage() {
               View all
             </Link>
           </div>
-          <div className="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3">
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {teslas.map((b, i) => (
               <BuildCard key={b.slug} build={b} index={i} />
             ))}
@@ -165,7 +165,7 @@ export default function TeslaHubPage() {
         />
         <div className="mt-10">
           <MagneticButton href={quoteHref} variant="paper">
-            Start a Tesla quote
+            Book a Tesla appointment
           </MagneticButton>
         </div>
       </section>

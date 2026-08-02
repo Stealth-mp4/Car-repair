@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { Lead } from "@/lib/lead";
 
 /**
- * POST /api/lead — the single lead intake for the Quote Builder and Chat Assistant.
+ * POST /api/lead — the single lead intake for the appointment form and Chat Assistant.
  * Validates, stamps id + createdAt, then forwards to LEAD_WEBHOOK_URL when set
  * (e.g. a CRM, Zapier, or an email service). With no destination configured it
  * accepts and logs the lead so nothing 500s — wire the destination at launch.
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
     vehicle: body.vehicle ?? {},
     services: Array.isArray(body.services) ? body.services : [],
     details: body.details ?? {},
+    appointment: body.appointment,
     photos: Array.isArray(body.photos) ? body.photos : [],
     contact: {
       name,

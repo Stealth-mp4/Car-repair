@@ -30,7 +30,7 @@ export default function TeslaTeaser() {
         <Reveal delay={0.1}>
           <p className="mt-5 max-w-xl text-muted">
             PPF for panel gaps, tint for range and heat, and colour-change sized to
-            Model 3, Y, S, X — and the Cybertruck.
+            Model 3, Y, S, X, and the Cybertruck.
           </p>
         </Reveal>
         <Reveal delay={0.2}>

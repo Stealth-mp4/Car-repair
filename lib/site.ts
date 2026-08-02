@@ -9,9 +9,9 @@ export const business = {
   wordmark: "IQBALLAZ",
   wordmarkSub: "CUSTOMS",
   tagline: "Wrapped in Houston. Built for Tesla.",
-  cue: "HOUSTON, TX — BY APPOINTMENT",
-  /** Hero star-line (V5) — small, legible, sits above the "Built Different" headline. */
-  heroCue: "★ We Wrap Private Jets, Aircraft & Marine Vessels Too. ★",
+  cue: "HOUSTON, TX · BY APPOINTMENT",
+  /** Hero star-line (V5) — small, legible, sits above the "Built Different" headline. Stars rendered separately in Hero.tsx (styled yellow). */
+  heroCue: "We Wrap Private Jets, Aircraft & Marine Vessels Too.",
   /** Hero subcopy (V5), sits under the "Built Different" headline. */
   heroSubcopy: "Premium vehicle customization for those who expect more.",
   /**
@@ -19,7 +19,7 @@ export const business = {
    * understated. PLACEHOLDER figures: confirm exact founding year and lifetime
    * vehicle count with the client before shipping; do not invent numbers.
    */
-  trust: "EST. 2015 — 500+ VEHICLES WRAPPED IN HOUSTON",
+  trust: "EST. 2015 · 500+ VEHICLES WRAPPED IN HOUSTON",
   url: "https://iqballazcustoms.com",
   phone: "(832) 208-1071",
   phoneHref: "tel:+18322081071",
@@ -32,28 +32,33 @@ export const business = {
     country: "US",
   },
   priceRange: "$$",
+  /**
+   * "View All Reviews" destination. PLACEHOLDER — a generic Google search
+   * link, not the confirmed Google Business Profile review URL. Swap for the
+   * real g.page / maps review link once the client sends it.
+   */
+  googleReviewsUrl: "https://www.google.com/search?q=Iqballaz+Customs+reviews",
 } as const;
 
-/** Mon–Fri 10–6, Sat by appt, Sun closed */
+/** Mon-Sat 12PM-8PM, Sun closed */
 export const hours = [
-  { day: "Mon–Fri", value: "10:00 — 6:00" },
-  { day: "Saturday", value: "By appointment" },
+  { day: "Mon-Sat", value: "12PM-8PM" },
   { day: "Sunday", value: "Closed" },
 ] as const;
 
 /** Structured opening hours for JSON-LD (LocalBusiness schema). */
 export const openingHours = [
   {
-    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    opens: "10:00",
-    closes: "18:00",
+    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    opens: "12:00",
+    closes: "20:00",
   },
 ];
 
 export const social = {
   instagram: "https://www.instagram.com/iqballazcustoms",
   instagramHandle: "@iqballazcustoms",
-  facebook: "https://www.facebook.com/iqballazcustoms",
+  facebook: "https://www.facebook.com/people/Iqballaz-customs/61562782624220",
   tiktok: "https://www.tiktok.com/@_iqballazcustoms",
   tiktokHandle: "@_iqballazcustoms",
 } as const;
@@ -91,7 +96,7 @@ export const services: ServiceLink[] = [
     title: "Vehicle Wraps",
     short: "Full colour-change vinyl, precise, no lifted edges.",
     href: "/services/vehicle-wraps",
-    image: "/VINYL_WRAP.webp",
+    image: "/client/vehicle-wraps-card.jpg",
     featured: true,
     filmBrand: "Avery Dennison",
   },
@@ -100,7 +105,7 @@ export const services: ServiceLink[] = [
     title: "Paint Protection Film",
     short: "Self-healing PPF against rock chips and swirl.",
     href: "/services/paint-protection-film",
-    image: "/PPF.webp",
+    image: "/client/ppf-card.jpg",
     featured: true,
     filmBrand: "XPEL",
   },
@@ -109,16 +114,17 @@ export const services: ServiceLink[] = [
     title: "Ceramic Tint",
     short: "Heat-rejecting film. Cooler cabin, protected interior.",
     href: "/services/ceramic-tint",
-    image: "/WINDOW_TINT.webp",
+    image: "/client/ceramic-tint-card.jpg",
     featured: true,
     filmBrand: "3M",
   },
   {
     slug: "starlight-headliners",
     title: "Starlight Headliners",
+    /** Homepage FeaturedServices grid displays this card as "Accessories" — see homeTitle override in FeaturedServices.tsx. */
     short: "Fibre-optic headliner, mapped and dimmable.",
     href: "/services/starlight-headliners",
-    image: "/SS1.webp",
+    image: "/client/accessories-card.jpg",
   },
   {
     slug: "wheels-tires",
@@ -135,15 +141,16 @@ export const featuredServices = (): ServiceLink[] =>
 export type ServiceNavItem = { label: string; href: string; short: string };
 
 /**
- * Services dropdown (navbar + mobile menu) — Tesla Hub plus every service
+ * Service index links — Tesla Hub plus every service
  * landing page, each with a one-line spec description. Single source so the
  * desktop dropdown and the mobile menu "Services" group never drift apart.
  */
+/** Used by the /services index — every service page, Tesla Hub first. */
 export const serviceNavItems: ServiceNavItem[] = [
   {
     label: "Tesla Hub",
     href: "/tesla",
-    short: "Wraps, tint & PPF built for Tesla — 3, Y, S, X, Cybertruck.",
+    short: "Wraps, tint & PPF built for Tesla: 3, Y, S, X, Cybertruck.",
   },
   ...services.map((s) => ({ label: s.title, href: s.href, short: s.short })),
 ];
@@ -154,7 +161,7 @@ export const serviceNavItems: ServiceNavItem[] = [
  */
 export const promo = {
   active: true,
-  label: "LIMITED — THROUGH AUG 31",
+  label: "LIMITED · THROUGH AUG 31",
   headline: "Tesla tint + PPF front package",
   detail: "Ceramic tint all-around plus a full front PPF clip, booked as one build.",
   image: "/VINYL_WRAP.webp",
@@ -162,22 +169,19 @@ export const promo = {
 } as const;
 
 /**
- * Mobile menu overlay (<1024px only — desktop nav shows every link + the
- * Services dropdown directly, see `nav` below). `top` is the flat, ungrouped
- * link list; `groups` are the labelled sections underneath it.
+ * Mobile menu overlay (<1024px only — desktop nav shows every link directly,
+ * see `nav` below). `top` is the flat, ungrouped link list; `groups` are the
+ * labelled sections underneath it.
  */
 export const menu = {
   top: [
     { label: "Home", href: "/" },
+    { label: "Services", href: "/services" },
     { label: "Gallery", href: "/gallery" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],
   groups: [
-    {
-      label: "Services",
-      items: serviceNavItems.map((item) => ({ label: item.label, href: item.href })),
-    },
     {
       label: "Get started",
       items: [
@@ -190,15 +194,14 @@ export const menu = {
 
 /**
  * Primary nav (V5 — Mansory reference): split link clusters flank the centered
- * logo mark on desktop (>=1024px). "Services" opens a dropdown of every
- * service page instead of linking straight through. Below 1024px, a menu
- * button opens the full-screen overlay (see `menu` above) instead.
+ * logo mark on desktop (>=1024px). "Services" links straight to /services,
+ * which carries every service page. Below 1024px, a menu button opens the
+ * full-screen overlay (see `menu` above) instead.
  */
 export const nav = {
   left: [
     { label: "Services", href: "/services" },
     { label: "Gallery", href: "/gallery" },
-    { label: "Tesla", href: "/tesla" },
     { label: "About", href: "/about" },
   ],
   right: [
@@ -206,7 +209,7 @@ export const nav = {
     { label: "Passport", href: "/passport" },
     { label: "Contact", href: "/contact" },
   ],
-  cta: { label: "Get a Quote", href: "/quote" },
+  cta: { label: "Book Appointment", href: "/quote" },
 } as const;
 
 /** Service filter facets used by the gallery filter bar. */

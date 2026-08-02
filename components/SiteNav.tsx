@@ -1,88 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import MagneticButton from "@/components/ui/MagneticButton";
-import { brand, business, menu, nav, serviceNavItems, social } from "@/lib/site";
-
-/**
- * Services dropdown (desktop only, >=1024px) — hover-opens a panel listing
- * every service page (Tesla Hub + the 5 landing pages) with a one-line spec
- * description each, in place of the old full-screen-menu-only access.
- *
- * The gap between the trigger and the panel is padding (part of the same
- * hoverable box), not margin — margin would leave a dead strip the pointer
- * has to cross where neither element is "hovered", closing the panel before
- * the pointer ever reaches it. A short close delay on top of that forgives
- * fast/diagonal pointer moves, matching the habibi-tires-and-wheels reference.
- */
-function ServicesDropdown() {
-  const [open, setOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const cancelClose = () => {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current);
-      closeTimer.current = null;
-    }
-  };
-  const scheduleClose = () => {
-    cancelClose();
-    closeTimer.current = setTimeout(() => setOpen(false), 250);
-  };
-
-  useEffect(() => cancelClose, []);
-
-  return (
-    <div
-      className="relative flex items-center"
-      onMouseEnter={() => {
-        cancelClose();
-        setOpen(true);
-      }}
-      onMouseLeave={scheduleClose}
-    >
-      <Link
-        href="/services"
-        onClick={() => setOpen(false)}
-        className="link-underline mono-label inline-flex items-center gap-1.5 text-ink"
-        aria-expanded={open}
-      >
-        Services
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className={`h-3 w-3 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-          aria-hidden="true"
-        >
-          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </Link>
-
-      <div
-        className={`absolute left-0 top-full z-10 w-[22rem] pt-4 transition-all duration-300 ease-brand ${
-          open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
-        }`}
-      >
-        <div className="rounded-2xl border border-line bg-black-raised p-3 shadow-2xl">
-          {serviceNavItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="block rounded-xl px-4 py-3 transition-colors hover:bg-black/40"
-            >
-              <span className="block font-display text-base text-ink">{item.label}</span>
-              <span className="mt-0.5 block text-sm text-muted">{item.short}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+import { brand, business, menu, nav, social } from "@/lib/site";
 
 /**
  * SiteNav (V5 — Mansory reference) — thin transparent bar over the hero,
@@ -144,19 +67,15 @@ export default function SiteNav() {
               </span>
             </button>
             <div className="hidden items-center gap-7 lg:flex">
-              {nav.left.map((item) =>
-                item.label === "Services" ? (
-                  <ServicesDropdown key={item.href} />
-                ) : (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="link-underline mono-label text-ink"
-                  >
-                    {item.label}
-                  </Link>
-                )
-              )}
+              {nav.left.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="link-underline mono-label text-ink"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -164,7 +83,7 @@ export default function SiteNav() {
           <Link href="/" className="relative h-9 w-24 justify-self-center sm:h-10 sm:w-28">
             <Image
               src={brand.markTight}
-              alt={`${business.name} — home`}
+              alt={`${business.name} home`}
               fill
               sizes="120px"
               priority

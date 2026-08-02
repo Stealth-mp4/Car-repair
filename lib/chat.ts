@@ -17,7 +17,7 @@ export type ChatTopic = {
 
 /** Stated on the first message — it's an assistant, not a team member. */
 export const CHAT_DISCLAIMER =
-  "Hey — I'm the Iqballaz assistant, not a team member, just here to help you get started.";
+  "Hey, I'm the Iqballaz assistant, not a team member, just here to help you get started.";
 
 export const CHAT_INTRO =
   "What can I help with?";
@@ -32,7 +32,7 @@ export const chatTopics: Record<string, ChatTopic> = {
     id: "services",
     label: "Services",
     answer:
-      "We do vinyl wraps, ceramic tint, paint protection film (PPF), starlight headliners, and wheel powder coating — with a heavy focus on Tesla builds.",
+      "We do vinyl wraps, ceramic tint, paint protection film (PPF), starlight headliners, and wheel powder coating, with a heavy focus on Tesla builds.",
     followups: ["pricing", "wrap-faq", "tint-faq", "ppf-faq", HANDOFF],
   },
   pricing: {
@@ -46,35 +46,35 @@ export const chatTopics: Record<string, ChatTopic> = {
     id: "financing",
     label: "Financing",
     answer:
-      "Financing is available — you can split the cost of a build across payments. Mention it when you request a quote and we'll walk you through the options.",
+      "Financing is available. You can split the cost of a build across payments. Mention it when you request a quote and we'll walk you through the options.",
     followups: ["pricing", HANDOFF],
   },
   hours: {
     id: "hours",
     label: "Hours & location",
     answer:
-      `We're at ${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}. Mon–Fri 10–6, Saturday by appointment, closed Sunday. By appointment only — ${business.phone}.`,
+      `We're at ${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}. Open Mon-Sat 12PM-8PM, closed Sunday, by appointment. ${business.phone}.`,
     followups: [HANDOFF, "services"],
   },
   "wrap-faq": {
     id: "wrap-faq",
     label: "Wrap FAQ",
     answer:
-      "A quality wrap lasts ~5–7 years, protects your factory paint, and removes cleanly. A full wrap is usually 3–5 days in the shop. We wrap stainless Cybertrucks too.",
+      "A quality wrap lasts ~5-7 years, protects your factory paint, and removes cleanly. A full wrap is usually 3-5 days in the shop. We wrap stainless Cybertrucks too.",
     followups: ["pricing", HANDOFF, "services"],
   },
   "tint-faq": {
     id: "tint-faq",
     label: "Tint FAQ",
     answer:
-      "Ceramic tint blocks heat and UV without going purple like cheap film. Texas allows 25% on front side windows. Let it cure 3–5 days before rolling windows down.",
+      "Ceramic tint blocks heat and UV without going purple like cheap film. Texas allows 25% on front side windows. Let it cure 3-5 days before rolling windows down.",
     followups: ["pricing", HANDOFF, "services"],
   },
   "ppf-faq": {
     id: "ppf-faq",
     label: "PPF FAQ",
     answer:
-      "PPF is a clear, self-healing film that takes rock chips and swirl instead of your paint — roughly a 10-year warranty, in clear gloss or stealth satin.",
+      "PPF is a clear, self-healing film that takes rock chips and swirl instead of your paint, with roughly a 10-year warranty, in clear gloss or stealth satin.",
     followups: ["pricing", HANDOFF, "services"],
   },
 };

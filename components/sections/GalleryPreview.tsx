@@ -82,8 +82,8 @@ export default function GalleryPreview({ builds }: { builds: Build[] }) {
             </div>
             <div className="mt-3 flex items-center justify-between gap-4">
               <p className="mono-label">
-                {b.year} {b.make} {b.model} — {b.services.join(" / ")}
-                {b.wrapColor ? ` — ${b.wrapColor}` : ""}
+                {b.year} {b.make} {b.model} · {b.services.join(" / ")}
+                {b.wrapColor ? ` · ${b.wrapColor}` : ""}
               </p>
               <span className="link-underline shrink-0 text-sm text-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 View build

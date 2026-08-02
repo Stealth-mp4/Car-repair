@@ -109,7 +109,7 @@ export default function ContactForm() {
           value={service}
           onChange={(e) => setService(e.target.value)}
         >
-          <option value="">Service interested in — optional</option>
+          <option value="">Service interested in (optional)</option>
           {services.map((s) => (
             <option key={s.slug} value={s.title}>
               {s.title}

@@ -22,7 +22,7 @@ export default function PassportPhotoGrid({
       {beforeAfterBuilds.map((b) => (
         <div key={b.slug}>
           <p className="mono-label mb-4">
-            Before / after — {b.services.join(" / ")}
+            Before / after: {b.services.join(" / ")}
           </p>
           <BeforeAfterSlider data={b.beforeAfter!} />
         </div>

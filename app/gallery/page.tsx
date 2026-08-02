@@ -25,7 +25,7 @@ export async function generateMetadata({
   const scope = [titleCase(make), titleCase(service)].filter(Boolean).join(" ");
   const prefix = scope ? `${scope} ` : "";
   return {
-    title: `${prefix}Gallery — Completed Builds`,
+    title: `${prefix}Gallery | Completed Builds`,
     description: `Completed ${scope || "wrap, tint & PPF"} builds from Iqballaz Customs in Houston. Filter by make and service.`,
   };
 }
@@ -46,7 +46,7 @@ export default async function GalleryPage({
   const TRUST = [
     { icon: <CalendarIcon />, title: "By appointment only", body: "Every build gets a dedicated, unrushed slot." },
     { icon: <StarIcon />, title: avgRating ? `${avgRating.toFixed(1)} rating on Google` : "Real customer reviews", body: "On-record feedback, not a curated highlight reel." },
-    { icon: <DiamondIcon />, title: "Tesla specialists", body: "Model 3, Y, S, X, and Cybertruck — regularly." },
+    { icon: <DiamondIcon />, title: "Tesla specialists", body: "Model 3, Y, S, X, and Cybertruck, regularly." },
     { icon: <ShieldCheckIcon />, title: "Studio-lit precision", body: "Every build shot and finished under the same light." },
   ];
 
@@ -56,8 +56,8 @@ export default async function GalleryPage({
       <section className="relative flex min-h-[82svh] flex-col justify-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/gallery/lamborghini-huracan-red-1.webp"
-            alt="Lamborghini Huracán finished in a Rosso Mars wrap"
+            src="/client/gallery-hero.webp"
+            alt="BMW M4 in a satin grey wrap on the Iqballaz Customs shop floor"
             fill
             priority
             quality={90}
@@ -93,17 +93,14 @@ export default async function GalleryPage({
           <FilterBar />
         </Suspense>
 
-        <p className="mono-label mt-8 text-muted">
-          {results.length} build{results.length === 1 ? "" : "s"}
-          {filtered ? " · filtered" : ""}
-        </p>
+        {filtered ? <p className="mono-label mt-8 text-muted">Filtered</p> : null}
 
         {results.length === 0 ? (
           <div className="mt-6 rounded-media border border-line p-10 text-cream/80">
             No builds match that combination yet. Clear a filter to see more of the work.
           </div>
         ) : (
-          <div className="mt-6 columns-1 gap-4 sm:columns-2 lg:columns-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {results.map((b, i) => (
               <BuildCard key={b.slug} build={b} index={i} priority={i < 2} />
             ))}

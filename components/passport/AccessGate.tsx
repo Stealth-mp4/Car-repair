@@ -58,7 +58,7 @@ export default function AccessGate({ error }: { error?: boolean }) {
         required
       />
       {error ? (
-        <p className="mono-label text-red">Code not recognized — check with the shop.</p>
+        <p className="mono-label text-red">Code not recognized. Check with the shop.</p>
       ) : null}
       <button
         ref={btnRef}

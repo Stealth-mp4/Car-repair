@@ -6,7 +6,7 @@ import ClipReveal from "@/components/ui/ClipReveal";
 
 const POINTS = [
   { title: "Spread the cost", body: "Break a wrap, PPF, or multi-service build into manageable payments." },
-  { title: "Apply with your quote", body: "Tell us you'd like to finance when you request a quote — no separate trip." },
+  { title: "Apply with your quote", body: "Tell us you'd like to finance when you request a quote. No separate trip." },
   { title: "Full build covered", body: "Financing applies to the whole build, current promotions included." },
 ];
 
@@ -30,7 +30,7 @@ export default function FinancingTeaser() {
           />
           <Reveal delay={0.1}>
             <p className="mt-5 max-w-md text-cream">
-              Split the cost of your build across manageable terms — apply when you
+              Split the cost of your build across manageable terms. Apply when you
               request a quote, no separate trip.
             </p>
           </Reveal>
@@ -55,8 +55,8 @@ export default function FinancingTeaser() {
         <div className="md:col-span-6 md:col-start-7">
           <ClipReveal className="media-frame relative aspect-[4/3]">
             <Image
-              src="/wheel_powder_coat.webp"
-              alt="Freshly powder-coated wheel — financing available on the full build"
+              src="/client/financing.jpg"
+              alt="Finished BMW M4 build: financing available on the full build"
               fill
               sizes="(max-width: 768px) 100vw, 42vw"
               className="graded object-cover"
