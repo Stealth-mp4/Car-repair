@@ -48,7 +48,7 @@ export default function SiteNav() {
         }`}
       >
         <nav
-          className="grid grid-cols-3 items-center py-4"
+          className="grid grid-cols-2 items-center py-4 lg:grid-cols-3"
           style={{ paddingInline: "var(--gutter)" }}
         >
           {/* Left cluster — menu button (mobile/tablet only) + primary links (desktop) */}
@@ -79,8 +79,14 @@ export default function SiteNav() {
             </div>
           </div>
 
-          {/* Centered logo mark (Mansory reference) */}
-          <Link href="/" className="relative h-9 w-24 justify-self-center sm:h-10 sm:w-28">
+          {/* Logo mark. Centred on desktop (Mansory reference); on mobile it
+              takes the right-hand slot the "Book Appointment" CTA used to
+              occupy — the CTA is redundant there, it already sits as a
+              full-width button at the bottom of the slide-out menu. */}
+          <Link
+            href="/"
+            className="relative h-9 w-24 justify-self-end sm:h-10 sm:w-28 lg:justify-self-center"
+          >
             <Image
               src={brand.markTight}
               alt={`${business.name} home`}
@@ -91,9 +97,10 @@ export default function SiteNav() {
             />
           </Link>
 
-          {/* Right cluster — secondary links (desktop) + CTA (all sizes) */}
-          <div className="flex items-center gap-7 justify-self-end">
-            <div className="hidden items-center gap-7 lg:flex">
+          {/* Right cluster — desktop only, so mobile is a clean two-column
+              grid: menu button left, logo right. */}
+          <div className="hidden items-center gap-7 justify-self-end lg:flex">
+            <div className="flex items-center gap-7">
               {nav.right.map((item) => (
                 <Link
                   key={item.href}
