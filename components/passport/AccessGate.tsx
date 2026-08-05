@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
-import { openPassport } from "@/app/passport/actions";
+import { openPassport } from "@/app/(site)/passport/actions";
 
 const inputClass =
   "w-full rounded-input border border-line bg-black-raised px-4 py-3 text-center text-ink placeholder:text-muted outline-none transition-colors focus:border-red";
