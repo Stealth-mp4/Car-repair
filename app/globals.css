@@ -35,6 +35,13 @@
   --color-red: #e10600; /* the ONE accent — caliper red, not neon */
   --color-red-deep: #5c0f16; /* pressed/hover state — resolves to maroon, not a separate red */
 
+  /* Status — ADMIN CONSOLE ONLY (/admin). Never used on the public site: the
+     marketing pages carry no ok/warn semantics, and adding a green there would
+     break the black/burgundy/maroon world. Both are desaturated to sit inside
+     it rather than reading as generic dashboard chrome. */
+  --color-ok: #4e9e6a; /* confirmed / paid / active */
+  --color-warn: #c8922f; /* pending / due / awaiting */
+
   /* Type */
   --font-display: "General Sans", ui-sans-serif, system-ui, sans-serif;
   --font-text: "Satoshi", ui-sans-serif, system-ui, sans-serif;

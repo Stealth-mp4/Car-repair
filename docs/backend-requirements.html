@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Iqballaz Customs — Admin Dashboard: Backend Requirements</title>
+    <style>
+      /* Print-first: light stage, brand red as the only accent, hairline rules.
+         Regenerate the PDF from this folder with:
+           google-chrome --headless=new --disable-gpu --no-pdf-header-footer \
+             --print-to-pdf="Iqballaz-Admin-Backend-Requirements.pdf" \
+             "file://$PWD/backend-requirements.html"                        */
+      @page {
+        size: A4;
+        margin: 18mm 16mm 20mm 16mm;
+      }
+
+      :root {
+        --red: #c1121f;
+        --ink: #14100f;
+        --body: #33302e;
+        --muted: #6f6a67;
+        --line: #ddd7d2;
+        --wash: #f7f4f1;
+        --ok: #2f6f4a;
+        --warn: #8a6516;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.55;
+        color: var(--body);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      h1, h2, h3 { color: var(--ink); line-height: 1.2; margin: 0; }
+      h1 { font-size: 22pt; letter-spacing: -0.4pt; }
+      h2 {
+        font-size: 13.5pt;
+        margin: 22pt 0 8pt;
+        padding-bottom: 5pt;
+        border-bottom: 1.5pt solid var(--ink);
+      }
+      h3 { font-size: 11pt; margin: 14pt 0 3pt; }
+      p { margin: 0 0 8pt; }
+      ul { margin: 0 0 8pt; padding-left: 15pt; }
+      li { margin-bottom: 3pt; }
+      strong { color: var(--ink); }
+
+      .eyebrow {
+        font-size: 8pt;
+        letter-spacing: 1.4pt;
+        text-transform: uppercase;
+        color: var(--red);
+        font-weight: 700;
+      }
+
+      header.cover { border-bottom: 3pt solid var(--red); padding-bottom: 12pt; margin-bottom: 4pt; }
+      header.cover .meta { margin-top: 10pt; font-size: 9pt; color: var(--muted); }
+      header.cover .meta span { margin-right: 18pt; }
+
+      .lede { font-size: 11.5pt; color: var(--ink); margin-top: 10pt; }
+
+      table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt; font-size: 9.5pt; }
+      th, td { text-align: left; padding: 6pt 8pt; border-bottom: 0.75pt solid var(--line); vertical-align: top; }
+      th {
+        font-size: 8pt;
+        letter-spacing: 0.8pt;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-bottom: 1pt solid var(--ink);
+        font-weight: 700;
+      }
+      td.num { text-align: right; white-space: nowrap; }
+      tfoot td { font-weight: 700; color: var(--ink); border-bottom: none; border-top: 1pt solid var(--ink); }
+
+      .pill {
+        display: inline-block;
+        font-size: 7.5pt;
+        letter-spacing: 0.6pt;
+        text-transform: uppercase;
+        font-weight: 700;
+        padding: 1.5pt 6pt;
+        border-radius: 9pt;
+        border: 0.75pt solid currentColor;
+        white-space: nowrap;
+      }
+      .pill.done { color: var(--ok); }
+      .pill.need { color: var(--red); }
+      .pill.later { color: var(--warn); }
+
+      .svc {
+        border: 0.75pt solid var(--line);
+        border-left: 3pt solid var(--red);
+        padding: 10pt 12pt;
+        margin: 0 0 10pt;
+        background: var(--wash);
+        break-inside: avoid;
+      }
+      .svc h3 { margin-top: 0; }
+      .svc dl { margin: 6pt 0 0; display: grid; grid-template-columns: 92pt 1fr; gap: 3pt 8pt; font-size: 9.5pt; }
+      .svc dt { color: var(--muted); text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.7pt; padding-top: 2pt; font-weight: 700; }
+      .svc dd { margin: 0; }
+
+      .note {
+        border-left: 3pt solid var(--ink);
+        background: var(--wash);
+        padding: 8pt 12pt;
+        margin: 12pt 0;
+        font-size: 9.5pt;
+        break-inside: avoid;
+      }
+
+      .phase { font-size: 9pt; color: var(--muted); margin: 0 0 10pt; }
+
+      footer.sig { margin-top: 20pt; padding-top: 8pt; border-top: 0.75pt solid var(--line); font-size: 8.5pt; color: var(--muted); }
+
+      section { break-inside: auto; }
+      table, .svc, .note { break-inside: avoid; }
+      h2 { break-after: avoid; }
+      h3 { break-after: avoid; }
+    </style>
+  </head>
+  <body>
+    <header class="cover">
+      <p class="eyebrow">Iqballaz Customs</p>
+      <h1>Admin Dashboard — Backend Requirements</h1>
+      <p class="lede">
+        What the dashboard does today, and the external services it needs before
+        the shop can run on it day to day.
+      </p>
+      <p class="meta">
+        <span><strong>Prepared for:</strong> Iqballaz Customs</span>
+        <span><strong>Date:</strong> 5 August 2026</span>
+        <span><strong>Status:</strong> Front end complete, sample data</span>
+      </p>
+    </header>
+
+    <section>
+      <h2>1. Where things stand</h2>
+      <p>
+        The admin dashboard is <strong>fully built and clickable</strong>. Every
+        screen from the approved reference design exists and works: the
+        dashboard overview with revenue chart and figures, an appointments
+        calendar with month, week and day views, and thirteen management screens
+        covering customers, vehicles, projects, services, invoices, payments,
+        finance, reviews, messages, users, staff, inventory and an activity log.
+        You can add, edit and delete records, search, sort, filter and page
+        through them, and book or reschedule from the calendar.
+      </p>
+      <p>
+        What it is <strong>not</strong> doing yet is remembering anything. All of
+        it currently runs on sample data held in the browser, so a page refresh
+        resets it. Nothing is stored, no card is charged, and no customer is
+        emailed or texted. That is by design — the interface was built first so
+        it could be reviewed and signed off before the plumbing behind it is
+        commissioned.
+      </p>
+      <p>
+        Making it real means connecting a small number of external services.
+        This document lists each one: what it is for, what it costs, and what we
+        need from you to set it up.
+      </p>
+
+      <h3>What works today vs. what needs a service</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Today</th>
+            <th style="width: 78pt">Needs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>All screens, layout, navigation, mobile</td>
+            <td>Complete and working</td>
+            <td><span class="pill done">Nothing</span></td>
+          </tr>
+          <tr>
+            <td>Adding and editing records</td>
+            <td>Works, but resets on refresh</td>
+            <td><span class="pill need">Database</span></td>
+          </tr>
+          <tr>
+            <td>Staff sign-in</td>
+            <td>One shared password</td>
+            <td><span class="pill need">Accounts</span></td>
+          </tr>
+          <tr>
+            <td>Invoices and payments</td>
+            <td>Displayed only; nothing is charged</td>
+            <td><span class="pill need">Payments</span></td>
+          </tr>
+          <tr>
+            <td>Appointment confirmations and reminders</td>
+            <td>Not sent</td>
+            <td><span class="pill need">Email / SMS</span></td>
+          </tr>
+          <tr>
+            <td>Website enquiries reaching the inbox</td>
+            <td>Accepted, but only logged</td>
+            <td><span class="pill need">Database</span></td>
+          </tr>
+          <tr>
+            <td>Customer reviews</td>
+            <td>Typed in by hand</td>
+            <td><span class="pill later">Reviews sync</span></td>
+          </tr>
+          <tr>
+            <td>Invoice PDFs and build photos</td>
+            <td>Fixed files in the site folder</td>
+            <td><span class="pill later">File storage</span></td>
+          </tr>
+          <tr>
+            <td>“+12% from last week” figures</td>
+            <td>Sample numbers</td>
+            <td><span class="pill later">Reporting</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>2. Essential — the dashboard cannot go live without these</h2>
+      <p class="phase">Phase 1. Everything else depends on this group.</p>
+
+      <div class="svc">
+        <h3>2.1 Hosting</h3>
+        <p>
+          Where the website and dashboard actually run. The site is already
+          built on a platform that hosts it directly, with automatic
+          deployments, HTTPS and a global cache included.
+        </p>
+        <dl>
+          <dt>Recommended</dt>
+          <dd>Vercel (built by the makers of the site’s framework — least friction)</dd>
+          <dt>Alternatives</dt>
+          <dd>Netlify, Cloudflare Pages, or a self-managed server</dd>
+          <dt>Indicative cost</dt>
+          <dd>Free tier is viable to start; approx. <strong>$20/month</strong> per seat on the paid plan</dd>
+          <dt>We need</dt>
+          <dd>An account in the shop’s name, and the domain’s DNS access to point <em>iqballazcustoms.com</em> at it</dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>2.2 Database</h3>
+        <p>
+          The single most important item. This is the shop’s permanent record:
+          customers, vehicles, appointments, projects, invoices, payments,
+          inventory and staff. Without it, nothing the dashboard shows survives
+          a refresh.
+        </p>
+        <p>
+          It also becomes the one source of truth shared with the customer
+          Vehicle Passport already on the public site, so a customer’s warranty
+          and service history stops being hand-maintained in two places.
+        </p>
+        <dl>
+          <dt>Recommended</dt>
+          <dd>Supabase or Neon (both managed PostgreSQL, with automatic backups)</dd>
+          <dt>Alternatives</dt>
+          <dd>Vercel Postgres, Amazon RDS</dd>
+          <dt>Indicative cost</dt>
+          <dd>Free tier covers early use; approx. <strong>$19–25/month</strong> once past it</dd>
+          <dt>We need</dt>
+          <dd>An account in the shop’s name. Also a decision on where data is stored geographically, and how long records are kept</dd>
+          <dt>Note</dt>
+          <dd>Please budget for this even if usage stays inside a free tier — free tiers pause inactive databases, which is not appropriate for live business records</dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>2.3 Staff accounts and permissions</h3>
+        <p>
+          Today the dashboard has a proper sign-in screen, but behind it sits a
+          single shared password. That means no individual staff logins, no
+          password resets, and no record of who changed what.
+        </p>
+        <p>
+          The Users and Staff screens already show access levels — Super Admin,
+          Manager, Technician, Front Desk — but nothing enforces them yet. Once
+          this is connected, those levels become real: a technician would not be
+          able to see finance, for instance.
+        </p>
+        <dl>
+          <dt>Recommended</dt>
+          <dd>Auth.js (no licence fee, runs on the shop’s own hosting) or Clerk (paid, but includes ready-made password reset and two-factor)</dd>
+          <dt>Indicative cost</dt>
+          <dd>Auth.js: free. Clerk: free to roughly 10,000 monthly users, then approx. <strong>$25/month</strong></dd>
+          <dt>We need</dt>
+          <dd>The list of staff who should have access and the level each one gets. A decision on whether two-factor sign-in is required</dd>
+        </dl>
+      </div>
+
+      <div class="note">
+        <strong>Recommendation:</strong> commission Phase 1 as a single block.
+        Hosting, database and accounts are interdependent, and splitting them
+        means paying twice to wire the same connections.
+      </div>
+    </section>
+
+    <section>
+      <h2>3. Operating — needed for daily use</h2>
+      <p class="phase">Phase 2. Turns the dashboard from a record book into the tool the shop runs on.</p>
+
+      <div class="svc">
+        <h3>3.1 Card payments</h3>
+        <p>
+          The Invoices and Payments screens list what is owed and what has been
+          settled, but nothing charges a card today. Connecting a payment
+          provider lets an invoice be sent as a payment link, and marks itself
+          paid automatically when the customer pays — no manual reconciliation.
+        </p>
+        <dl>
+          <dt>Recommended</dt>
+          <dd>Stripe (already referenced on the public site’s financing page)</dd>
+          <dt>Alternatives</dt>
+          <dd>Square, PayPal</dd>
+          <dt>Indicative cost</dt>
+          <dd>No monthly fee. Roughly <strong>2.9% + $0.30</strong> per card transaction — confirm current US rates at signup</dd>
+          <dt>We need</dt>
+          <dd>A Stripe account with business verification completed, and the shop’s bank details for payouts</dd>
+          <dt>Note</dt>
+          <dd>The existing financing partners (Acima, Snap) stay a separate manual process unless they provide a direct integration — worth asking them</dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>3.2 Email and text messaging</h3>
+        <p>
+          For appointment confirmations, reminders the day before, and
+          “your vehicle is ready” notices. Given the shop books by appointment
+          with same-week slots, text messages will matter more than email for
+          reducing no-shows.
+        </p>
+        <dl>
+          <dt>Recommended</dt>
+          <dd>Resend or Postmark for email; Twilio for text messages</dd>
+          <dt>Indicative cost</dt>
+          <dd>
+            Email: free to roughly 3,000 messages/month, then approx.
+            <strong>$20/month</strong>. Text: approx. <strong>$0.008</strong> per
+            message plus about <strong>$1.15/month</strong> for a number — confirm current rates
+          </dd>
+          <dt>We need</dt>
+          <dd>
+            Permission to send from the shop’s domain (a small DNS change), the
+            sending address to use, and approval of the message wording. US text
+            messaging also requires business registration with the carriers,
+            which takes a few days
+          </dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>3.3 Website enquiries into the dashboard</h3>
+        <p>
+          The quote form and chat assistant on the public site already collect
+          enquiries correctly. At present they are only recorded in the server
+          log. Pointing them at the database turns the Messages screen into the
+          live inbox it already looks like.
+        </p>
+        <dl>
+          <dt>Requires</dt>
+          <dd>Nothing new — this is included once the database (2.2) exists</dd>
+          <dt>Indicative cost</dt>
+          <dd>None</dd>
+          <dt>We need</dt>
+          <dd>Confirmation of who should be notified when a new enquiry arrives</dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>3.4 File storage</h3>
+        <p>
+          For invoice PDFs and customer build photographs. These currently point
+          at fixed files in the website folder, which does not scale and cannot
+          be added to from the dashboard. Proper storage also allows private
+          links, so a customer’s invoice is not publicly guessable.
+        </p>
+        <dl>
+          <dt>Recommended</dt>
+          <dd>Cloudflare R2 (no charge for data transfer out) or Amazon S3</dd>
+          <dt>Indicative cost</dt>
+          <dd>Typically <strong>under $5/month</strong> at this scale</dd>
+          <dt>We need</dt>
+          <dd>An account, and a decision on how long customer photos are retained</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. Enhancement — valuable, not urgent</h2>
+      <p class="phase">Phase 3. Can follow once the shop is running on the dashboard.</p>
+
+      <div class="svc">
+        <h3>4.1 Google review sync</h3>
+        <p>
+          The Reviews screen currently holds reviews typed in by hand.
+          Connecting Google Business Profile pulls them in automatically, so the
+          screen and the website’s review section always reflect reality.
+        </p>
+        <dl>
+          <dt>Requires</dt>
+          <dd>Google Business Profile / Places API access</dd>
+          <dt>Indicative cost</dt>
+          <dd>Charged per request; low volume typically sits within the monthly free allowance — confirm current terms</dd>
+          <dt>We need</dt>
+          <dd>Admin access to the shop’s Google Business Profile</dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>4.2 Reporting figures</h3>
+        <p>
+          The comparison figures on the dashboard — “+12% from last week”,
+          “+15% revenue” — are sample numbers. Once real records accumulate,
+          these become genuine period-on-period calculations from the shop’s own
+          data.
+        </p>
+        <dl>
+          <dt>Requires</dt>
+          <dd>Nothing new — calculated from the database (2.2)</dd>
+          <dt>Indicative cost</dt>
+          <dd>None</dd>
+          <dt>We need</dt>
+          <dd>Confirmation of which figures matter most to the business, so the right ones are shown</dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>4.3 Editable settings</h3>
+        <p>
+          The Settings screen currently displays business details, opening hours
+          and the live promotion, but they are read-only — those values live in
+          the website’s code, and showing editable boxes would imply a save that
+          goes nowhere. Once stored in the database, the shop can change opening
+          hours or swap the promotion without a developer.
+        </p>
+        <dl>
+          <dt>Requires</dt>
+          <dd>Nothing new — depends on the database (2.2)</dd>
+          <dt>Indicative cost</dt>
+          <dd>None</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. Indicative running costs</h2>
+      <p>
+        Monthly, at the shop’s expected volume. Figures are indicative and should
+        be confirmed at signup — providers change pricing, and several offer free
+        tiers that may cover early use.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Purpose</th>
+            <th>Phase</th>
+            <th class="num">Indicative / month</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Hosting</td><td>Runs the site and dashboard</td><td>1</td><td class="num">$0 – 20</td></tr>
+          <tr><td>Database</td><td>Stores every record</td><td>1</td><td class="num">$0 – 25</td></tr>
+          <tr><td>Staff accounts</td><td>Individual logins and permissions</td><td>1</td><td class="num">$0 – 25</td></tr>
+          <tr><td>Card payments</td><td>Charging and reconciling invoices</td><td>2</td><td class="num">Per transaction</td></tr>
+          <tr><td>Email</td><td>Confirmations and receipts</td><td>2</td><td class="num">$0 – 20</td></tr>
+          <tr><td>Text messaging</td><td>Appointment reminders</td><td>2</td><td class="num">$5 – 20</td></tr>
+          <tr><td>File storage</td><td>Invoice PDFs, build photos</td><td>2</td><td class="num">Under $5</td></tr>
+          <tr><td>Review sync</td><td>Google reviews</td><td>3</td><td class="num">$0 – 5</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3">Typical total, excluding card transaction fees</td>
+            <td class="num">Roughly $5 – 120</td>
+          </tr>
+        </tfoot>
+      </table>
+      <p style="font-size: 9pt; color: var(--muted)">
+        The lower end reflects starting on free tiers; the upper end reflects
+        paid plans across every service. Card processing is charged as a
+        percentage of takings rather than a monthly fee, so it scales with
+        revenue rather than adding fixed cost.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. What we need from you</h2>
+      <p>Work can begin as soon as these are available. Accounts should be created in the shop’s name, not a developer’s, so ownership stays with the business.</p>
+
+      <h3>Accounts to open</h3>
+      <ul>
+        <li>Hosting platform (Phase 1)</li>
+        <li>Database provider (Phase 1)</li>
+        <li>Stripe, with business verification and bank details (Phase 2)</li>
+        <li>Email and text messaging providers (Phase 2)</li>
+        <li>File storage provider (Phase 2)</li>
+      </ul>
+
+      <h3>Access to grant</h3>
+      <ul>
+        <li>DNS access for <em>iqballazcustoms.com</em>, to point the domain and to authorise sending email from it</li>
+        <li>Admin access to the Google Business Profile, for review sync (Phase 3)</li>
+      </ul>
+
+      <h3>Decisions to confirm</h3>
+      <ul>
+        <li>Which staff get dashboard access, and at what level</li>
+        <li>Whether two-factor sign-in is required for staff</li>
+        <li>Wording for appointment confirmations and reminders</li>
+        <li>How long customer records and photographs are retained</li>
+        <li>Who is notified when a new website enquiry arrives</li>
+      </ul>
+
+      <h3>Information to verify</h3>
+      <p>
+        The dashboard is currently populated with realistic sample data so the
+        screens could be reviewed properly. The following are placeholders and
+        must be replaced with real figures before launch:
+      </p>
+      <ul>
+        <li>Staff names and roles</li>
+        <li>Service pricing and typical duration</li>
+        <li>Inventory items, suppliers and reorder levels</li>
+        <li>The finance ledger and all revenue figures</li>
+      </ul>
+
+      <div class="note">
+        <strong>On the sample data:</strong> none of the customers, vehicles,
+        invoices or payments currently shown are real. They exist purely to make
+        the screens legible during review and will be cleared before the shop
+        starts using the dashboard.
+      </div>
+    </section>
+
+    <section>
+      <h2>7. Suggested sequence</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 46pt">Phase</th>
+            <th>Delivers</th>
+            <th>Outcome for the shop</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td>Hosting, database, staff accounts</td>
+            <td>The dashboard becomes real: records are kept, staff have their own logins, and the customer Vehicle Passport shares the same data</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td>Payments, email and text, enquiries inbox, file storage</td>
+            <td>The shop can run its day on it: take payment, confirm and remind customers, and handle enquiries in one place</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td>Review sync, reporting, editable settings</td>
+            <td>Reviews stay current without typing, figures reflect real trading, and the shop can update its own details</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Phase 1 is the meaningful milestone — at the end of it the dashboard
+        stops being a demonstration and becomes the shop’s system of record.
+        Phases 2 and 3 add capability on top of a working foundation and can be
+        scheduled to suit budget.
+      </p>
+    </section>
+
+    <footer class="sig">
+      Iqballaz Customs — Admin Dashboard: Backend Requirements · 5 August 2026 ·
+      Costs are indicative and should be confirmed with each provider at signup.
+    </footer>
+  </body>
+</html>

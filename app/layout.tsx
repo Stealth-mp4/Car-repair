@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SmoothScroll from "@/components/ui/SmoothScroll";
-import SiteNav from "@/components/SiteNav";
-import SiteFooter from "@/components/SiteFooter";
-import ChatWidget from "@/components/ui/ChatWidget";
-import SplashScreen from "@/components/ui/SplashScreen";
-import { business, openingHours } from "@/lib/site";
+import { business } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(business.url),
@@ -23,63 +18,47 @@ export const metadata: Metadata = {
   },
 };
 
-// LocalBusiness + AutoRepair schema (build.md SEO). NAP from lib/site.
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": ["AutoRepair", "LocalBusiness"],
-  name: business.name,
-  url: business.url,
-  image: `${business.url}/logo.webp`,
-  telephone: "+18322081071",
-  priceRange: business.priceRange,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: business.address.street,
-    addressLocality: business.address.locality,
-    addressRegion: business.address.region,
-    postalCode: business.address.postalCode,
-    addressCountry: business.address.country,
-  },
-  openingHoursSpecification: openingHours.map((h) => ({
-    "@type": "OpeningHoursSpecification",
-    dayOfWeek: h.days,
-    opens: h.opens,
-    closes: h.closes,
-  })),
-};
-
+/**
+ * Root layout — document shell only (fonts, globals). The public
+ * marketing chrome (nav, footer, splash, smooth scroll, chat) lives in
+ * `app/(site)/layout.tsx`; `app/admin` renders its own shell instead.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-        {/* Fonts — Fontshare via <link> (General Sans + Satoshi), JetBrains Mono via Google */}
+    /*
+     * suppressHydrationWarning on <html> and <body>: browser extensions
+     * (dark-mode, zoom, wallet injectors) stamp attributes onto these two
+     * elements before React hydrates — the reported mismatch was a
+     * `class="zoom-1 dark"` that no code here writes. The flag only ignores
+     * attribute diffs one level deep on these elements, so real mismatches
+     * anywhere inside the app still surface.
+     */
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        {/*
+         * Fonts — Fontshare (General Sans + Satoshi) and Google (JetBrains
+         * Mono). Rendered in the tree, NOT inside a hand-written <head>:
+         * React 19 hoists <link> itself, and hand-authoring <head> in the App
+         * Router leaves stray whitespace text nodes there that hydration then
+         * reports as a mismatch. The favicon comes from app/favicon.ico
+         * automatically, so it needs no tag at all.
+         */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"
+          precedence="default"
           href="https://api.fontshare.com/v2/css?f[]=general-sans@600&f[]=satoshi@400,500,700&display=swap"
         />
         <link
           rel="stylesheet"
+          precedence="default"
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className="grain">
-        <SplashScreen />
-        <SmoothScroll>
-          <SiteNav />
-          <main>{children}</main>
-          <SiteFooter />
-        </SmoothScroll>
-        <ChatWidget />
+        {children}
       </body>
     </html>
   );
