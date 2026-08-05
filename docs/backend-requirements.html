@@ -120,7 +120,8 @@
       footer.sig { margin-top: 20pt; padding-top: 8pt; border-top: 0.75pt solid var(--line); font-size: 8.5pt; color: var(--muted); }
 
       section { break-inside: auto; }
-      table, .svc, .note { break-inside: avoid; }
+      .svc, .note { break-inside: avoid; }
+      thead { display: table-header-group; }
       h2 { break-after: avoid; }
       h3 { break-after: avoid; }
     </style>
@@ -165,6 +166,12 @@
         This document lists each one: what it is for, what it costs, and what we
         need from you to set it up.
       </p>
+      <p>
+        For context: this is an addition to your existing website, not a
+        replacement. The site is already live and already hosted, and it will
+        keep deploying the way it does now — the dashboard simply becomes part
+        of it. Nothing in this document requires rebuilding or moving the site.
+      </p>
 
       <h3>What works today vs. what needs a service</h3>
       <table>
@@ -179,6 +186,11 @@
           <tr>
             <td>All screens, layout, navigation, mobile</td>
             <td>Complete and working</td>
+            <td><span class="pill done">Nothing</span></td>
+          </tr>
+          <tr>
+            <td>Hosting and deployment</td>
+            <td>Live, syncing from your copy of the project</td>
             <td><span class="pill done">Nothing</span></td>
           </tr>
           <tr>
@@ -204,7 +216,12 @@
           <tr>
             <td>Website enquiries reaching the inbox</td>
             <td>Accepted, but only logged</td>
-            <td><span class="pill need">Database</span></td>
+            <td><span class="pill need">HubSpot</span></td>
+          </tr>
+          <tr>
+            <td>Chat assistant</td>
+            <td>Scripted buttons only; can’t answer free text</td>
+            <td><span class="pill need">Claude</span></td>
           </tr>
           <tr>
             <td>Customer reviews</td>
@@ -227,24 +244,47 @@
 
     <section>
       <h2>2. Essential — the dashboard cannot go live without these</h2>
-      <p class="phase">Phase 1. Everything else depends on this group.</p>
+      <p class="phase">
+        Phase 1. Everything else depends on this group. Hosting already exists —
+        the entry below is about access, not cost.
+      </p>
 
       <div class="svc">
-        <h3>2.1 Hosting</h3>
+        <h3>2.1 Hosting — already in place</h3>
         <p>
-          Where the website and dashboard actually run. The site is already
-          built on a platform that hosts it directly, with automatic
-          deployments, HTTPS and a global cache included.
+          The site is already live and deploys from your copy of the project,
+          which you sync when we ship changes. That arrangement does not change,
+          and there is nothing new to buy or set up.
+        </p>
+        <p>
+          One thing to plan for: each service in this document is switched on by
+          adding a small number of <strong>environment variables</strong> —
+          settings such as a database address or an API key — in the hosting
+          dashboard. They deliberately live outside the code and are never
+          stored in the project files, which is what keeps them private. Syncing
+          the repository does not carry them across.
+        </p>
+        <p>
+          So as each service goes live, someone needs to add those values. Either
+          you add them from a list we provide, or we are given access to the
+          hosting project and add them directly — whichever you prefer. It is
+          only worth agreeing which before Phase 1 starts.
         </p>
         <dl>
-          <dt>Recommended</dt>
-          <dd>Vercel (built by the makers of the site’s framework — least friction)</dd>
-          <dt>Alternatives</dt>
-          <dd>Netlify, Cloudflare Pages, or a self-managed server</dd>
+          <dt>Requires</dt>
+          <dd>Nothing new — no additional account, no additional cost</dd>
           <dt>Indicative cost</dt>
-          <dd>Free tier is viable to start; approx. <strong>$20/month</strong> per seat on the paid plan</dd>
-          <dt>We need</dt>
-          <dd>An account in the shop’s name, and the domain’s DNS access to point <em>iqballazcustoms.com</em> at it</dd>
+          <dd>None, beyond your current hosting plan</dd>
+          <dt>We may need</dt>
+          <dd>
+            Access to the hosting project, <em>or</em> a named person on your
+            side who can add environment variables when we send them
+          </dd>
+          <dt>Note</dt>
+          <dd>
+            We understand the site is hosted on Vercel — worth confirming, as the
+            place to enter these settings differs slightly between providers
+          </dd>
         </dl>
       </div>
 
@@ -300,8 +340,9 @@
 
       <div class="note">
         <strong>Recommendation:</strong> commission Phase 1 as a single block.
-        Hosting, database and accounts are interdependent, and splitting them
-        means paying twice to wire the same connections.
+        The hosting check, the database and the staff accounts are
+        interdependent, and splitting them means paying twice to wire the same
+        connections.
       </div>
     </section>
 
@@ -359,25 +400,117 @@
       </div>
 
       <div class="svc">
-        <h3>3.3 Website enquiries into the dashboard</h3>
+        <h3>3.3 Enquiries into HubSpot — account already in place</h3>
         <p>
-          The quote form and chat assistant on the public site already collect
-          enquiries correctly. At present they are only recorded in the server
-          log. Pointing them at the database turns the Messages screen into the
-          live inbox it already looks like.
+          The quote form and the chat assistant on the public site already
+          collect enquiries correctly, in a single consistent format. At present
+          they are only written to the server log. They will be sent to your
+          existing HubSpot account instead, so every enquiry becomes a contact
+          and a deal in the CRM the shop already uses.
+        </p>
+        <p>
+          The dashboard’s Messages screen will show the same enquiries, so the
+          shop can respond from either place. HubSpot stays the system of record
+          for the sales pipeline; the dashboard is the day-to-day working view.
         </p>
         <dl>
           <dt>Requires</dt>
-          <dd>Nothing new — this is included once the database (2.2) exists</dd>
+          <dd>Your HubSpot account (already in place) plus the database (2.2)</dd>
           <dt>Indicative cost</dt>
-          <dd>None</dd>
+          <dd>None beyond your existing HubSpot plan — the free CRM tier covers contacts and forms</dd>
           <dt>We need</dt>
-          <dd>Confirmation of who should be notified when a new enquiry arrives</dd>
+          <dd>
+            A HubSpot private-app token with contact and deal permissions, and a
+            decision on which pipeline and deal stage new enquiries should land
+            in
+          </dd>
         </dl>
       </div>
 
       <div class="svc">
-        <h3>3.4 File storage</h3>
+        <h3>3.4 AI chat assistant — Claude (Anthropic)</h3>
+        <p>
+          The chat widget on the public site works today, but it is a
+          <em>scripted</em> assistant: it answers from a fixed set of questions
+          via tap-through buttons, and hands off to a human for anything else.
+          It cannot answer a question phrased in the customer’s own words.
+        </p>
+        <p>
+          Connecting it to Claude turns it into a real assistant: it answers
+          free-text questions about services, materials, turnaround and
+          financing in the shop’s own voice, and still hands off to a human —
+          and into HubSpot — when the customer wants a quote or a booking.
+        </p>
+        <dl>
+          <dt>Requires</dt>
+          <dd>Your existing Anthropic account, with credits added</dd>
+          <dt>Indicative cost</dt>
+          <dd>
+            Billed per conversation, not monthly. At the volume a single shop
+            sees, roughly <strong>$10–40/month</strong> on the recommended
+            model. Start with a <strong>$50</strong> credit and review after the
+            first month
+          </dd>
+          <dt>We need</dt>
+          <dd>
+            Credits added to the Anthropic account and an API key. Plus approval
+            of what the assistant may and may not say — most importantly whether
+            it quotes prices, or only ever gives ranges and refers to the shop
+          </dd>
+          <dt>Note</dt>
+          <dd>
+            Cost scales with how many people chat, so it is worth setting a
+            monthly spend cap in the Anthropic console from day one
+          </dd>
+        </dl>
+      </div>
+
+      <div class="svc">
+        <h3>3.5 Model choice and cost control</h3>
+        <p>
+          Anthropic offers several models at different price points. The
+          difference the shop would notice is answer quality on unusual or
+          detailed questions — all three are fast enough for a chat widget.
+          Pricing below is per million words-worth of text, roughly; a typical
+          customer conversation is a very small fraction of that.
+        </p>
+        <table style="margin-top: 4pt">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Best for</th>
+              <th class="num">Input / output per 1M tokens</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Claude Opus 5</strong> (recommended)</td>
+              <td>Best answer quality; handles detailed and unusual questions well</td>
+              <td class="num">$5 / $25</td>
+            </tr>
+            <tr>
+              <td>Claude Sonnet 5</td>
+              <td>Strong quality at lower cost; a sensible middle option</td>
+              <td class="num">$3 / $15</td>
+            </tr>
+            <tr>
+              <td>Claude Haiku 4.5</td>
+              <td>Cheapest and fastest; fine for simple, repetitive questions</td>
+              <td class="num">$1 / $5</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size: 9pt; color: var(--muted); margin-top: 0">
+          Prices are Anthropic’s published rates and should be confirmed at
+          signup. The model can be changed at any time without rebuilding the
+          assistant, so it is easy to start on one and move if the quality or
+          the cost is not right. Repeated instructions are cached automatically,
+          which cuts the real cost well below a naive per-message estimate.
+        </p>
+      </div>
+
+      <div class="svc">
+        <h3>3.6 File storage</h3>
         <p>
           For invoice PDFs and customer build photographs. These currently point
           at fixed files in the website folder, which does not scale and cannot
@@ -469,19 +602,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Hosting</td><td>Runs the site and dashboard</td><td>1</td><td class="num">$0 – 20</td></tr>
+          <tr><td>Hosting</td><td>Runs the site and dashboard</td><td>—</td><td class="num">Already in place</td></tr>
           <tr><td>Database</td><td>Stores every record</td><td>1</td><td class="num">$0 – 25</td></tr>
           <tr><td>Staff accounts</td><td>Individual logins and permissions</td><td>1</td><td class="num">$0 – 25</td></tr>
           <tr><td>Card payments</td><td>Charging and reconciling invoices</td><td>2</td><td class="num">Per transaction</td></tr>
           <tr><td>Email</td><td>Confirmations and receipts</td><td>2</td><td class="num">$0 – 20</td></tr>
           <tr><td>Text messaging</td><td>Appointment reminders</td><td>2</td><td class="num">$5 – 20</td></tr>
+          <tr><td>AI chat assistant</td><td>Answers customer questions in their own words</td><td>2</td><td class="num">$10 – 40</td></tr>
+          <tr><td>Lead capture</td><td>Enquiries into HubSpot</td><td>2</td><td class="num">Existing plan</td></tr>
           <tr><td>File storage</td><td>Invoice PDFs, build photos</td><td>2</td><td class="num">Under $5</td></tr>
           <tr><td>Review sync</td><td>Google reviews</td><td>3</td><td class="num">$0 – 5</td></tr>
         </tbody>
         <tfoot>
           <tr>
             <td colspan="3">Typical total, excluding card transaction fees</td>
-            <td class="num">Roughly $5 – 120</td>
+            <td class="num">Roughly $15 – 140</td>
           </tr>
         </tfoot>
       </table>
@@ -497,9 +632,15 @@
       <h2>6. What we need from you</h2>
       <p>Work can begin as soon as these are available. Accounts should be created in the shop’s name, not a developer’s, so ownership stays with the business.</p>
 
-      <h3>Accounts to open</h3>
+      <h3>Already in place — we just need access</h3>
       <ul>
-        <li>Hosting platform (Phase 1)</li>
+        <li>Hosting — either access to the project, or a named person who can add environment variables as each service is connected</li>
+        <li>HubSpot — a private-app token with contact and deal permissions</li>
+        <li>Anthropic — <strong>credits added to the account</strong>, plus an API key</li>
+      </ul>
+
+      <h3>Accounts still to open</h3>
+      <ul>
         <li>Database provider (Phase 1)</li>
         <li>Stripe, with business verification and bank details (Phase 2)</li>
         <li>Email and text messaging providers (Phase 2)</li>
@@ -508,13 +649,16 @@
 
       <h3>Access to grant</h3>
       <ul>
-        <li>DNS access for <em>iqballazcustoms.com</em>, to point the domain and to authorise sending email from it</li>
+        <li>DNS access for <em>iqballazcustoms.com</em> — only to authorise sending email from the domain (the site itself is already pointed correctly)</li>
         <li>Admin access to the Google Business Profile, for review sync (Phase 3)</li>
       </ul>
 
       <h3>Decisions to confirm</h3>
       <ul>
         <li>Which staff get dashboard access, and at what level</li>
+        <li>Which HubSpot pipeline and deal stage new enquiries should land in</li>
+        <li>What the chat assistant may say about pricing — exact quotes, ranges only, or refer to the shop</li>
+        <li>Which Claude model to run, and the monthly spend cap to set</li>
         <li>Whether two-factor sign-in is required for staff</li>
         <li>Wording for appointment confirmations and reminders</li>
         <li>How long customer records and photographs are retained</li>
@@ -555,13 +699,13 @@
         <tbody>
           <tr>
             <td><strong>1</strong></td>
-            <td>Hosting, database, staff accounts</td>
+            <td>Database and staff accounts (hosting already in place)</td>
             <td>The dashboard becomes real: records are kept, staff have their own logins, and the customer Vehicle Passport shares the same data</td>
           </tr>
           <tr>
             <td><strong>2</strong></td>
-            <td>Payments, email and text, enquiries inbox, file storage</td>
-            <td>The shop can run its day on it: take payment, confirm and remind customers, and handle enquiries in one place</td>
+            <td>Payments, email and text, HubSpot lead capture, AI chat assistant, file storage</td>
+            <td>The shop can run its day on it: take payment, confirm and remind customers, capture every enquiry in HubSpot, and let the chat assistant answer real questions around the clock</td>
           </tr>
           <tr>
             <td><strong>3</strong></td>
