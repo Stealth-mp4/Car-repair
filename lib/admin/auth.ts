@@ -27,39 +27,41 @@ const SESSION_SECONDS = 8 * 60 * 60;
 export type Config = { user: string; password: string; secret: Uint8Array };
 
 /**
- * Seeded development login, so the console opens with zero setup while a real
- * auth flow is still pending.
+ * Seeded demo login. Applies in EVERY environment, including deployed
+ * production builds, so a shared demo link just works with no env setup.
  *
- * Applied ONLY when NODE_ENV !== "production". A production build with no env
- * vars set still fails closed — hardcoded credentials that ship are how admin
- * panels get found and opened, and git history keeps them forever.
+ * ponytail: hardcoded shared credential, deliberate for the demo phase.
+ * To lock the console down later, either set ADMIN_USER / ADMIN_PASSWORD /
+ * SESSION_SECRET in the host (they override this with no code change), or
+ * delete DEV_SEED and have readConfig() return null when they're unset.
  *
- * Env vars override this in every environment, so you can point dev at
- * different credentials without touching code.
+ * `secret` is the worse half of this: it signs the session cookie, so anyone
+ * who can read this file can forge a valid session WITHOUT the password —
+ * changing only ADMIN_PASSWORD does not close that. SESSION_SECRET must be set
+ * in the host too. It can't be randomised per process as a stopgap: on
+ * serverless hosting each instance would sign with a different key and
+ * sessions would fail across instances.
  */
 export const DEV_SEED = {
   user: "admin",
   password: "iqballaz",
-  secret: "dev-only-session-key-not-used-in-production",
+  secret: "demo-session-key-replace-before-real-launch",
 } as const;
 
-const seed = () => (process.env.NODE_ENV === "production" ? null : DEV_SEED);
-
-/** True when the console is running on the seeded dev login, not env vars. */
+/** True when the console is running on the seeded login rather than env vars. */
 export function usingDevSeed(): boolean {
-  return seed() !== null && !process.env.ADMIN_USER && !process.env.ADMIN_PASSWORD;
+  return !process.env.ADMIN_USER && !process.env.ADMIN_PASSWORD;
 }
 
 /**
- * Resolves credentials: env vars first, dev seed second. Returns null only
- * when neither is available (i.e. an unconfigured production build), so every
- * caller fails closed rather than guessing a default.
+ * Resolves credentials: env vars first, seeded demo login second. Never returns
+ * null while DEV_SEED exists — the null branch is kept so callers stay
+ * fail-closed if the seed is removed later.
  */
 export function readConfig(): Config | null {
-  const fallback = seed();
-  const user = process.env.ADMIN_USER || fallback?.user;
-  const password = process.env.ADMIN_PASSWORD || fallback?.password;
-  const secret = process.env.SESSION_SECRET || fallback?.secret;
+  const user = process.env.ADMIN_USER || DEV_SEED.user;
+  const password = process.env.ADMIN_PASSWORD || DEV_SEED.password;
+  const secret = process.env.SESSION_SECRET || DEV_SEED.secret;
   if (!user || !password || !secret) return null;
   return { user, password, secret: new TextEncoder().encode(secret) };
 }

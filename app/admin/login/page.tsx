@@ -57,16 +57,16 @@ export default async function LoginPage({
                 <LoginForm next={next} />
               </div>
               {devSeed && (
-                /* Dev seed only — never rendered in a production build, since
-                   usingDevSeed() is false as soon as NODE_ENV is production. */
+                /* Shown whenever the console is running on the seeded login.
+                   Setting ADMIN_USER / ADMIN_PASSWORD hides this. */
                 <p className="mono-label mt-6 rounded-input border border-line px-4 py-3 leading-relaxed">
-                  <span className="text-warn">Dev login</span>
+                  <span className="text-warn">Demo login</span>
                   <br />
                   <span className="text-cream normal-case tracking-normal">
                     {DEV_SEED.user} / {DEV_SEED.password}
                   </span>
                   <br />
-                  Set ADMIN_USER + ADMIN_PASSWORD in .env.local to override.
+                  Set ADMIN_USER + ADMIN_PASSWORD in the host to override.
                 </p>
               )}
             </>

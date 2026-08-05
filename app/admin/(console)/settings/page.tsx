@@ -65,7 +65,7 @@ const integrations = [
     detail: "Who can reach /admin",
     env: "ADMIN_USER, ADMIN_PASSWORD, SESSION_SECRET",
     status: "active",
-    note: "One shared login, signed session cookie. Add per-user accounts and roles before launch.",
+    note: "Seeded demo login (admin / iqballaz), signed session cookie. Set the env vars or add per-user accounts before real use.",
   },
 ];
 

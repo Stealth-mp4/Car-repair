@@ -10,27 +10,29 @@ hairlines instead of shadows — see `DESIGN.md`).
 npm run dev        # http://localhost:3000/admin
 ```
 
-Sign in with the seeded development login, which the login screen also shows:
+Sign in with the seeded login, which the login screen also displays:
 
 ```
 admin / iqballaz
 ```
 
-That seed lives in `lib/admin/auth.ts` and applies **only when
-`NODE_ENV !== "production"`**. It is a placeholder until real per-user auth
-lands (item 1 below), not a credential to keep.
+It lives in `lib/admin/auth.ts` (`DEV_SEED`) and applies in **every**
+environment, including deployed production builds — a demo link works with no
+setup at all.
 
-**Before deploying**, set all three in the host's environment — a production
-build has no seeded login and refuses to open the console without them:
+**This is a shared hardcoded credential, deliberately, for the demo phase.**
+Two separate risks, not one: the password is guessable by anyone with the repo,
+and `DEV_SEED.secret` signs the session cookie — so anyone who can read the repo
+can forge a valid session *without* the password. Rotating only the password
+does not close the second one; `SESSION_SECRET` has to be set as well.
 
-```
-ADMIN_USER=...
-ADMIN_PASSWORD=...
-SESSION_SECRET=...     # openssl rand -base64 32
-```
+Before the client's staff use this for real, do one of:
 
-Env vars override the seed in every environment. Next reads `.env.local` at
-startup only, so restart the dev server after editing it.
+- set `ADMIN_USER` / `ADMIN_PASSWORD` / `SESSION_SECRET` in the host — they
+  override the seed with no code change; or
+- delete `DEV_SEED` so `readConfig()` returns null when they're unset (the
+  fail-closed branch is still there); or
+- land item 1 below (per-user accounts), which replaces this wholesale.
 
 ## What's there
 
