@@ -55,7 +55,7 @@ export default function FinancingTeaser() {
         <div className="md:col-span-6 md:col-start-7">
           <ClipReveal className="media-frame relative aspect-[4/3]">
             <Image
-              src="/client/financing.jpg"
+              src="/client/financing.webp"
               alt="Finished BMW M4 build: financing available on the full build"
               fill
               sizes="(max-width: 768px) 100vw, 42vw"

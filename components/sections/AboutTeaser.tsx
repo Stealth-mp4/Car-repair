@@ -39,7 +39,7 @@ export default function AboutTeaser() {
         <div className="md:col-span-5 md:col-start-8">
           <ClipReveal className="media-frame relative aspect-[4/5]">
             <Image
-              src="/client/about-shop-night.jpg"
+              src="/client/about-shop-night.webp"
               alt="Iqballaz Customs storefront at night"
               fill
               sizes="(max-width: 768px) 100vw, 40vw"

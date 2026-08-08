@@ -8,6 +8,9 @@ import { services as siteServices } from "@/lib/site";
 
 export type ServiceFaq = { q: string; a: string };
 export type ServiceStep = { title: string; body: string };
+/** A heading plus its paragraphs in the long-form body of a service page. */
+export type ServiceSection = { heading: string; paragraphs: string[] };
+export type ServiceImage = { src: string; alt: string; caption?: string };
 
 export type ServicePageContent = {
   slug: string;
@@ -21,6 +24,14 @@ export type ServicePageContent = {
   priceNote?: string;
   process: ServiceStep[];
   faqs: ServiceFaq[];
+  /**
+   * Optional long-form body, for the pages the client wants reading like a real
+   * article rather than a spec card. Rendered between the hero and the process
+   * strip; pages without it are unchanged.
+   */
+  body?: ServiceSection[];
+  /** Photos interleaved through `body` — kept few on purpose (client note). */
+  images?: ServiceImage[];
 };
 
 /** Film/product brand carried for this service, read from lib/site (single source). */
@@ -38,7 +49,7 @@ export const servicePages: Record<string, ServicePageContent> = {
     h1: "Vehicle Wraps Houston.",
     intro:
       "A full wrap changes the colour of your car in cast vinyl. Reversible, paint-protecting, and, done right, indistinguishable from a respray. We wrap edges rather than tuck them, so panels read as painted, not covered.",
-    priceNote: "Full wraps from around $2,800, depending on vehicle size and film.",
+    priceNote: "Full wraps start at $2,799+, depending on vehicle size and film.",
     process: [
       { title: "Colour & film", body: "Pick a finish in person against your paint: satin, gloss, matte, colour-shift, or a chrome delete." },
       { title: "Prep & teardown", body: "Wash, decontaminate, and remove badges, handles, and trim so film wraps behind edges." },
@@ -64,7 +75,54 @@ export const servicePages: Record<string, ServicePageContent> = {
     h1: "Ceramic Tint Houston.",
     intro:
       "Ceramic film blocks infrared heat and UV without the signal interference of metallic tint or the purple fade of cheap dyed film. In a Houston summer that's a measurably cooler cabin and an interior that doesn't bake.",
-    priceNote: "Tint from around $200, depending on coverage and film.",
+    priceNote: "Ceramic tint starts at $349+, depending on coverage and film.",
+    body: [
+      {
+        heading: "Why window tint is not optional in Houston",
+        paragraphs: [
+          "Houston sits at roughly 29 degrees north with humidity that turns a 95-degree afternoon into something closer to 105. A car parked outside for an hour reaches interior temperatures well past what's comfortable and well past what's good for the materials inside it. Tint is the cheapest intervention that actually changes that number.",
+          "The effect compounds over years. Ultraviolet light is what cracks a dashboard, fades a leather seat from black to grey, and yellows the plastic on your interior trim. Quality film blocks essentially all of it. The car you sell in five years looks like a car that lived in a garage, because as far as its interior is concerned, it did.",
+          "Then there's the part you notice on day one: the air conditioning stops fighting a losing battle. Less solar load through the glass means the cabin cools faster and holds temperature, which on an electric vehicle shows up directly as range you didn't spend on climate control.",
+        ],
+      },
+      {
+        heading: "Ceramic, dyed, and metallic — the difference that matters",
+        paragraphs: [
+          "Dyed film is the cheap option and it works by being dark. It blocks visible light, does very little about infrared heat, and it fades. The purple-tinted windows you see on older cars are dyed film at the end of its life. If the goal is privacy on a budget it does the job; if the goal is a cooler car, it mostly does not.",
+          "Metallic film rejects heat properly by reflecting it, but it does so with a layer of metal particles in the film. On a modern car that runs cellular, GPS, satellite radio, tire-pressure sensors, and in many cases a key card or phone-as-key through the glass, a conductive layer across every window is a real and recurring problem.",
+          "Ceramic film uses non-conductive ceramic particles instead. It rejects a large share of infrared heat without darkening the glass more than you want, without interfering with a single antenna, and without fading. It costs more than dyed film. It is the only one of the three we recommend, which is why it's the only one we install.",
+        ],
+      },
+      {
+        heading: "What's legal in Texas",
+        paragraphs: [
+          "Texas allows 25% VLT or lighter on the front side windows, meaning at least a quarter of visible light has to get through. Rear side windows and the back glass can go as dark as you like on most vehicles. The windshield can take film below the AS-1 line — the small marking near the top of the glass — or the top five inches if there's no AS-1 marking.",
+          "A clear or very light ceramic film across the full windshield is legal in many configurations and is the single biggest heat improvement available on a car, because the windshield is the largest piece of glass pointed at the sun. We'll walk you through exactly what applies to your vehicle rather than talking you into a shade that gets you a ticket.",
+          "Medical exemptions exist for drivers with documented photosensitivity. If that applies to you, bring the paperwork and we'll work to it.",
+        ],
+      },
+      {
+        heading: "How we install it",
+        paragraphs: [
+          "Film is computer-cut from a pattern for your exact year, make, and model. Nothing is cut on the car, which means no blade ever goes near your glass, your rubber seals, or the defroster lines printed on your rear window — the most common and most expensive damage a careless tint job causes.",
+          "Glass is cleaned and scraped down to a genuinely clean surface first, because every speck of dust left behind becomes a permanent bump under the film. Installation happens in a controlled bay rather than an open lot, so airborne fibres aren't landing on wet adhesive.",
+          "Old film gets removed properly when there is any — steamed off and the adhesive fully cleaned rather than scraped and covered over. Most tint jobs are a same-day service; a full car with a windshield takes longer.",
+          "Afterwards the film needs three to five days to cure. Leave the windows up during that window. A little haze or a few small water pockets in the first days are normal and clear on their own as the moisture evaporates.",
+        ],
+      },
+    ],
+    images: [
+      {
+        src: "/client/ceramic-tint-card.webp",
+        alt: "Range Rover with fresh ceramic tint in the Iqballaz Customs bay",
+        caption: "Computer-cut patterns, installed in a controlled bay.",
+      },
+      {
+        src: "/WINDOW_TINT.webp",
+        alt: "Ceramic window tint film applied to vehicle glass",
+        caption: "Ceramic rejects infrared without touching signal.",
+      },
+    ],
     process: [
       { title: "Shade & VLT", body: "Choose a legal shade and heat-rejection level for each set of glass." },
       { title: "Computer-cut", body: "Patterns plotted to your exact vehicle so there's no blade near your glass." },
@@ -90,7 +148,7 @@ export const servicePages: Record<string, ServicePageContent> = {
     h1: "PPF Houston.",
     intro:
       "Paint protection film is a clear urethane layer that takes the rock chips, sand, and swirl your paint otherwise would. It self-heals light marks with heat and comes in clear gloss or a satin 'stealth' finish that turns gloss paint matte.",
-    priceNote: "Front packages and full-body coverage priced per vehicle.",
+    priceNote: "PPF starts at $3,499+, by coverage and vehicle.",
     process: [
       { title: "Decon & prep", body: "Paint washed, clayed, and prepped so film bonds to a clean surface." },
       { title: "Pattern or bulk", body: "Computer-cut patterns for most panels, hand-cut on the car where coverage needs to be seamless." },

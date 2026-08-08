@@ -1,6 +1,6 @@
 import Image from "next/image";
 import MagneticButton from "@/components/ui/MagneticButton";
-import { promo } from "@/lib/site";
+import { activePromos } from "@/lib/site";
 
 /**
  * Current Promotions (V4 — bugatti.com "SUR MESURE" split-panel reference) —
@@ -9,7 +9,8 @@ import { promo } from "@/lib/site";
  * eyebrow + the CTA fill) — the background itself stays black, never red.
  */
 export default function Promotions() {
-  if (!promo.active) return null;
+  const promo = activePromos()[0];
+  if (!promo) return null;
 
   return (
     <section className="py-20 md:py-28" style={{ paddingInline: "var(--gutter)" }}>

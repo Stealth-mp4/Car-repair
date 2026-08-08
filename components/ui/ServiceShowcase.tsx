@@ -9,9 +9,17 @@ export type ShowcaseItem = {
   alt: string;
   /** small caps line above the title — e.g. a film brand or category tag */
   eyebrow?: string;
-  /** spec-sheet copy shown under the title */
-  caption?: string;
+  /** spec-sheet copy shown under the title — takes JSX so a price line can
+   *  highlight its numeral (see the `.money` accent in globals.css) */
+  caption?: React.ReactNode;
   ctaLabel?: string;
+  /**
+   * Span the full width of the masonry instead of sitting in a column. The
+   * columns balance by height, not by count, so an item at the end of the list
+   * can still render above the bottom of a taller column — spanning is the only
+   * way to guarantee a card reads as the last one.
+   */
+  span?: boolean;
 };
 
 /**
@@ -34,11 +42,16 @@ export default function ServiceShowcase({ items }: { items: ShowcaseItem[] }) {
 
 function ShowcaseCard({ item, index }: { item: ShowcaseItem; index: number }) {
   // Deterministic mixed rhythm so the two columns fall out of step, like the
-  // reference grid's tall/short pairing.
-  const aspect = index % 2 === 0 ? "4 / 5" : "1 / 1";
+  // reference grid's tall/short pairing. A spanning card is wide, so it takes a
+  // landscape ratio instead.
+  const aspect = item.span ? "16 / 9" : index % 2 === 0 ? "4 / 5" : "1 / 1";
 
   return (
-    <Reveal delay={(index % 4) * 0.08} className="mb-5">
+    <Reveal
+      delay={(index % 4) * 0.08}
+      className="mb-5"
+      style={item.span ? { columnSpan: "all" } : undefined}
+    >
       <Link
         href={item.href}
         className="media-frame group relative flex flex-col justify-between overflow-hidden"

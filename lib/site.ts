@@ -96,7 +96,7 @@ export const services: ServiceLink[] = [
     title: "Vehicle Wraps",
     short: "Full colour-change vinyl, precise, no lifted edges.",
     href: "/services/vehicle-wraps",
-    image: "/client/vehicle-wraps-card.jpg",
+    image: "/client/vehicle-wraps-card.webp",
     featured: true,
     filmBrand: "Avery Dennison",
   },
@@ -105,7 +105,7 @@ export const services: ServiceLink[] = [
     title: "Paint Protection Film",
     short: "Self-healing PPF against rock chips and swirl.",
     href: "/services/paint-protection-film",
-    image: "/client/ppf-card.jpg",
+    image: "/client/ppf-card.webp",
     featured: true,
     filmBrand: "XPEL",
   },
@@ -114,7 +114,7 @@ export const services: ServiceLink[] = [
     title: "Ceramic Tint",
     short: "Heat-rejecting film. Cooler cabin, protected interior.",
     href: "/services/ceramic-tint",
-    image: "/client/ceramic-tint-card.jpg",
+    image: "/client/ceramic-tint-card.webp",
     featured: true,
     filmBrand: "3M",
   },
@@ -124,7 +124,7 @@ export const services: ServiceLink[] = [
     /** Homepage FeaturedServices grid displays this card as "Accessories" — see homeTitle override in FeaturedServices.tsx. */
     short: "Fibre-optic headliner, mapped and dimmable.",
     href: "/services/starlight-headliners",
-    image: "/client/accessories-card.jpg",
+    image: "/client/accessories-card.webp",
   },
   {
     slug: "wheels-tires",
@@ -156,17 +156,79 @@ export const serviceNavItems: ServiceNavItem[] = [
 ];
 
 /**
- * Current promotion — one live offer at a time (build.md section 4).
- * Editable here without touching components. Set `active: false` to hide the band.
+ * Payments. Stripe is the only method the shop takes online, so the account's
+ * Billing page links straight out to it rather than collecting a card here —
+ * no card number ever touches this site.
+ *
+ * PLACEHOLDER: `portalUrl` is empty until the client sends their real link.
+ * Paste it here and the Billing button goes live with no code change; while
+ * it's empty the page says so instead of linking somewhere broken.
+ *
+ * Which link to paste depends on what they want it to do:
+ *   - a Stripe **customer portal** link (billing.stripe.com/p/login/...) lets a
+ *     customer manage their own payment methods and receipts;
+ *   - a Stripe **payment link** (buy.stripe.com/...) is a straight "pay now".
+ * Either drops in here; the button copy below is written to suit the portal.
  */
-export const promo = {
-  active: true,
-  label: "LIMITED · THROUGH AUG 31",
-  headline: "Tesla tint + PPF front package",
-  detail: "Ceramic tint all-around plus a full front PPF clip, booked as one build.",
-  image: "/VINYL_WRAP.webp",
-  cta: { label: "Claim this offer", href: "/quote" },
+export const payments = {
+  portalUrl: "",
+  label: "Pay or manage billing in Stripe",
 } as const;
+
+export type Promo = {
+  id: string;
+  /** short line shown in the bar above the nav — keep it under ~60 chars */
+  barText: string;
+  label: string;
+  headline: string;
+  detail: string;
+  image: string;
+  /** ISO instant the offer closes. Drives the countdown; past offers self-hide. */
+  endsAt: string;
+  /** null when the offer isn't capped by headcount */
+  spotsTotal?: number;
+  spotsLeft?: number;
+  cta: { label: string; href: string };
+};
+
+/**
+ * Live promotions (build.md section 4). Meta ads point at /promos, and the
+ * first entry also drives the countdown bar above the nav. Edit here — nothing
+ * else hard-codes an offer. An entry whose `endsAt` has passed drops out on its
+ * own, so a stale promo can't outlive its deadline on the site.
+ */
+export const promos: Promo[] = [
+  {
+    id: "satin-black-wrap-1999",
+    barText: "SATIN BLACK WRAP SPECIAL · $1,999 · 7 SPOTS LEFT",
+    label: "LIMITED · FIRST 10 CUSTOMERS",
+    headline: "$1,999 satin black wrap special",
+    detail:
+      "A full satin black colour change, booked as one build. Capped at ten cars so every one gets the same bench time.",
+    image: "/VINYL_WRAP.webp",
+    endsAt: "2026-08-14T23:59:59-05:00",
+    spotsTotal: 10,
+    spotsLeft: 7,
+    cta: { label: "Claim this offer", href: "/quote?promo=satin-black-wrap-1999" },
+  },
+  {
+    id: "tesla-tint-ppf",
+    barText: "TESLA TINT + FRONT PPF PACKAGE",
+    label: "LIMITED · THROUGH AUG 31",
+    headline: "Tesla tint + PPF front package",
+    detail:
+      "Ceramic tint all-around plus a full front PPF clip, booked as one build instead of two visits.",
+    image: "/PPF.webp",
+    endsAt: "2026-08-31T23:59:59-05:00",
+    cta: { label: "Claim this offer", href: "/quote?promo=tesla-tint-ppf" },
+  },
+];
+
+/** Promotions that haven't expired yet, soonest deadline first. */
+export const activePromos = (now: Date = new Date()): Promo[] =>
+  promos
+    .filter((p) => new Date(p.endsAt) > now)
+    .sort((a, b) => a.endsAt.localeCompare(b.endsAt));
 
 /**
  * Mobile menu overlay (<1024px only — desktop nav shows every link directly,
@@ -185,8 +247,10 @@ export const menu = {
     {
       label: "Get started",
       items: [
+        { label: "Current Promos", href: "/promos" },
         { label: "Vehicle Passport", href: "/passport" },
         { label: "Financing", href: "/financing" },
+        { label: "My Account", href: "/account" },
       ],
     },
   ],
@@ -202,14 +266,22 @@ export const nav = {
   left: [
     { label: "Services", href: "/services" },
     { label: "Gallery", href: "/gallery" },
+    { label: "Passport", href: "/passport" },
     { label: "About", href: "/about" },
   ],
   right: [
+    { label: "Promos", href: "/promos" },
     { label: "Financing", href: "/financing" },
-    { label: "Passport", href: "/passport" },
     { label: "Contact", href: "/contact" },
   ],
+  /**
+   * Customer account. Rendered as its own icon link rather than another word in
+   * the right cluster — accounts are optional here (everything on the site works
+   * without one), so it shouldn't compete with the page links for attention.
+   */
   cta: { label: "Book Appointment", href: "/quote" },
+  account: { label: "Account", href: "/account" },
+  
 } as const;
 
 /** Service filter facets used by the gallery filter bar. */

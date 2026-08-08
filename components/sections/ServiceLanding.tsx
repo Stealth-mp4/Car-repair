@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import MagneticButton from "@/components/ui/MagneticButton";
 import BuildCard from "@/components/ui/BuildCard";
 import RevealLines from "@/components/ui/RevealLines";
@@ -74,6 +75,55 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
           ) : null}
         </Reveal>
       </section>
+
+      {/* Long-form body — only the pages that carry `body` content render this */}
+      {content.body?.length ? (
+        <section className="py-8 md:py-12" style={{ paddingInline: "var(--gutter)" }}>
+          <div className="mx-auto max-w-3xl">
+            {content.body.map((block, i) => (
+              <div key={block.heading}>
+                <Reveal>
+                  <h2
+                    className={`font-display text-2xl font-semibold text-ink sm:text-3xl ${
+                      i === 0 ? "" : "mt-14"
+                    }`}
+                  >
+                    {block.heading}
+                  </h2>
+                </Reveal>
+                {block.paragraphs.map((p, j) => (
+                  <Reveal key={j}>
+                    <p className="mt-5 text-cream/85">{p}</p>
+                  </Reveal>
+                ))}
+
+                {/* Photos are spaced through the article rather than stacked:
+                    image 0 after block 0, image 1 after block 2, and so on. */}
+                {content.images?.[i / 2] && i % 2 === 0 ? (
+                  <Reveal delay={0.1}>
+                    <figure className="mt-12">
+                      <div className="media-frame relative aspect-4/3 w-full">
+                        <Image
+                          src={content.images[i / 2].src}
+                          alt={content.images[i / 2].alt}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 768px"
+                          className="graded object-cover"
+                        />
+                      </div>
+                      {content.images[i / 2].caption ? (
+                        <figcaption className="mono-label mt-3">
+                          {content.images[i / 2].caption}
+                        </figcaption>
+                      ) : null}
+                    </figure>
+                  </Reveal>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* Process */}
       <section className="pb-16 pt-8 md:pt-16" style={{ paddingInline: "var(--gutter)" }}>
