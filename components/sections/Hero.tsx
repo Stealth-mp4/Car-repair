@@ -55,8 +55,10 @@ export default function Hero() {
           loop
           playsInline
           preload="auto"
-          //poster="/DSC_4438.webp"
+          poster="/videos/hero-poster.webp"
         >
+          {/* webm first — VP9 is smaller where it's supported, mp4 is the fallback */}
+          <source src="/videos/hero-reel.webm" type="video/webm" />
           <source src="/videos/hero-reel.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/50" />

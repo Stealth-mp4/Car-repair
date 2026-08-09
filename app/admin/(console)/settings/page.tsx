@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Panel } from "@/components/admin/Panel";
 import StatusPill from "@/components/admin/StatusPill";
-import { business, hours, social, promo, services } from "@/lib/site";
+import { business, hours, social, activePromos, services } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Settings" };
 
@@ -70,6 +70,7 @@ const integrations = [
 ];
 
 export default function AdminSettings() {
+  const live = activePromos();
   return (
     <div className="space-y-4">
       <header>
@@ -108,13 +109,13 @@ export default function AdminSettings() {
 
         <Panel title="Public site">
           <dl className="px-5">
-            <Field label="Live promo" value={promo.active ? promo.headline : "None"} />
-            <Field label="Promo window" value={promo.label} />
+            <Field label="Live promos" value={live[0]?.headline ?? "None"} />
+            <Field label="Promo window" value={live[0]?.label ?? "-"} />
             <Field label="Service pages" value={`${services.length} published`} />
             <Field label="Instagram" value={social.instagramHandle} />
             <Field label="TikTok" value={social.tiktokHandle} />
           </dl>
-          <Source>Edited in lib/site.ts → `promo`, `services`, `social`</Source>
+          <Source>Edited in lib/site.ts → `promos`, `services`, `social`</Source>
         </Panel>
 
         <Panel title="Support" className="scroll-mt-24" >

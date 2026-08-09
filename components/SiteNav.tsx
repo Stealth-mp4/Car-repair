@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import MagneticButton from "@/components/ui/MagneticButton";
+import PromoBar from "@/components/ui/PromoBar";
+import { UserIcon } from "@/components/ui/icons";
 import { brand, business, menu, nav, social } from "@/lib/site";
 
 /**
@@ -47,8 +49,9 @@ export default function SiteNav() {
           solid || open ? "border-b border-line bg-black/95" : "bg-transparent"
         }`}
       >
+        <PromoBar />
         <nav
-          className="grid grid-cols-2 items-center py-4 lg:grid-cols-3"
+          className="grid grid-cols-3 items-center py-4"
           style={{ paddingInline: "var(--gutter)" }}
         >
           {/* Left cluster — menu button (mobile/tablet only) + primary links (desktop) */}
@@ -79,13 +82,12 @@ export default function SiteNav() {
             </div>
           </div>
 
-          {/* Logo mark. Centred on desktop (Mansory reference); on mobile it
-              takes the right-hand slot the "Book Appointment" CTA used to
-              occupy — the CTA is redundant there, it already sits as a
-              full-width button at the bottom of the slide-out menu. */}
+          {/* Logo mark — centred at every width (client note). The grid stays
+              three columns on mobile so the empty right cell balances the menu
+              button and the mark lands on the true centre line. */}
           <Link
             href="/"
-            className="relative h-9 w-24 justify-self-end sm:h-10 sm:w-28 lg:justify-self-center"
+            className="relative h-9 w-24 justify-self-center sm:h-10 sm:w-28"
           >
             <Image
               src={brand.markTight}
@@ -111,8 +113,21 @@ export default function SiteNav() {
                 </Link>
               ))}
             </div>
-            <Link href={nav.cta.href} className="link-underline mono-label text-ink">
+            {/* nowrap: the account icon after it leaves just enough room at
+                1280-1366 for "Book Appointment" to break onto two lines. */}
+            <Link
+              href={nav.cta.href}
+              className="link-underline mono-label whitespace-nowrap text-ink"
+            >
               {nav.cta.label}
+            </Link>
+            <Link
+              href={nav.account.href}
+              aria-label={nav.account.label}
+              title={nav.account.label}
+              className="flex items-center justify-center text-ink transition-colors hover:text-red"
+            >
+              <UserIcon className="h-[18px] w-[18px]" />
             </Link>
           </div>
         </nav>

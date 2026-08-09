@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/financing",
     "/quote",
     "/services",
+    "/promos",
   ].map((path) => ({ url: `${base}${path}`, changeFrequency: "monthly" as const, priority: 0.7 }));
 
   const serviceRoutes = services.map((s) => ({

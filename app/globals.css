@@ -106,6 +106,19 @@
     color: var(--color-muted);
   }
 
+  /*
+   * Money accent — a deliberate, client-mandated exception to the black /
+   * burgundy / red palette. Reserved for the numeral in a price line ("Starts
+   * at $2799+"), never for body copy, borders, or a surface. If it starts
+   * showing up anywhere else, it's being misused.
+   */
+  .money {
+    color: #35e06f;
+    text-shadow:
+      0 0 10px rgba(53, 224, 111, 0.55),
+      0 0 26px rgba(53, 224, 111, 0.22);
+  }
+
   /* ---- Imagery grade — every build photo shares ONE grade ---- */
   /* Retuned for the near-black background: slightly higher contrast, cooler warmth. */
   .graded {

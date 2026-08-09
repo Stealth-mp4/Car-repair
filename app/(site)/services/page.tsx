@@ -15,7 +15,9 @@ import {
   CalendarIcon,
   StarIcon,
 } from "@/components/ui/icons";
-import { services, business } from "@/lib/site";
+import AdditionalServices from "@/components/sections/AdditionalServices";
+import TireQuoteForm from "@/components/ui/TireQuoteForm";
+import { services } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -38,24 +40,81 @@ const WHY = [
   { icon: <StarIcon />, title: "Satisfaction guaranteed", body: "We're not done until you are." },
 ];
 
+/**
+ * Every card carries a starting price instead of a description (client note) —
+ * the numeral gets the `.money` accent. `null` means the price genuinely varies
+ * and gets the "Price varies" treatment instead of a figure.
+ */
+const PRICE: Record<string, string | null> = {
+  "vehicle-wraps": "$2799",
+  "paint-protection-film": "$3499",
+  "ceramic-tint": "$349",
+  "starlight-headliners": null,
+};
+
+/**
+ * Card order and titles for this index. Wheels & Tires drops off the grid
+ * (client note) — the route stays live and is reached from the Additional
+ * Services block below. Accessories sits last.
+ */
+const ORDER = [
+  "paint-protection-film",
+  "ceramic-tint",
+  "starlight-headliners",
+];
+
+const TITLE_OVERRIDE: Record<string, string> = {
+  "starlight-headliners": "Accessories",
+};
+
+function priceCaption(slug: string) {
+  const price = PRICE[slug];
+  if (price === null) {
+    return (
+      <>
+        Price <span className="money">varies</span>
+      </>
+    );
+  }
+  if (!price) return undefined;
+  return (
+    <>
+      Starts at <span className="money">{price}</span>+
+    </>
+  );
+}
+
 export default function ServicesIndexPage() {
+  const bySlug = new Map(services.map((s) => [s.slug, s]));
+
   const items: ShowcaseItem[] = [
     {
-      href: "/tesla",
-      title: "Tesla Hub",
-      image: "/DSC_4434.webp",
-      alt: "Tesla Cybertruck in satin black wrap",
-      eyebrow: "Model 3 / Y / S / X · Cybertruck",
-      caption: "Wraps, tint, and PPF dialed specifically for Tesla.",
+      href: "/services/vehicle-wraps",
+      title: "Vehicle Wraps",
+      image: "/client/services-card.webp",
+      alt: "Cadillac Escalade wrapped in satin black outside the Houston shop",
+      caption: (
+        <>
+          Starts at <span className="money">$2799</span>+
+        </>
+      ),
     },
-    ...services.map((s) => ({
-      href: s.href,
-      title: s.title,
-      image: s.image,
-      alt: s.title,
-      eyebrow: s.filmBrand ? `${s.filmBrand} certified install` : business.wordmark,
-      caption: s.short,
-    })),
+    ...ORDER.flatMap((slug) => {
+      const s = bySlug.get(slug);
+      if (!s) return [];
+      return [
+        {
+          href: s.href,
+          title: TITLE_OVERRIDE[slug] ?? s.title,
+          image: s.image,
+          alt: s.title,
+          caption: priceCaption(slug),
+          // Accessories closes the grid (client note) — spanning both columns
+          // is what actually puts it last, since the masonry balances by height.
+          span: slug === ORDER[ORDER.length - 1],
+        },
+      ];
+    }),
   ];
 
   return (
@@ -126,6 +185,9 @@ export default function ServicesIndexPage() {
         </div>
       </section>
 
+      {/* Everything else the shop handles */}
+      <AdditionalServices />
+
       {/* Why choose Iqballaz */}
       <section className="border-y border-line bg-black-raised py-20 md:py-28" style={{ paddingInline: "var(--gutter)" }}>
         <Reveal>
@@ -146,6 +208,9 @@ export default function ServicesIndexPage() {
 
       {/* Process */}
       <Process />
+
+      {/* Tire recommendation capture */}
+      <TireQuoteForm />
 
       {/* Closing CTA */}
       <section className="bg-burgundy py-24 md:py-32" style={{ paddingInline: "var(--gutter)" }}>

@@ -8,6 +8,9 @@ import { services as siteServices } from "@/lib/site";
 
 export type ServiceFaq = { q: string; a: string };
 export type ServiceStep = { title: string; body: string };
+/** A heading plus its paragraphs in the long-form body of a service page. */
+export type ServiceSection = { heading: string; paragraphs: string[] };
+export type ServiceImage = { src: string; alt: string; caption?: string };
 
 export type ServicePageContent = {
   slug: string;
@@ -21,6 +24,18 @@ export type ServicePageContent = {
   priceNote?: string;
   process: ServiceStep[];
   faqs: ServiceFaq[];
+  /**
+   * Optional long-form body, for the pages the client wants reading like a real
+   * article rather than a spec card. Rendered between the hero and the process
+   * strip; pages without it are unchanged.
+   */
+  body?: ServiceSection[];
+  /** Photos interleaved through `body` — kept few on purpose (client note). */
+  images?: ServiceImage[];
+  /** Full-bleed cover image; when set the hero renders as an image hero. */
+  heroImage?: ServiceImage;
+  /** Label above the long-form body, e.g. "The full picture". */
+  bodyEyebrow?: string;
 };
 
 /** Film/product brand carried for this service, read from lib/site (single source). */
@@ -31,14 +46,81 @@ export const servicePages: Record<string, ServicePageContent> = {
   "vehicle-wraps": {
     slug: "vehicle-wraps",
     facet: "Wraps",
-    metaTitle: "Vehicle Wraps Houston",
+    metaTitle: "Vehicle Wraps Houston | Colour Change, Satin, Gloss & Specialty Film",
     metaDescription:
-      "Full colour-change vinyl wraps in Houston: satin, gloss, and specialty finishes installed with wrapped edges and no lifting. Iqballaz Customs.",
-    eyebrow: "Service · Wraps",
+      "Full colour-change vinyl wraps in Houston: satin, gloss, matte, and specialty finishes installed with wrapped edges and no lifting. Iqballaz Customs.",
+    eyebrow: "Wraps · Houston",
     h1: "Vehicle Wraps Houston.",
     intro:
       "A full wrap changes the colour of your car in cast vinyl. Reversible, paint-protecting, and, done right, indistinguishable from a respray. We wrap edges rather than tuck them, so panels read as painted, not covered.",
-    priceNote: "Full wraps from around $2,800, depending on vehicle size and film.",
+    priceNote: "Full wraps start at $2,799+, depending on vehicle size and film.",
+    heroImage: {
+      src: "/client/tesla-wrap-cover.webp",
+      alt: "Wrapped vehicles under studio lighting in the Iqballaz Customs Houston shop",
+    },
+    bodyEyebrow: "The full picture",
+    body: [
+      {
+        heading: "Why a wrap, and why not a respray",
+        paragraphs: [
+          "Factory colour palettes are short. A Houston parking lot is white, black, grey, and silver, and half of what's there is the same white as the car parked next to it. A vinyl wrap is the fastest and most reversible way out of that, which is why colour change is the single most requested job in the shop.",
+          "There's a second reason, and it matters more than most owners expect. Modern factory paint is thin. It marks easily, shows swirl under direct sun, and chips on the low nose and the leading edge of the hood faster than owners think it should. A wrap puts a layer of cast vinyl between that paint and the road, so the surface underneath stays exactly as it left the factory. When you sell or trade in three years, the film comes off and the paint is still original.",
+          "Reversibility is the part people underrate. A respray is permanent, it shows up on a vehicle history report, and it costs you at resale. A wrap is a decision you can undo in an afternoon.",
+        ],
+      },
+      {
+        heading: "Colour change: what actually gets installed on your car",
+        paragraphs: [
+          "We install cast vinyl, not calendared film. The difference isn't marketing — cast film is manufactured in a way that leaves it dimensionally stable, so it conforms to compound curves on a hatch or a rear quarter without fighting back and without shrinking off the edges six months later. Calendared film is cheaper, and it's why a lot of budget wraps start lifting at the corners within a season.",
+          "Panels come apart before film goes on. Badges, door handles, mirror caps, light trim, and where necessary the bumpers come off the car, so film wraps behind edges rather than stopping at them. A tucked edge collects dirt and gives water somewhere to start. A wrapped edge reads as paint from two feet away, which is the whole point.",
+          "Finish is the fun part and the part worth seeing in person. Satin is the most popular choice and for good reason: it hides road film and light texture better than gloss and it photographs beautifully. Gloss reads closest to factory paint and is the easiest to keep clean. Matte is the boldest and the most demanding to live with. Colour-shift, chrome, and specialty films land somewhere else entirely. Bring the car by and we'll lay swatches on your own panels under our lights and in daylight — screens lie about finishes.",
+        ],
+      },
+      {
+        heading: "Partial wraps, chrome delete, and accents",
+        paragraphs: [
+          "Not every job is a full colour change. A roof wrapped in gloss black, a chrome delete across the window trim and badges, a carbon-fibre hood or mirror caps — these are small jobs that change how a car reads far more than the price suggests, and they're a low-risk way to see how you like living with film.",
+          "Partial work is held to the same install standard as a full wrap. The trim still comes off, the edges are still wrapped, and the film is still cast. The only thing smaller is the area, never the prep.",
+          "Roof wraps in particular take the most sun of any panel on the car, so we specify film accordingly rather than using whatever is left on the roll.",
+        ],
+      },
+      {
+        heading: "Stainless, exotics, and the jobs most shops decline",
+        paragraphs: [
+          "A Cybertruck is not a normal wrap job, and shops that treat it like one produce visibly bad work. The panels are flat, unforgiving, and enormous, which means every squeegee mark and every speck of trapped dust has nowhere to hide. The edges are sharp enough to cut film during install, and bare stainless shows adhesive residue instantly. We wrap them regularly, and we wrap the edges rather than trimming to them, so there's no exposed steel line running down the vehicle.",
+          "Exotics bring the opposite problem: deep curves, aggressive aero, active spoilers, and carbon panels that have to be treated as finished surfaces rather than substrates. Those cars get relief cuts planned before a single piece of film is laid, and they get post-heated properly so nothing pulls back off a curve a week later.",
+          "The install standard doesn't move with the badge. A daily-driven sedan gets the same teardown, the same cast film, and the same edge work as the car in the gallery you recognised.",
+        ],
+      },
+      {
+        heading: "Wraps and paint protection film together",
+        paragraphs: [
+          "A wrap and PPF are not an either/or. Vinyl changes colour and shields paint from sun and light abrasion, but it isn't armour against rock chips at highway speed. Urethane PPF is — it's thicker, self-healing, and built to take impact.",
+          "The common combinations: satin PPF over factory gloss gives you the satin look with real impact protection and no colour change at all. Clear PPF over the high-wear areas of a colour-change wrap — bumper, hood edge, rockers — protects the vinyl itself so the wrap ages evenly. Plenty of the cars in our gallery are running both.",
+          "If you're deciding between them, tell us how the car is used. A garage-kept weekend car and a car that commutes I-10 daily deserve different specifications, and we'd rather say so up front than sell you coverage you don't need.",
+        ],
+      },
+      {
+        heading: "How a build actually runs, start to finish",
+        paragraphs: [
+          "It starts with a conversation, not a checkout page. Tell us the vehicle, what you're after, and how it gets used. We'll give you a real number rather than a range that doubles when you arrive.",
+          "The car comes in by appointment. It gets washed and decontaminated, because film bonds to a clean surface and nothing else. Panels come apart. Film goes on panel by panel, relief-cut and post-heated so it stays where it's put. Then every edge gets checked under light before the car goes back together. A full wrap is typically three to five days.",
+          "We work by appointment for a reason: one build at a time gets the bay, so nobody's car is sitting half-wrapped while we squeeze in a walk-in. When it's done you get care instructions that actually matter — the first week of cure, what soap to use, and what to keep away from the edges. Hand wash with a pH-neutral soap and two buckets, skip automatic brushes, and keep pressure washers off the seams. Treated that way, quality cast vinyl holds up for five to seven years.",
+        ],
+      },
+    ],
+    images: [
+      {
+        src: "/client/tesla-wrap-x5m.webp",
+        alt: "BMW X5 M finished in satin black inside the Houston shop",
+        caption: "Satin black, edges wrapped rather than tucked.",
+      },
+      {
+        src: "/client/tesla-wrap-huracan.webp",
+        alt: "Lamborghini Huracán in red with a carbon fibre hood, in the shop",
+        caption: "Colour change over carbon — the same install standard, whatever the badge.",
+      },
+    ],
     process: [
       { title: "Colour & film", body: "Pick a finish in person against your paint: satin, gloss, matte, colour-shift, or a chrome delete." },
       { title: "Prep & teardown", body: "Wash, decontaminate, and remove badges, handles, and trim so film wraps behind edges." },
@@ -64,7 +146,54 @@ export const servicePages: Record<string, ServicePageContent> = {
     h1: "Ceramic Tint Houston.",
     intro:
       "Ceramic film blocks infrared heat and UV without the signal interference of metallic tint or the purple fade of cheap dyed film. In a Houston summer that's a measurably cooler cabin and an interior that doesn't bake.",
-    priceNote: "Tint from around $200, depending on coverage and film.",
+    priceNote: "Ceramic tint starts at $349+, depending on coverage and film.",
+    body: [
+      {
+        heading: "Why window tint is not optional in Houston",
+        paragraphs: [
+          "Houston sits at roughly 29 degrees north with humidity that turns a 95-degree afternoon into something closer to 105. A car parked outside for an hour reaches interior temperatures well past what's comfortable and well past what's good for the materials inside it. Tint is the cheapest intervention that actually changes that number.",
+          "The effect compounds over years. Ultraviolet light is what cracks a dashboard, fades a leather seat from black to grey, and yellows the plastic on your interior trim. Quality film blocks essentially all of it. The car you sell in five years looks like a car that lived in a garage, because as far as its interior is concerned, it did.",
+          "Then there's the part you notice on day one: the air conditioning stops fighting a losing battle. Less solar load through the glass means the cabin cools faster and holds temperature, which on an electric vehicle shows up directly as range you didn't spend on climate control.",
+        ],
+      },
+      {
+        heading: "Ceramic, dyed, and metallic — the difference that matters",
+        paragraphs: [
+          "Dyed film is the cheap option and it works by being dark. It blocks visible light, does very little about infrared heat, and it fades. The purple-tinted windows you see on older cars are dyed film at the end of its life. If the goal is privacy on a budget it does the job; if the goal is a cooler car, it mostly does not.",
+          "Metallic film rejects heat properly by reflecting it, but it does so with a layer of metal particles in the film. On a modern car that runs cellular, GPS, satellite radio, tire-pressure sensors, and in many cases a key card or phone-as-key through the glass, a conductive layer across every window is a real and recurring problem.",
+          "Ceramic film uses non-conductive ceramic particles instead. It rejects a large share of infrared heat without darkening the glass more than you want, without interfering with a single antenna, and without fading. It costs more than dyed film. It is the only one of the three we recommend, which is why it's the only one we install.",
+        ],
+      },
+      {
+        heading: "What's legal in Texas",
+        paragraphs: [
+          "Texas allows 25% VLT or lighter on the front side windows, meaning at least a quarter of visible light has to get through. Rear side windows and the back glass can go as dark as you like on most vehicles. The windshield can take film below the AS-1 line — the small marking near the top of the glass — or the top five inches if there's no AS-1 marking.",
+          "A clear or very light ceramic film across the full windshield is legal in many configurations and is the single biggest heat improvement available on a car, because the windshield is the largest piece of glass pointed at the sun. We'll walk you through exactly what applies to your vehicle rather than talking you into a shade that gets you a ticket.",
+          "Medical exemptions exist for drivers with documented photosensitivity. If that applies to you, bring the paperwork and we'll work to it.",
+        ],
+      },
+      {
+        heading: "How we install it",
+        paragraphs: [
+          "Film is computer-cut from a pattern for your exact year, make, and model. Nothing is cut on the car, which means no blade ever goes near your glass, your rubber seals, or the defroster lines printed on your rear window — the most common and most expensive damage a careless tint job causes.",
+          "Glass is cleaned and scraped down to a genuinely clean surface first, because every speck of dust left behind becomes a permanent bump under the film. Installation happens in a controlled bay rather than an open lot, so airborne fibres aren't landing on wet adhesive.",
+          "Old film gets removed properly when there is any — steamed off and the adhesive fully cleaned rather than scraped and covered over. Most tint jobs are a same-day service; a full car with a windshield takes longer.",
+          "Afterwards the film needs three to five days to cure. Leave the windows up during that window. A little haze or a few small water pockets in the first days are normal and clear on their own as the moisture evaporates.",
+        ],
+      },
+    ],
+    images: [
+      {
+        src: "/client/ceramic-tint-card.webp",
+        alt: "Range Rover with fresh ceramic tint in the Iqballaz Customs bay",
+        caption: "Computer-cut patterns, installed in a controlled bay.",
+      },
+      {
+        src: "/WINDOW_TINT.webp",
+        alt: "Ceramic window tint film applied to vehicle glass",
+        caption: "Ceramic rejects infrared without touching signal.",
+      },
+    ],
     process: [
       { title: "Shade & VLT", body: "Choose a legal shade and heat-rejection level for each set of glass." },
       { title: "Computer-cut", body: "Patterns plotted to your exact vehicle so there's no blade near your glass." },
@@ -90,7 +219,7 @@ export const servicePages: Record<string, ServicePageContent> = {
     h1: "PPF Houston.",
     intro:
       "Paint protection film is a clear urethane layer that takes the rock chips, sand, and swirl your paint otherwise would. It self-heals light marks with heat and comes in clear gloss or a satin 'stealth' finish that turns gloss paint matte.",
-    priceNote: "Front packages and full-body coverage priced per vehicle.",
+    priceNote: "PPF starts at $3,499+, by coverage and vehicle.",
     process: [
       { title: "Decon & prep", body: "Paint washed, clayed, and prepped so film bonds to a clean surface." },
       { title: "Pattern or bulk", body: "Computer-cut patterns for most panels, hand-cut on the car where coverage needs to be seamless." },

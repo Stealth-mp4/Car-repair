@@ -165,6 +165,11 @@ export default function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/account" className="link-underline text-ink">
+                My Account
+              </Link>
+            </li>
+            <li>
               <Link href="/quote" className="link-underline text-red">
                 Book Appointment
               </Link>
