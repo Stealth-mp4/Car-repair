@@ -58,7 +58,6 @@ const PRICE: Record<string, string | null> = {
  * Services block below. Accessories sits last.
  */
 const ORDER = [
-  "vehicle-wraps",
   "paint-protection-film",
   "ceramic-tint",
   "starlight-headliners",
@@ -90,8 +89,8 @@ export default function ServicesIndexPage() {
 
   const items: ShowcaseItem[] = [
     {
-      href: "/tesla",
-      title: "Services",
+      href: "/services/vehicle-wraps",
+      title: "Vehicle Wraps",
       image: "/client/services-card.webp",
       alt: "Cadillac Escalade wrapped in satin black outside the Houston shop",
       caption: (

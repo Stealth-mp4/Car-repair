@@ -49,7 +49,49 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
 
   return (
     <article>
-      {/* Hero */}
+      {/* Hero — full-bleed cover variant when the page carries a heroImage */}
+      {content.heroImage ? (
+        <section className="relative flex min-h-[80svh] flex-col justify-end overflow-hidden">
+          <div className="absolute inset-0">
+            <Image
+              src={content.heroImage.src}
+              alt={content.heroImage.alt}
+              fill
+              priority
+              quality={90}
+              sizes="100vw"
+              className="graded object-cover"
+            />
+            <div className="absolute inset-0 bg-black/55" />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black to-transparent" />
+          </div>
+          <div className="relative z-10 pt-32 pb-16" style={{ paddingInline: "var(--gutter)" }}>
+            <p className="mono-label text-red">{content.eyebrow}</p>
+            <RevealLines
+              as="h1"
+              trigger="load"
+              className="display mt-4 max-w-4xl text-ink"
+              lines={[content.h1]}
+            />
+            <Reveal delay={0.15}>
+              <p className="mt-6 max-w-xl text-cream">{content.intro}</p>
+            </Reveal>
+            <Reveal delay={0.25} className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <MagneticButton href={quoteHref} variant="primary">
+                Book Appointment
+              </MagneticButton>
+              <Link href={`/gallery?service=${content.facet.toLowerCase()}`} className="link-underline text-ink">
+                See {content.facet.toLowerCase()} builds
+              </Link>
+            </Reveal>
+            {content.priceNote ? (
+              <Reveal delay={0.3}>
+                <p className="mono-label mt-6">{content.priceNote}</p>
+              </Reveal>
+            ) : null}
+          </div>
+        </section>
+      ) : (
       <section className="pb-16 pt-36" style={{ paddingInline: "var(--gutter)" }}>
         <p className="mono-label text-red">{content.eyebrow}</p>
         <RevealLines
@@ -75,11 +117,17 @@ export default function ServiceLanding({ content }: { content: ServicePageConten
           ) : null}
         </Reveal>
       </section>
+      )}
 
       {/* Long-form body — only the pages that carry `body` content render this */}
       {content.body?.length ? (
         <section className="py-8 md:py-12" style={{ paddingInline: "var(--gutter)" }}>
           <div className="mx-auto max-w-3xl">
+            {content.bodyEyebrow ? (
+              <Reveal>
+                <p className="mono-label mb-6 text-red">{content.bodyEyebrow}</p>
+              </Reveal>
+            ) : null}
             {content.body.map((block, i) => (
               <div key={block.heading}>
                 <Reveal>
