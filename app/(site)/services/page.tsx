@@ -55,7 +55,7 @@ const PRICE: Record<string, string | null> = {
 /**
  * Card order and titles for this index. Wheels & Tires drops off the grid
  * (client note) — the route stays live and is reached from the Additional
- * Services block below. Accessories sits last.
+ * Services block below.
  */
 const ORDER = [
   "paint-protection-film",
@@ -109,9 +109,6 @@ export default function ServicesIndexPage() {
           image: s.image,
           alt: s.title,
           caption: priceCaption(slug),
-          // Accessories closes the grid (client note) — spanning both columns
-          // is what actually puts it last, since the masonry balances by height.
-          span: slug === ORDER[ORDER.length - 1],
         },
       ];
     }),
