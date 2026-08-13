@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAccount, currentUser } from "@/lib/account/store";
-import { business, hours, services as serviceList } from "@/lib/site";
+import { services as serviceList } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 import {
   Panel,
   Row,
@@ -36,6 +37,7 @@ const today = () => new Date().toISOString().slice(0, 10);
  * and records the request on the member instead of posting a cold lead.
  */
 export default function AccountBookPage() {
+  const shop = useShop();
   const user = useAccount(currentUser);
   const requestAppointment = useAccount((s) => s.requestAppointment);
 
@@ -84,8 +86,8 @@ export default function AccountBookPage() {
           {date ? ` ${formatDate(date)}` : ""}
           {time ? ` at ${time}` : ""}. It&apos;s on your overview now. For anything urgent,
           call{" "}
-          <a href={business.phoneHref} className="link-underline text-ink">
-            {business.phone}
+          <a href={shop.business.phoneHref} className="link-underline text-ink">
+            {shop.business.phone}
           </a>
           .
         </p>
@@ -229,11 +231,11 @@ export default function AccountBookPage() {
         <div className="rounded-media border border-maroon/60 bg-burgundy p-6">
           <h2 className="font-display text-lg text-ink">Visit us</h2>
           <address className="mt-3 not-italic text-sm text-cream/85">
-            {business.address.street}, {business.address.locality},{" "}
-            {business.address.region} {business.address.postalCode}
+            {shop.business.address.street}, {shop.business.address.locality},{" "}
+            {shop.business.address.region} {shop.business.address.postalCode}
           </address>
           <ul className="mt-5 space-y-1 border-t border-maroon/50 pt-4 text-sm">
-            {hours.map((h) => (
+            {shop.hours.map((h) => (
               <li key={h.day} className="flex justify-between gap-6">
                 <span className="text-cream/80">{h.day}</span>
                 <span className={h.value === "Closed" ? "text-red" : "text-ink"}>
@@ -243,11 +245,11 @@ export default function AccountBookPage() {
             ))}
           </ul>
           <a
-            href={business.phoneHref}
+            href={shop.business.phoneHref}
             className="mono-label mt-5 inline-flex items-center gap-2 rounded-full border border-maroon/70 px-4 py-2.5 text-ink transition-colors hover:border-red"
           >
             <PhoneIcon className="h-3.5 w-3.5" />
-            {business.phone}
+            {shop.business.phone}
           </a>
         </div>
 

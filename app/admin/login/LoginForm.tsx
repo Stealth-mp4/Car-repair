@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { signIn, type LoginState } from "./actions";
 
 const field =
@@ -23,6 +24,17 @@ function Submit() {
   );
 }
 
+/** Hidden while a new attempt is in flight — the previous failure is stale. */
+function Error({ message }: { message?: string }) {
+  const { pending } = useFormStatus();
+  if (!message || pending) return null;
+  return (
+    <p role="alert" className="mono-label text-red">
+      {message}
+    </p>
+  );
+}
+
 export default function LoginForm({ next }: { next?: string }) {
   const [state, action] = useActionState<LoginState, FormData>(signIn, {});
 
@@ -31,16 +43,22 @@ export default function LoginForm({ next }: { next?: string }) {
       <input type="hidden" name="next" value={next ?? ""} />
 
       <div>
-        <label htmlFor="user" className="mono-label mb-1.5 block">
-          Username
+        <label htmlFor="email" className="mono-label mb-1.5 block">
+          Email
         </label>
         <input
-          id="user"
-          name="user"
-          type="text"
+          id="email"
+          name="email"
+          type="email"
           autoComplete="username"
           autoFocus
           required
+          // key: the action's return value is the only thing that changes
+          // between attempts, and React keeps an uncontrolled input's DOM value
+          // unless the element is replaced. Without this the field stays blank
+          // after a failed attempt, which is where it was left.
+          key={state.email ?? ""}
+          defaultValue={state.email ?? ""}
           className={field}
         />
       </div>
@@ -49,21 +67,16 @@ export default function LoginForm({ next }: { next?: string }) {
         <label htmlFor="password" className="mono-label mb-1.5 block">
           Password
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           className={field}
         />
       </div>
 
-      {state.error && (
-        <p role="alert" className="mono-label text-red">
-          {state.error}
-        </p>
-      )}
+      <Error message={state.error} />
 
       <Submit />
     </form>

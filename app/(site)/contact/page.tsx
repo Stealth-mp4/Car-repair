@@ -11,22 +11,25 @@ import {
   MailIcon,
   ClockIcon,
 } from "@/components/ui/icons";
-import { business, hours, social } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: `Contact Iqballaz Customs at ${business.address.street}, ${business.address.locality}, ${business.address.region}. ${business.phone}. By appointment.`,
-};
+// generateMetadata, not a static export: the description quotes the address,
+// which is now a database value.
+export async function generateMetadata(): Promise<Metadata> {
+  const { business } = await getShop();
+  return {
+    title: "Contact",
+    description: `Contact Iqballaz Customs at ${business.address.street}, ${business.address.locality}, ${business.address.region}. ${business.phone}. By appointment.`,
+  };
+}
 
-const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-  `${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}`
-)}`;
+export default async function ContactPage() {
+  const { business, hours, social } = await getShop();
 
-const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
-  `${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}`
-)}&output=embed`;
+  const addr = `${business.address.street}, ${business.address.locality}, ${business.address.region} ${business.address.postalCode}`;
+  const directions = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
+  const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed`;
 
-export default function ContactPage() {
   return (
     <>
       {/* Hero */}

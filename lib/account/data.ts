@@ -40,6 +40,25 @@ export type AppointmentRequest = {
 
 export type NotificationKey = "billing" | "service" | "promos";
 
+/**
+ * An offer this member has claimed. Written when they click through to the
+ * promo's checkout, which is the only moment the site sees.
+ *
+ * `headline` is copied rather than looked up by id: an offer expires and drops
+ * out of `activePromos()`, but the customer's record of claiming it shouldn't
+ * turn into a blank row six weeks later.
+ *
+ * There is deliberately no "paid" state. Payment happens on Square/Stripe's
+ * hosted page and nothing tells this site the outcome — inventing a status here
+ * would be a lie the dashboard can't back up. A real webhook is what upgrades
+ * this to a payment record.
+ */
+export type ClaimedPromo = {
+  promoId: string;
+  headline: string;
+  claimedAt: string;
+};
+
 export type AccountUser = {
   id: string;
   firstName: string;
@@ -59,6 +78,7 @@ export type AccountUser = {
   joined: string;
   appointments: AppointmentRequest[];
   activity: ActivityEntry[];
+  claims: ClaimedPromo[];
   notifications: Record<NotificationKey, boolean>;
 };
 
@@ -90,7 +110,23 @@ export const seedUser: AccountUser = {
   vehicle: { makeModel: "2023 Tesla Model 3", plate: "MD 7719" },
   joined: "2025-01-18",
   appointments: [],
+  // One claimed offer so the Promos tab opens with something in it. The id
+  // matches a live promo in lib/site.ts.
+  claims: [
+    {
+      promoId: "satin-black-wrap-1999",
+      headline: "$1,999 satin black wrap special",
+      claimedAt: "2026-08-02",
+    },
+  ],
   activity: [
+    {
+      id: "ac-003",
+      kind: "account",
+      label: "Promo claimed",
+      detail: "$1,999 satin black wrap special",
+      date: "2026-08-02",
+    },
     {
       id: "ac-002",
       kind: "service",

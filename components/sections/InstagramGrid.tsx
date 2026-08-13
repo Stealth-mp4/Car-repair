@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { social } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 import Reveal from "@/components/ui/Reveal";
 
 export type SocialPost = {
@@ -53,8 +53,9 @@ const PLATFORM_BADGE: Record<SocialPost["platform"], { icon: React.ReactNode; cl
  * repeating handle ticker runs underneath, matching the reference site's
  * mobile marquee motion.
  */
-export default function InstagramGrid({ posts }: { posts: SocialPost[] }) {
-  const ticker = Array(8).fill(social.instagramHandle);
+export default async function InstagramGrid({ posts }: { posts: SocialPost[] }) {
+  const shop = await getShop();
+  const ticker = Array(8).fill(shop.social.instagramHandle);
 
   return (
     <div className="mt-10">

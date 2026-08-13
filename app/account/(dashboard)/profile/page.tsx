@@ -12,6 +12,7 @@ import {
   GhostButton,
   formatDate,
 } from "@/components/account/ui";
+import PasswordInput from "@/components/ui/PasswordInput";
 import {
   UserIcon,
   MailIcon,
@@ -166,8 +167,7 @@ export default function AccountProfilePage() {
       <Panel title="Security">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="New password" icon={LockIcon}>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Leave blank to keep current"
@@ -176,8 +176,7 @@ export default function AccountProfilePage() {
             />
           </Field>
           <Field label="Confirm password" icon={LockIcon}>
-            <input
-              type="password"
+            <PasswordInput
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               placeholder="Repeat it"

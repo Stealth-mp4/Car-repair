@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next";
-import { business, services } from "@/lib/site";
+import { services } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 import { builds } from "@/lib/builds";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { business } = await getShop();
   const base = business.url;
 
   const staticRoutes = [

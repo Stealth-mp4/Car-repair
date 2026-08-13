@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthCard from "@/components/account/AuthCard";
 import { Field, fieldClass, PrimaryButton } from "@/components/account/ui";
 import { MailIcon, LockIcon, PhoneIcon, UserIcon, CarIcon } from "@/components/account/icons";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { useAccount } from "@/lib/account/store";
+import { safeNext } from "@/lib/account/redirect";
 
 /** Mirrors validateContact in lib/lead.ts — same rules the booking form uses. */
 function validate(f: {
@@ -29,6 +31,8 @@ function validate(f: {
 export default function SignUpForm() {
   const signUp = useAccount((s) => s.signUp);
   const router = useRouter();
+  // ?next= — set by the promos page, so a claim lands back on the offer.
+  const next = useSearchParams().get("next");
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -64,7 +68,7 @@ export default function SignUpForm() {
 
     // signUp signs the new member straight in.
     setStatus("done");
-    router.push("/account");
+    router.push(safeNext(next));
   };
 
   return (
@@ -76,7 +80,7 @@ export default function SignUpForm() {
       footer={
         <p className="mono-label">
           Already a member?{" "}
-          <Link href="/account/login" className="link-underline text-red">
+          <Link href={`/account/login${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="link-underline text-red">
             Sign in
           </Link>
         </p>
@@ -131,8 +135,7 @@ export default function SignUpForm() {
             />
           </Field>
           <Field label="Password" icon={LockIcon}>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
@@ -141,8 +144,7 @@ export default function SignUpForm() {
             />
           </Field>
           <Field label="Confirm password" icon={LockIcon}>
-            <input
-              type="password"
+            <PasswordInput
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               placeholder="Repeat it"

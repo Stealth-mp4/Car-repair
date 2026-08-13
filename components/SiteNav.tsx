@@ -7,7 +7,8 @@ import Image from "next/image";
 import MagneticButton from "@/components/ui/MagneticButton";
 import PromoBar from "@/components/ui/PromoBar";
 import { UserIcon } from "@/components/ui/icons";
-import { brand, business, menu, nav, social } from "@/lib/site";
+import { brand, menu, nav, type Promo } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 
 /**
  * SiteNav (V5 — Mansory reference) — thin transparent bar over the hero,
@@ -16,7 +17,8 @@ import { brand, business, menu, nav, social } from "@/lib/site";
  * hover dropdown of every service page. Below 1024px a menu button opens a
  * dark, full-height slide-out panel carrying the full link set.
  */
-export default function SiteNav() {
+export default function SiteNav({ promo }: { promo: Promo | null }) {
+  const shop = useShop();
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -49,7 +51,7 @@ export default function SiteNav() {
           solid || open ? "border-b border-line bg-black/95" : "bg-transparent"
         }`}
       >
-        <PromoBar />
+        <PromoBar promo={promo} />
         <nav
           className="grid grid-cols-3 items-center py-4"
           style={{ paddingInline: "var(--gutter)" }}
@@ -91,7 +93,7 @@ export default function SiteNav() {
           >
             <Image
               src={brand.markTight}
-              alt={`${business.name} home`}
+              alt={`${shop.business.name} home`}
               fill
               sizes="120px"
               priority
@@ -167,7 +169,7 @@ export default function SiteNav() {
               >
                 <Image
                   src={brand.markTight}
-                  alt={business.name}
+                  alt={shop.business.name}
                   fill
                   sizes="40px"
                   className="object-contain p-1.5"
@@ -233,13 +235,13 @@ export default function SiteNav() {
                 {nav.cta.label}
               </MagneticButton>
               <div className="flex items-center justify-between border-t border-line pt-5">
-                <a href={social.instagram} className="mono-label text-muted hover:text-ink">
+                <a href={shop.social.instagram} className="mono-label text-muted hover:text-ink">
                   Instagram
                 </a>
-                <a href={social.facebook} className="mono-label text-muted hover:text-ink">
+                <a href={shop.social.facebook} className="mono-label text-muted hover:text-ink">
                   Facebook
                 </a>
-                <a href={social.tiktok} className="mono-label text-muted hover:text-ink">
+                <a href={shop.social.tiktok} className="mono-label text-muted hover:text-ink">
                   TikTok
                 </a>
               </div>

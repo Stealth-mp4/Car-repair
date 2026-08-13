@@ -4,6 +4,7 @@ import { useState } from "react";
 import DataTable from "@/components/admin/DataTable";
 import CalendarView from "@/components/admin/CalendarView";
 import { CalendarIcon, ListIcon } from "@/components/admin/icons";
+import { Guard } from "@/components/admin/States";
 
 /**
  * Appointments is the one section with two shapes: the generic table (search,
@@ -45,7 +46,15 @@ export default function AppointmentsView() {
         </div>
       </div>
 
-      {mode === "calendar" ? <CalendarView /> : <DataTable slug="appointments" heading={false} />}
+      {mode === "calendar" ? (
+        // The table renders its own states; the calendar is a grid of days that
+        // would otherwise look like a genuinely empty week.
+        <Guard of="appointments" what="appointments" rows={6}>
+          <CalendarView />
+        </Guard>
+      ) : (
+        <DataTable slug="appointments" heading={false} />
+      )}
     </div>
   );
 }

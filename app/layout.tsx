@@ -1,31 +1,42 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { business } from "@/lib/site";
+import { getShop } from "@/lib/shop";
+import ShopProvider from "@/components/ShopProvider";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(business.url),
-  title: {
-    default: "Iqballaz Customs | Vehicle Wraps, Tint & PPF in Houston",
-    template: "%s | Iqballaz Customs",
-  },
-  description:
-    "Houston's premium vehicle customization shop. Vinyl wraps, ceramic tint, paint protection film, and Tesla-specific builds. By appointment.",
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: business.name,
-    url: business.url,
-  },
-};
+// generateMetadata rather than a static export: metadataBase and the OpenGraph
+// URL come from the settings table, which can't be read at module scope.
+export async function generateMetadata(): Promise<Metadata> {
+  const { business } = await getShop();
+
+  return {
+    metadataBase: new URL(business.url),
+    title: {
+      default: "Iqballaz Customs | Vehicle Wraps, Tint & PPF in Houston",
+      template: "%s | Iqballaz Customs",
+    },
+    description:
+      "Houston's premium vehicle customization shop. Vinyl wraps, ceramic tint, paint protection film, and Tesla-specific builds. By appointment.",
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      siteName: business.name,
+      url: business.url,
+    },
+  };
+}
 
 /**
  * Root layout — document shell only (fonts, globals). The public
  * marketing chrome (nav, footer, splash, smooth scroll, chat) lives in
  * `app/(site)/layout.tsx`; `app/admin` renders its own shell instead.
  */
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Read once, here, so every client component below can useShop() without
+  // each of them importing the static copy and disagreeing with settings.
+  const shop = await getShop();
+
   return (
     /*
      * suppressHydrationWarning on <html> and <body>: browser extensions
@@ -58,7 +69,7 @@ export default function RootLayout({
           precedence="default"
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
         />
-        {children}
+        <ShopProvider shop={shop}>{children}</ShopProvider>
       </body>
     </html>
   );

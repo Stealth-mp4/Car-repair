@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { business, hours, services as serviceList } from "@/lib/site";
+import { services as serviceList } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 import { emptyLead, validateContact, submitLead, type Lead } from "@/lib/lead";
 
 /** Shop runs 12PM to 8PM, so the last bookable start is 7PM. */
@@ -50,6 +51,7 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
  * pages still prefill through ?year&make&model&service.
  */
 export default function AppointmentForm() {
+  const shop = useShop();
   const params = useSearchParams();
   const [service, setService] = useState("");
   const [detail, setDetail] = useState("");
@@ -117,8 +119,8 @@ export default function AppointmentForm() {
           We&apos;ll call you back to confirm your slot
           {date ? ` on ${date}` : ""}
           {time ? ` at ${time}` : ""}. For anything urgent, call{" "}
-          <a href={business.phoneHref} className="link-underline text-ink">
-            {business.phone}
+          <a href={shop.business.phoneHref} className="link-underline text-ink">
+            {shop.business.phone}
           </a>
           .
         </p>
@@ -206,7 +208,7 @@ export default function AppointmentForm() {
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder={business.phone}
+              placeholder={shop.business.phone}
               inputMode="tel"
               autoComplete="tel"
               className={fieldClass}
@@ -267,11 +269,11 @@ export default function AppointmentForm() {
         <div className="rounded-media border border-line bg-black-raised p-6">
           <h2 className="font-display text-xl text-ink">Visit us</h2>
           <address className="mt-3 not-italic text-sm text-cream/80">
-            {business.address.street}, {business.address.locality}, {business.address.region}{" "}
-            {business.address.postalCode}
+            {shop.business.address.street}, {shop.business.address.locality}, {shop.business.address.region}{" "}
+            {shop.business.address.postalCode}
           </address>
           <ul className="mt-5 space-y-1 border-t border-line pt-4 text-sm">
-            {hours.map((h) => (
+            {shop.hours.map((h) => (
               <li key={h.day} className="flex justify-between gap-6">
                 <span className="text-cream/80">{h.day}</span>
                 <span className={h.value === "Closed" ? "text-red" : "text-ink"}>{h.value}</span>
@@ -282,8 +284,8 @@ export default function AppointmentForm() {
 
         <p className="rounded-media border border-line px-6 py-5 text-sm text-cream/80">
           For immediate scheduling help, call or text{" "}
-          <a href={business.phoneHref} className="link-underline text-ink">
-            {business.phone}
+          <a href={shop.business.phoneHref} className="link-underline text-ink">
+            {shop.business.phone}
           </a>
           .
         </p>

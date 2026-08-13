@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAdmin } from "@/lib/admin/store";
 import { sections } from "@/lib/admin/sections";
+import { canSee } from "@/lib/admin/access";
 import { brand } from "@/lib/site";
 import { CloseIcon, LifebuoyIcon, MenuIcon, ArrowRightIcon } from "@/components/admin/icons";
 
@@ -12,6 +13,9 @@ const href = (slug: string) => (slug ? `/admin/${slug}` : "/admin");
 
 function NavList({ collapsed, onNavigate }: { collapsed: boolean; onNavigate: () => void }) {
   const pathname = usePathname();
+  // Null before hydration, and canSee() denies on null — the nav fills in a
+  // beat later rather than flashing sections the viewer may not be allowed.
+  const access = useAdmin((s) => s.me?.access);
 
   return (
     <nav className="flex-1 overflow-y-auto px-3 pb-6 scrollbar-none">
@@ -24,7 +28,7 @@ function NavList({ collapsed, onNavigate }: { collapsed: boolean; onNavigate: ()
           )}
           <ul className="space-y-0.5">
             {sections
-              .filter((s) => s.group === group)
+              .filter((s) => s.group === group && canSee(access, s.slug))
               .map((s) => {
                 const to = href(s.slug);
                 const active = s.slug ? pathname.startsWith(to) : pathname === "/admin";

@@ -31,12 +31,15 @@ export default function MagneticButton({
   variant = "primary",
   className = "",
   strength = 0.35,
+  onClick,
 }: {
   href: string;
   children: React.ReactNode;
   variant?: Variant;
   className?: string;
   strength?: number;
+  /** fires before navigation — for recording the click, not for preventing it */
+  onClick?: () => void;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
 
@@ -70,6 +73,7 @@ export default function MagneticButton({
     <Link
       ref={ref}
       href={href}
+      onClick={onClick}
       className={`${base} ${v.className} ${className}`}
       style={{ ["--sweep" as string]: v.sweep } as React.CSSProperties}
     >

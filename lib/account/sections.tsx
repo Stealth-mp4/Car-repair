@@ -10,6 +10,7 @@ import {
   ClockIcon,
   CardIcon,
   UserIcon,
+  StarIcon,
 } from "@/components/account/icons";
 
 export type AccountSection = {
@@ -47,6 +48,14 @@ export const sections: AccountSection[] = [
     title: "Service history",
     lede: "A complete record of every visit, fitment, and warranty.",
     icon: ClockIcon,
+  },
+  {
+    slug: "promos",
+    label: "Promos",
+    eyebrow: "Promos · Member offers",
+    title: "Promos",
+    lede: "Live offers, and the ones you've already claimed.",
+    icon: StarIcon,
   },
   {
     slug: "billing",

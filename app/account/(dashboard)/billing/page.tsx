@@ -2,7 +2,8 @@
 
 import { useAccount, currentUser } from "@/lib/account/store";
 import { getVehiclesForCustomer, getInvoices } from "@/lib/passport";
-import { business, payments } from "@/lib/site";
+import { payments } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 import {
   Panel,
   StatTile,
@@ -19,6 +20,7 @@ import {
 } from "@/components/account/icons";
 
 export default function AccountBillingPage() {
+  const shop = useShop();
   const user = useAccount(currentUser);
   if (!user) return null;
 
@@ -103,8 +105,8 @@ export default function AccountBillingPage() {
                   Add the shop&apos;s Stripe link in{" "}
                   <code className="text-ink">lib/site.ts → payments.portalUrl</code> and this
                   button goes live. Until then, pay in person or call{" "}
-                  <a href={business.phoneHref} className="link-underline text-ink">
-                    {business.phone}
+                  <a href={shop.business.phoneHref} className="link-underline text-ink">
+                    {shop.business.phone}
                   </a>
                   .
                 </span>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAdmin } from "@/lib/admin/store";
+import { canEdit } from "@/lib/admin/access";
 import type { Field, Row, SectionDef } from "@/lib/admin/sections";
 import { CloseIcon } from "@/components/admin/icons";
 
@@ -32,11 +33,17 @@ function Control({
   id,
   field,
   value,
+  options,
+  disabled,
   onChange,
 }: {
   id: string;
   field: Field;
   value: unknown;
+  /** resolved from field.optionsFrom by the caller, which has the store */
+  options?: { value: string; label: string }[];
+  /** shown, but not changeable — see `locked` in the dialog below */
+  disabled?: boolean;
   onChange: (v: unknown) => void;
 }) {
   if (field.type === "checkbox") {
@@ -55,19 +62,35 @@ function Control({
   }
 
   if (field.type === "select") {
+    const current = String(value ?? "");
     return (
       <select
         id={id}
-        value={String(value ?? "")}
+        value={current}
         required={field.required}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className={controlClass}
+        className={`${controlClass} disabled:cursor-not-allowed disabled:text-muted disabled:opacity-70`}
       >
-        {field.options?.map((o) => (
-          <option key={o} value={o} className="bg-black capitalize">
-            {o.replace("-", " ")}
+        {/* A foreign key on a new row starts empty, and an empty value matches
+            no option — without this the browser shows the first customer while
+            the draft still holds "", so it looks chosen and saves blank. */}
+        {options && !options.some((o) => o.value === current) && (
+          <option value="" className="bg-black">
+            Select…
           </option>
-        ))}
+        )}
+        {options
+          ? options.map((o) => (
+              <option key={o.value} value={o.value} className="bg-black">
+                {o.label}
+              </option>
+            ))
+          : field.options?.map((o) => (
+              <option key={o} value={o} className="bg-black capitalize">
+                {o.replace("-", " ")}
+              </option>
+            ))}
       </select>
     );
   }
@@ -118,7 +141,11 @@ export default function RowForm({
   onClose: () => void;
 }) {
   const table = section.table!;
-  const upsert = useAdmin((s) => s.upsertRow);
+  // Whole store, not a selector: optionsFrom reads collections, and a selector
+  // returning a fresh array every render is what useSyncExternalStore treats as
+  // "changed" — see the note above the derived helpers in lib/admin/store.ts.
+  const store = useAdmin();
+  const upsert = store.upsertRow;
   const ref = useRef<HTMLDialogElement>(null);
   const [draft, setDraft] = useState<Obj>(row as Obj);
 
@@ -139,6 +166,17 @@ export default function RowForm({
     upsert(table.collection, draft);
     ref.current?.close();
   };
+
+  /**
+   * The owner of an existing record can't be changed by someone who can't
+   * manage customers — a technician records what's been done to the car, not
+   * who it belongs to. Reassignment is an office decision.
+   *
+   * Only on existing rows: on a new one the picker is the only way to satisfy
+   * `customerId not null`, and a disabled required field is a dead end.
+   */
+  const locked = (f: Field) =>
+    !isNew && f.key === "customerId" && !canEdit(store.me?.access, "customers");
 
   return (
     <dialog
@@ -179,7 +217,18 @@ export default function RowForm({
                 id={`f-${f.key}`}
                 field={f}
                 value={get(draft, f.key)}
-                onChange={(v) => setDraft((d) => set(d, f.key, v))}
+                options={f.optionsFrom?.(store)}
+                disabled={locked(f)}
+                onChange={(v) =>
+                  setDraft((d) => {
+                    const next = set(d, f.key, v);
+                    // Foreign key with a denormalised name beside it: set both,
+                    // or the row shows one customer against another's id.
+                    if (!f.syncLabelTo) return next;
+                    const label = f.optionsFrom?.(store).find((o) => o.value === v)?.label ?? "";
+                    return set(next, f.syncLabelTo, label);
+                  })
+                }
               />
             </div>
           ))}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import AppointmentForm from "@/components/ui/AppointmentForm";
 import Reveal from "@/components/ui/Reveal";
-import { business } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 
 export const metadata: Metadata = {
   title: "Book an Appointment",
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
     "Book an appointment at Iqballaz Customs. Pick a service, a date, and a time. No account needed.",
 };
 
-export default function QuotePage() {
+export default async function QuotePage() {
+  const shop = await getShop();
   return (
     <section className="pb-24 pt-36" style={{ paddingInline: "var(--gutter)" }}>
       <div className="flex flex-wrap items-end justify-between gap-6">
@@ -30,14 +31,14 @@ export default function QuotePage() {
         </div>
         <Reveal delay={0.1} className="flex flex-wrap gap-3">
           <a
-            href={business.phoneHref}
+            href={shop.business.phoneHref}
             style={{ ["--sweep" as string]: "var(--color-red-deep)" }}
             className="btn-sweep mono-label rounded-full bg-red px-6 py-3 text-ink"
           >
             Call
           </a>
           <a
-            href={`sms:${business.phoneHref.replace("tel:", "")}`}
+            href={`sms:${shop.business.phoneHref.replace("tel:", "")}`}
             style={{ ["--sweep" as string]: "var(--color-black-raised)" }}
             className="btn-sweep mono-label rounded-full border border-line px-6 py-3 text-ink"
           >

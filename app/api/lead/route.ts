@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import type { Lead } from "@/lib/lead";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { leadChannel, leadPreview, leadSubject } from "@/lib/lead-summary";
+import { getShop } from "@/lib/shop";
 
 /**
  * POST /api/lead — the single lead intake for the appointment form and Chat Assistant.
@@ -42,6 +45,27 @@ export async function POST(req: Request) {
     id: globalThis.crypto.randomUUID(),
   };
 
+  /*
+   * Into the console's Messages tab.
+   *
+   * The ADMIN client, deliberately: `messages` is office-only under RLS and the
+   * visitor sending this is anonymous. This route is the trusted server-side
+   * boundary that turns "a stranger filled in a form" into "a row staff can
+   * read" — which is exactly the narrow job the secret key exists for.
+   */
+  const { error: saveError } = await supabaseAdmin.from("messages").insert({
+    from: lead.contact.name,
+    // NOT NULL on the table, and the forms only require a phone.
+    email: lead.contact.email ?? "",
+    phone: lead.contact.phone,
+    subject: leadSubject(lead),
+    preview: leadPreview(lead),
+    channel: leadChannel(lead.source),
+    // `createdAt` is optional on the Lead type but always stamped just above.
+    date: (lead.createdAt ?? new Date().toISOString()).slice(0, 10),
+    read: false,
+  });
+
   const webhook = process.env.LEAD_WEBHOOK_URL;
   if (webhook) {
     try {
@@ -53,9 +77,28 @@ export async function POST(req: Request) {
     } catch (err) {
       console.error("[lead] webhook forward failed:", err);
     }
-  } else {
-    // No destination configured yet — log so the lead isn't silently lost.
-    console.log("[lead] received (no LEAD_WEBHOOK_URL set):", JSON.stringify(lead));
+  }
+
+  /*
+   * If the row didn't save, the enquiry reached nobody. Telling the visitor it
+   * went through would be the worst outcome here: they'd wait for a call that
+   * was never going to come. Fail loudly and point them at the phone instead —
+   * unless a webhook took it, in which case someone does have it.
+   */
+  if (saveError) {
+    console.error("[lead] NOT SAVED:", saveError.message, JSON.stringify(lead));
+    if (!webhook) {
+      // The number comes from settings, not lib/site.ts — telling someone to
+      // ring a number the shop has since changed is a poor apology.
+      const { business } = await getShop();
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Sorry — we couldn't send that just now. Please call the shop on ${business.phone}.`,
+        },
+        { status: 500 },
+      );
+    }
   }
 
   return NextResponse.json({ ok: true, id: lead.id });

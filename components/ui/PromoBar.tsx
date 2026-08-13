@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { activePromos } from "@/lib/site";
+import type { Promo } from "@/lib/site";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -77,8 +77,7 @@ export function Countdown({ endsAt, className = "" }: { endsAt: string; classNam
  * a hydration mismatch. The offer text itself is server-rendered, so the bar
  * never pops in from nothing.
  */
-export default function PromoBar() {
-  const promo = activePromos()[0];
+export default function PromoBar({ promo }: { promo: Promo | null }) {
   const [left, setLeft] = useState<Parts | null>(null);
   const [expired, setExpired] = useState(false);
 

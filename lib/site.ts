@@ -189,6 +189,19 @@ export type Promo = {
   spotsTotal?: number;
   spotsLeft?: number;
   cta: { label: string; href: string };
+  /**
+   * Hosted checkout link for this offer — a Square payment link
+   * (square.link/...) or a Stripe payment link (buy.stripe.com/...). The amount
+   * lives in the provider, not here, so a deposit and a full payment are the
+   * same field and can't drift out of sync with what the customer is charged.
+   *
+   * PLACEHOLDER: empty until the client sends the link. While it's empty the
+   * claim button falls back to the normal booking flow (`cta.href`), so the
+   * page is never broken — it just doesn't take money yet.
+   *
+   * Claiming is account-gated either way: see components/ui/PromoClaim.tsx.
+   */
+  payUrl?: string;
 };
 
 /**
@@ -210,6 +223,7 @@ export const promos: Promo[] = [
     spotsTotal: 10,
     spotsLeft: 7,
     cta: { label: "Claim this offer", href: "/quote?promo=satin-black-wrap-1999" },
+    payUrl: "",
   },
   {
     id: "tesla-tint-ppf",
@@ -221,6 +235,7 @@ export const promos: Promo[] = [
     image: "/PPF.webp",
     endsAt: "2026-08-31T23:59:59-05:00",
     cta: { label: "Claim this offer", href: "/quote?promo=tesla-tint-ppf" },
+    payUrl: "",
   },
 ];
 

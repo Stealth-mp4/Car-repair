@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { brand, business } from "@/lib/site";
+import { brand } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 import { prefersReducedMotion } from "@/lib/gsap";
 
 const FADE_IN_MS = 400;
@@ -18,6 +19,7 @@ const FADE_OUT_MS = 500;
  * a flash of the page behind it. Skipped under prefers-reduced-motion.
  */
 export default function SplashScreen() {
+  const shop = useShop();
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -79,7 +81,7 @@ export default function SplashScreen() {
       >
         <Image
           src={brand.markTight}
-          alt={business.name}
+          alt={shop.business.name}
           fill
           sizes="200px"
           priority
