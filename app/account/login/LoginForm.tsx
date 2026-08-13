@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AuthCard from "@/components/account/AuthCard";
 import { Field, fieldClass, PrimaryButton } from "@/components/account/ui";
 import { MailIcon, LockIcon } from "@/components/account/icons";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { useAccount } from "@/lib/account/store";
+import { safeNext } from "@/lib/account/redirect";
 import { DEMO_LOGIN } from "@/lib/account/data";
 
 export default function LoginForm() {
@@ -31,7 +33,7 @@ export default function LoginForm() {
       setBusy(false);
       return;
     }
-    router.push(next && next.startsWith("/account") ? next : "/account");
+    router.push(safeNext(next));
   };
 
   /** One click to fill the seeded demo account, so nobody has to retype it. */
@@ -49,7 +51,7 @@ export default function LoginForm() {
       footer={
         <p className="mono-label">
           No account yet?{" "}
-          <Link href="/account/signup" className="link-underline text-red">
+          <Link href={`/account/signup${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="link-underline text-red">
             Create one
           </Link>
         </p>
@@ -68,8 +70,7 @@ export default function LoginForm() {
           />
         </Field>
         <Field label="Password" icon={LockIcon}>
-          <input
-            type="password"
+          <PasswordInput
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"

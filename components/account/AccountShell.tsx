@@ -1,34 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAccount, currentUser } from "@/lib/account/store";
+import { useHydrated } from "@/lib/account/useHydrated";
 import { sections, accountHref, getSection } from "@/lib/account/sections";
-import { brand, business } from "@/lib/site";
+import { brand } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 import { MenuIcon, CloseIcon, SignOutIcon, ArrowRightIcon } from "@/components/account/icons";
-
-/**
- * False on the server and on the first client render, true from the first
- * effect onward.
- *
- * Every account page renders from persisted state and the server has no
- * localStorage, so rendering the signed-in view on the first pass would both
- * mismatch hydration and flash the signed-out state. Nothing renders until this
- * flips.
- *
- * This gates on mount rather than on `useAccount.persist.hasHydrated()`: the
- * persist API isn't attached during a static prerender (it crashed the build),
- * and it isn't needed. The store uses the default synchronous localStorage
- * backend, which rehydrates while the module initialises on the client — so by
- * the time this effect runs, the store is already the persisted one.
- */
-function useHydrated() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
-  return hydrated;
-}
 
 /** Which section the current path is in — "" for /account itself. */
 function slugFromPath(pathname: string): string {
@@ -109,6 +90,7 @@ function SidebarFooter({ onNavigate }: { onNavigate: () => void }) {
  * the visitor's own localStorage. See the SECURITY block in lib/account/store.ts.
  */
 export default function AccountShell({ children }: { children: React.ReactNode }) {
+  const shop = useShop();
   const hydrated = useHydrated();
   const user = useAccount(currentUser);
   const navOpen = useAccount((s) => s.ui.navOpen);
@@ -153,7 +135,7 @@ export default function AccountShell({ children }: { children: React.ReactNode }
     <Link href="/account" className="relative block h-10 w-28 shrink-0">
       <Image
         src={brand.markTight}
-        alt={`${business.name} account`}
+        alt={`${shop.business.name} account`}
         fill
         sizes="120px"
         priority

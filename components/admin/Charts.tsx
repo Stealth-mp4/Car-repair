@@ -7,10 +7,10 @@ import {
   topServices,
   type ChartPeriod,
 } from "@/lib/admin/store";
-import { revenueSeries, revenueBreakdown, deltas } from "@/lib/admin/data";
 import { compact, currency } from "@/lib/admin/format";
 import { Panel, ScrollX } from "@/components/admin/Panel";
-import { ArrowUpIcon, ChevronIcon } from "@/components/admin/icons";
+import { Empty, Guard } from "@/components/admin/States";
+import { ChevronIcon } from "@/components/admin/icons";
 
 /* ---- Shared period select ------------------------------------------------ */
 
@@ -63,8 +63,11 @@ export function RevenueChart() {
   const setPeriod = useAdmin((s) => s.setChartPeriod);
   const [hover, setHover] = useState<number | null>(null);
 
-  const points = revenueSeries[period];
-  const max = Math.ceil(Math.max(...points.map((p) => p.value)) / 5000) * 5000;
+  const points = useAdmin((s) => s.revenueSeries)[period];
+  const breakdown = useAdmin((s) => s.revenueBreakdown);
+  // A period with no rows makes Math.max(...[]) === -Infinity, which poisons
+  // every coordinate and every tick label. Floor at one gridline step.
+  const max = Math.max(5000, Math.ceil(Math.max(0, ...points.map((p) => p.value)) / 5000) * 5000);
   const total = points.reduce((sum, p) => sum + p.value, 0);
 
   const x = (i: number) =>
@@ -74,7 +77,9 @@ export function RevenueChart() {
   const line = points
     .map((p, i) => `${i === 0 ? "M" : "L"}${x(i)},${y(p.value)}`)
     .join(" ");
-  const area = `${line} L${x(points.length - 1)},${H - PAD.bottom} L${x(0)},${H - PAD.bottom} Z`;
+  const area = line
+    ? `${line} L${x(points.length - 1)},${H - PAD.bottom} L${x(0)},${H - PAD.bottom} Z`
+    : "";
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(max * f));
 
   return (
@@ -82,16 +87,17 @@ export function RevenueChart() {
       title="Revenue Overview"
       action={<PeriodSelect value={period} onChange={setPeriod} label="Revenue period" />}
     >
+      <Guard of="revenueSeries" what="revenue" rows={5}>
+      {points.length === 0 && <Empty what="settled payments in this period" />}
       <ScrollX min="min-w-[34rem]">
         <div className="px-5 pt-5">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <p className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
               {currency(total)}
             </p>
-            <p className="mono-label flex items-center gap-1 text-ok">
-              <ArrowUpIcon className="h-3 w-3" />
-              {deltas.revenueVsPrior}% vs prior {period}
-            </p>
+            {/* No "vs prior period" figure: the revenue_series view returns
+                only the current window, so a comparison would be invented. */}
+            <p className="mono-label">settled payments · this {period}</p>
           </div>
 
           <svg
@@ -173,13 +179,19 @@ export function RevenueChart() {
           </svg>
         </div>
       </ScrollX>
+      </Guard>
 
-      <dl className="grid grid-cols-2 gap-3 border-t border-line p-5 xl:grid-cols-4">
+      {/*
+        Two figures, not four. `productSales` was `0::numeric` in the view — a
+        hardcoded zero printed as though it were measured — and `serviceRevenue`
+        is the exact same SQL expression as `totalSales`, so the row showed one
+        real number twice plus a fake one. These two are the only distinct
+        things the view actually computes.
+      */}
+      <dl className="grid grid-cols-2 gap-3 border-t border-line p-5">
         {[
-          ["Total Sales", revenueBreakdown.totalSales],
-          ["Service Revenue", revenueBreakdown.serviceRevenue],
-          ["Product Sales", revenueBreakdown.productSales],
-          ["Avg. Order Value", revenueBreakdown.avgOrderValue],
+          ["Total Sales", breakdown.totalSales],
+          ["Avg. Order Value", breakdown.avgOrderValue],
         ].map(([label, value]) => (
           <div
             key={label as string}
@@ -221,6 +233,7 @@ export function ProjectsDonut() {
 
   return (
     <Panel title="Projects Overview" className="h-full">
+      <Guard of="projects" what="projects" rows={4}>
       <div className="flex flex-col items-center gap-6 p-5 sm:flex-row sm:justify-center">
         <div className="relative shrink-0">
           <svg viewBox="0 0 140 140" className="h-40 w-40 -rotate-90">
@@ -272,6 +285,7 @@ export function ProjectsDonut() {
           ))}
         </ul>
       </div>
+      </Guard>
     </Panel>
   );
 }
@@ -292,6 +306,8 @@ export function TopServices() {
         <PeriodSelect value={period} onChange={setPeriod} label="Top services period" />
       }
     >
+      <Guard of="services" what="services" rows={5}>
+      {rows.length === 0 && <Empty what="active services" />}
       <ul className="space-y-4 p-5">
         {rows.map((s) => (
           <li key={s.slug} className="flex items-center gap-4">
@@ -311,6 +327,7 @@ export function TopServices() {
           </li>
         ))}
       </ul>
+      </Guard>
     </Panel>
   );
 }

@@ -4,7 +4,9 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import RevealLines from "@/components/ui/RevealLines";
 import Reveal from "@/components/ui/Reveal";
 import { Countdown } from "@/components/ui/PromoBar";
-import { activePromos, business } from "@/lib/site";
+import PromoClaim from "@/components/ui/PromoClaim";
+import { getShop } from "@/lib/shop";
+import { getPromos } from "@/lib/promos";
 
 export const metadata: Metadata = {
   title: "Current Promos",
@@ -15,11 +17,13 @@ export const metadata: Metadata = {
 /**
  * /promos — where Meta ad traffic lands. Every live offer, soonest deadline
  * first, each with the countdown the ad creative promises. Expired offers drop
- * out via activePromos(), so an ad that outlives its promo lands on an honest
- * empty state rather than a deal we won't honour.
+ * out in getPromos(), so an ad that outlives its promo lands on an honest
+ * empty state rather than a deal we won't honour. Offers come from the promos
+ * table the console edits; lib/site.ts is the fallback if that read fails.
  */
-export default function PromosPage() {
-  const live = activePromos();
+export default async function PromosPage() {
+  const shop = await getShop();
+  const live = await getPromos();
 
   return (
     <>
@@ -45,8 +49,8 @@ export default function PromosPage() {
             <h2 className="font-display text-2xl text-ink">No live offers right now.</h2>
             <p className="mt-3 max-w-lg text-cream/80">
               New packages go up regularly. Call{" "}
-              <a href={business.phoneHref} className="link-underline text-ink">
-                {business.phone}
+              <a href={shop.business.phoneHref} className="link-underline text-ink">
+                {shop.business.phone}
               </a>{" "}
               and we&apos;ll quote your build directly.
             </p>
@@ -112,9 +116,7 @@ export default function PromosPage() {
                     ) : null}
 
                     <div className="mt-8">
-                      <MagneticButton href={promo.cta.href} variant="primary">
-                        {promo.cta.label}
-                      </MagneticButton>
+                      <PromoClaim promo={promo} />
                     </div>
                   </div>
                 </article>

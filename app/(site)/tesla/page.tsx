@@ -7,7 +7,7 @@ import Faq, { type FaqItem } from "@/components/ui/Faq";
 import RevealLines from "@/components/ui/RevealLines";
 import Reveal from "@/components/ui/Reveal";
 import { filterBuilds } from "@/lib/builds";
-import { business } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 
 export const metadata: Metadata = {
   // Targets "Tesla Wrap Houston" specifically (build.md SEO).
@@ -102,7 +102,8 @@ const BODY: { heading: string; paragraphs: string[] }[] = [
   },
 ];
 
-export default function TeslaHubPage() {
+export default async function TeslaHubPage() {
+  const shop = await getShop();
   const teslas = filterBuilds({ make: "Tesla" });
   const quoteHref = "/quote?make=Tesla";
 
@@ -217,8 +218,8 @@ export default function TeslaHubPage() {
               <h2 className="font-display text-2xl text-ink">Book your Tesla in</h2>
               <p className="mt-3 text-cream/80">
                 Appointment only, one build at a time. Call{" "}
-                <a href={business.phoneHref} className="link-underline text-ink">
-                  {business.phone}
+                <a href={shop.business.phoneHref} className="link-underline text-ink">
+                  {shop.business.phone}
                 </a>{" "}
                 or send the details and we&apos;ll come back with a real number.
               </p>

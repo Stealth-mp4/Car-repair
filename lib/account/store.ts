@@ -71,6 +71,8 @@ type Actions = {
   toggleNotification: (key: NotificationKey) => void;
 
   requestAppointment: (req: Omit<AppointmentRequest, "id" | "createdAt" | "status">) => void;
+  /** Records a promo claim against the signed-in member. Idempotent per offer. */
+  claimPromo: (promo: { id: string; headline: string }) => void;
 };
 
 export type AccountStore = AccountState & Actions;
@@ -103,6 +105,7 @@ export const useAccount = create<AccountStore>()(
           vehicle: { makeModel: input.vehicle?.trim() ?? "", plate: "" },
           joined: now,
           appointments: [],
+          claims: [],
           activity: [
             {
               id: id("ac"),
@@ -176,16 +179,45 @@ export const useAccount = create<AccountStore>()(
           })),
         }));
       },
+
+      claimPromo: (promo) => {
+        const now = today();
+        set((s) => ({
+          users: patchUser(s, (u) =>
+            // Claiming twice is a re-visit to checkout, not a second offer.
+            u.claims.some((c) => c.promoId === promo.id)
+              ? u
+              : {
+                  ...u,
+                  claims: [
+                    { promoId: promo.id, headline: promo.headline, claimedAt: now },
+                    ...u.claims,
+                  ],
+                  activity: [
+                    {
+                      id: id("ac"),
+                      kind: "account" as const,
+                      label: "Promo claimed",
+                      detail: promo.headline,
+                      date: now,
+                    },
+                    ...u.activity,
+                  ],
+                }
+          ),
+        }));
+      },
     }),
     {
       name: "iq-account",
-      version: 2,
+      version: 3,
       // UI state is per-visit; persisting `navOpen` would reopen the drawer on
       // every load. Everything else is the simulated database.
       partialize: (s) => ({ users: s.users, session: s.session }),
-      // v1 users carry plan/points/referral fields that no longer exist. Rather
-      // than migrate dead data, drop the stored table back to the seed — this is
-      // a demo store, and a stale localStorage shouldn't outlive the schema.
+      // v1 users carry plan/points/referral fields that no longer exist, and v2
+      // users predate `claims`. Rather than migrate dead data, drop the stored
+      // table back to the seed — this is a demo store, and a stale localStorage
+      // shouldn't outlive the schema.
       migrate: () => ({ users: [seedUser], session: { userId: null } }),
     },
   ),

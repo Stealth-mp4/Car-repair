@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useAdmin, dashboardStats } from "@/lib/admin/store";
-import { deltas } from "@/lib/admin/data";
+import { canSee, seesMoney } from "@/lib/admin/access";
 import { currency } from "@/lib/admin/format";
-import { ArrowUpIcon, CalendarIcon, CarIcon, DollarIcon, UsersIcon } from "@/components/admin/icons";
+import { CalendarIcon, CarIcon, DollarIcon, UsersIcon } from "@/components/admin/icons";
 
 /**
  * DateRange — two native date inputs in one pill. `<input type="date">` gives a
@@ -45,15 +45,18 @@ export function DateRange() {
 function StatCard({
   label,
   value,
-  delta,
   href,
   icon: Icon,
+  status,
+  error,
 }: {
   label: string;
   value: string;
-  delta: number;
   href: string;
   icon: (p: { className?: string }) => React.ReactNode;
+  status: "loading" | "ready";
+  /** Set when the tile's source collection failed to load. */
+  error?: string;
 }) {
   return (
     <Link
@@ -64,49 +67,83 @@ function StatCard({
         <Icon className="h-5 w-5" />
       </span>
       <p className="mono-label mt-4">{label}</p>
-      <p className="mt-1 font-display text-3xl tracking-tight text-ink">{value}</p>
-      <p className="mono-label mt-2 flex items-center gap-1 text-ok">
-        <ArrowUpIcon className="h-3 w-3" />
-        {delta}% from last week
+      {/* A tile is a single number with no room to qualify itself, so a failed
+          or pending load shows a dash. "0" here would be read as fact. */}
+      <p className="mt-1 font-display text-3xl tracking-tight text-ink">
+        {error || status === "loading" ? (
+          <span className="text-muted">—</span>
+        ) : (
+          value
+        )}
+      </p>
+      <p className={`mono-label mt-2 ${error ? "text-red" : ""}`}>
+        {error ? "Couldn't load" : status === "loading" ? "Loading…" : "Live"}
       </p>
     </Link>
   );
 }
 
-/** The four headline tiles. Counts come from the store, deltas from the API. */
+/** The four headline tiles, each reporting its own source's load state. */
 export function StatRow() {
-  const stats = dashboardStats(useAdmin());
+  const store = useAdmin();
+  const stats = dashboardStats(store);
+  const { status, errors } = store;
+  // Revenue reads the payments table, which RLS closes to technicians and front
+  // desk. Rendering the tile anyway would show them a confident "$0" — a wrong
+  // number is worse than an absent one.
+  const access = useAdmin((s) => s.me?.access);
+  const money = seesMoney(access);
+  // Same reasoning as `money`, for the same reason it was missed: a technician
+  // can't read customers, so this tile counted an empty list and reported "0
+  // new customers" as fact.
+  const people = canSee(access, "customers");
+
+  const columns = 2 + (money ? 1 : 0) + (people ? 1 : 0);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div
+      className={`grid gap-4 sm:grid-cols-2 ${
+        columns === 4 ? "xl:grid-cols-4" : columns === 3 ? "xl:grid-cols-3" : "xl:grid-cols-2"
+      }`}
+    >
       <StatCard
         label="Total Appointments"
         value={String(stats.appointments)}
-        delta={deltas.appointments}
+        status={status}
+        error={errors.appointments}
         href="/admin/appointments"
         icon={CalendarIcon}
       />
       <StatCard
         label="Active Projects"
         value={String(stats.activeProjects)}
-        delta={deltas.projects}
+        status={status}
+        error={errors.projects}
         href="/admin/projects"
         icon={CarIcon}
       />
-      <StatCard
-        label="Total Revenue"
-        value={currency(stats.revenue)}
-        delta={deltas.revenue}
-        href="/admin/finance"
-        icon={DollarIcon}
-      />
-      <StatCard
-        label="New Customers"
-        value={String(stats.newCustomers)}
-        delta={deltas.customers}
-        href="/admin/customers"
-        icon={UsersIcon}
-      />
+      {money && (
+        <StatCard
+          label="Total Revenue"
+          value={currency(stats.revenue)}
+          status={status}
+          // The tile sums payments rows now, so it answers for that collection
+          // rather than for the chart's pre-aggregated series.
+          error={errors.payments}
+          href="/admin/finance"
+          icon={DollarIcon}
+        />
+      )}
+      {people && (
+        <StatCard
+          label="New Customers"
+          value={String(stats.newCustomers)}
+          status={status}
+          error={errors.customers}
+          href="/admin/customers"
+          icon={UsersIcon}
+        />
+      )}
     </div>
   );
 }

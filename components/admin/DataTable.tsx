@@ -12,11 +12,50 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useAdmin } from "@/lib/admin/store";
+import { canEdit, canSee } from "@/lib/admin/access";
 import { getSection, type Row } from "@/lib/admin/sections";
 import RowForm from "@/components/admin/RowForm";
+import { Empty, Loading, LoadError } from "@/components/admin/States";
 import { ChevronIcon, CloseIcon, SearchIcon } from "@/components/admin/icons";
 
 type ColMeta = { right?: boolean; secondary?: boolean };
+
+/**
+ * Delete, in two clicks.
+ *
+ * A single click on a small × used to remove the row outright — no prompt, no
+ * undo, and the store writes the delete straight through to the database. The
+ * second click is inline rather than a `confirm()` so it can't block the page,
+ * and it reverts on blur so an accidental first click costs nothing.
+ */
+function ConfirmDelete({ onConfirm }: { onConfirm: () => void }) {
+  const [armed, setArmed] = useState(false);
+
+  if (armed) {
+    return (
+      <button
+        type="button"
+        autoFocus
+        onBlur={() => setArmed(false)}
+        onClick={onConfirm}
+        className="mono-label rounded-full border border-red bg-red/15 px-3 py-1 text-red"
+      >
+        Delete?
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setArmed(true)}
+      aria-label="Delete row"
+      className="rounded-full border border-line p-1.5 text-muted transition-colors hover:border-red hover:text-red"
+    >
+      <CloseIcon className="h-3.5 w-3.5" />
+    </button>
+  );
+}
 
 /**
  * DataTable — the one list view every console section renders. Columns, rows,
@@ -43,6 +82,10 @@ export default function DataTable({
   const table = section.table!;
   const removeRow = useAdmin((s) => s.removeRow);
 
+  // Whether this tab has data is a separate question from whether it has rows.
+  const status = useAdmin((s) => s.status);
+  const loadError = useAdmin((s) => s.errors[table.collection]);
+
   /*
    * `rows` MUST keep a stable identity between renders that don't change the
    * data. Several sections sort into a fresh array (`[...s.customers].sort()`),
@@ -63,23 +106,29 @@ export default function DataTable({
   const [filter, setFilter] = useState<number | null>(null);
   const [editing, setEditing] = useState<{ row: Row; isNew: boolean } | null>(null);
 
+  // What this viewer may change here. Read-only sections (customers, for a
+  // technician) keep the list and lose the New button and the row actions.
+  const editable = canEdit(store.me?.access, section.slug);
+
   const columns = useMemo<ColumnDef<Row>[]>(
     () => [
-      ...table.columns.map<ColumnDef<Row>>((c) => ({
-        id: c.label,
-        header: c.label,
-        // Sorting needs a primitive, and `cell` returns JSX — so the column's
-        // own `sortBy` supplies the comparable value. No sortBy = not sortable.
-        accessorFn: c.sortBy ?? (() => ""),
-        enableSorting: Boolean(c.sortBy),
-        cell: ({ row }) => c.cell(row.original),
-        meta: { right: c.right, secondary: c.secondary } satisfies ColMeta,
-      })),
-      {
+      ...table.columns
+        .filter((c) => !c.needs || canSee(store.me?.access, c.needs))
+        .map<ColumnDef<Row>>((c) => ({
+          id: c.label,
+          header: c.label,
+          // Sorting needs a primitive, and `cell` returns JSX — so the column's
+          // own `sortBy` supplies the comparable value. No sortBy = not sortable.
+          accessorFn: c.sortBy ?? (() => ""),
+          enableSorting: Boolean(c.sortBy),
+          cell: ({ row }) => c.cell(row.original),
+          meta: { right: c.right, secondary: c.secondary } satisfies ColMeta,
+        })),
+      ...(editable ? [{
         id: "actions",
         header: "",
         enableSorting: false,
-        cell: ({ row }) => (
+        cell: ({ row }: { row: { original: Row } }) => (
           <span className="flex justify-end gap-1.5 whitespace-nowrap">
             <button
               type="button"
@@ -88,20 +137,13 @@ export default function DataTable({
             >
               Edit
             </button>
-            <button
-              type="button"
-              onClick={() => removeRow(table.collection, row.original.id)}
-              aria-label="Delete row"
-              className="rounded-full border border-line p-1.5 text-muted transition-colors hover:border-red hover:text-red"
-            >
-              <CloseIcon className="h-3.5 w-3.5" />
-            </button>
+            <ConfirmDelete onConfirm={() => removeRow(table.collection, row.original.id)} />
           </span>
         ),
         meta: { right: true } satisfies ColMeta,
-      },
+      } as ColumnDef<Row>] : []),
     ],
-    [table, removeRow]
+    [table, removeRow, editable, store.me?.access]
   );
 
   const data = useMemo(
@@ -155,17 +197,32 @@ export default function DataTable({
               className="w-full rounded-full border border-line bg-black-raised py-2.5 pl-10 pr-4 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-red"
             />
           </div>
-          <button
-            type="button"
-            onClick={() => setEditing({ row: table.blank(), isNew: true })}
-            className="btn-sweep mono-label whitespace-nowrap bg-red px-5 py-2.5 text-ink"
-            style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
-          >
-            New {table.noun}
-          </button>
+          {editable && table.create !== false && (
+            <button
+              type="button"
+              onClick={() => setEditing({ row: table.blank(), isNew: true })}
+              // Creating into a collection we couldn't read risks colliding with
+              // a row that's already there and merely invisible right now.
+              disabled={Boolean(loadError) || status === "loading"}
+              className="btn-sweep mono-label whitespace-nowrap bg-red px-5 py-2.5 text-ink disabled:opacity-50"
+              style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
+            >
+              New {table.noun}
+            </button>
+          )}
         </div>
       </header>
 
+      {loadError ? (
+        <div className="rounded-media border border-line bg-black-raised">
+          <LoadError what={table.title.toLowerCase()} message={loadError} />
+        </div>
+      ) : status === "loading" ? (
+        <div className="rounded-media border border-line bg-black-raised">
+          <Loading label={`Loading ${table.title}`} />
+        </div>
+      ) : (
+        <>
       {table.filters && (
         <div className="flex flex-wrap gap-2">
           <Chip active={filter === null} onClick={() => setFilter(null)}>
@@ -250,11 +307,17 @@ export default function DataTable({
           </tbody>
         </table>
 
-        {filtered === 0 && (
-          <p className="px-5 py-12 text-center text-muted">
-            Nothing matches that. Clear the search or filter to see all {rows.length} records.
-          </p>
-        )}
+        {/* Two different nothings: nothing in the table at all, versus nothing
+            left after a search. Only the first is a claim about the shop. */}
+        {filtered === 0 &&
+          (rows.length === 0 ? (
+            <Empty what={table.title.toLowerCase()} />
+          ) : (
+            <p className="px-5 py-12 text-center text-muted">
+              Nothing matches that. Clear the search or filter to see all {rows.length}{" "}
+              records.
+            </p>
+          ))}
       </div>
 
       {/* Pagination */}
@@ -295,6 +358,8 @@ export default function DataTable({
           </PageButton>
         </div>
       </div>
+        </>
+      )}
 
       {editing && (
         <RowForm

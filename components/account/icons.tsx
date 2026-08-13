@@ -16,6 +16,7 @@ export {
   CheckCircleIcon,
   WrenchIcon,
   DollarIcon,
+  StarIcon,
 } from "@/components/ui/icons";
 
 export {

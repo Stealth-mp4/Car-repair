@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useAdmin, unreadNotifications, type AdminStore } from "@/lib/admin/store";
+import { useAdmin, attention, type AdminStore } from "@/lib/admin/store";
 import { sections } from "@/lib/admin/sections";
-import { feedStamp, initials } from "@/lib/admin/format";
+import { canSee } from "@/lib/admin/access";
+import { initials } from "@/lib/admin/format";
 import { BellIcon, ChevronIcon, MenuIcon, SearchIcon } from "@/components/admin/icons";
 import { signOut } from "@/app/admin/login/actions";
-
-/** The signed-in operator. Replace with the session user once auth is wired. */
-const currentUser = { name: "Admin", role: "Super Admin" };
 
 /** Cross-section search — reuses each section's own `searchText`, so a new
  *  section becomes searchable the moment it's added to sections.tsx. */
@@ -43,7 +41,12 @@ const closeOnBlur = (close: () => void) => (e: React.FocusEvent<HTMLDivElement>)
 export default function Topbar() {
   const state = useAdmin((s) => s);
   const search = state.ui.search;
-  const unread = unreadNotifications(state);
+  const needsAttention = attention(state);
+
+  // The real signed-in staff member, hydrated by the console layout. Falls
+  // back to a neutral label rather than a fake "Super Admin" while it loads.
+  const me = state.me;
+  const access = me?.access;
 
   const [openMenu, setOpenMenu] = useState<"none" | "bell" | "user">("none");
   const dismiss = closeOnBlur(() => setOpenMenu("none"));
@@ -96,36 +99,45 @@ export default function Topbar() {
         <button
           type="button"
           onClick={() => setOpenMenu(openMenu === "bell" ? "none" : "bell")}
-          aria-label={`Notifications, ${unread} unread`}
+          aria-label={`Notifications, ${needsAttention.length} needing attention`}
           aria-expanded={openMenu === "bell"}
           className="relative rounded-input p-2 text-cream transition-colors hover:bg-black-raised hover:text-ink"
         >
           <BellIcon className="h-5 w-5" />
-          {unread > 0 && (
+          {needsAttention.length > 0 && (
             <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red px-1 font-mono text-[0.625rem] text-ink">
-              {unread}
+              {needsAttention.length}
             </span>
           )}
         </button>
         {openMenu === "bell" && (
           <div className="absolute right-0 top-[calc(100%+8px)] w-80 rounded-media border border-line bg-black-raised">
-            <div className="flex items-center justify-between border-b border-line px-4 py-3">
-              <p className="mono-label text-ink">Notifications</p>
-              <button
-                type="button"
-                onClick={state.markAllNotificationsRead}
-                className="mono-label text-red hover:text-cream"
-              >
-                Mark all read
-              </button>
+            <div className="border-b border-line px-4 py-3">
+              <p className="mono-label text-ink">Needs attention</p>
             </div>
+            {/* No "mark all read": every item here is a live condition, so the
+                way to clear one is to deal with it. */}
             <ul className="max-h-72 overflow-y-auto scrollbar-none">
-              {state.notifications.map((n) => (
-                <li key={n.id} className="border-b border-line px-4 py-3 last:border-0">
-                  <p className={`text-sm ${n.read ? "text-muted" : "text-cream"}`}>
-                    {n.text}
-                  </p>
-                  <p className="mono-label mt-1">{feedStamp(n.at)}</p>
+              {needsAttention.length === 0 && (
+                <li className="px-4 py-6 text-center text-sm text-muted">
+                  {state.status === "loading" ? "Loading…" : "Nothing needs attention."}
+                </li>
+              )}
+              {needsAttention.map((n) => (
+                <li key={n.id} className="border-b border-line last:border-0">
+                  <Link
+                    href={n.href}
+                    onClick={() => setOpenMenu("none")}
+                    className="flex items-start gap-2.5 px-4 py-3 transition-colors hover:bg-black"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
+                        n.urgency === "now" ? "bg-red" : "bg-warn"
+                      }`}
+                    />
+                    <span className="text-sm text-cream">{n.text}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -142,28 +154,40 @@ export default function Topbar() {
           className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-black-raised"
         >
           <span className="mono-label flex h-9 w-9 items-center justify-center rounded-full border border-maroon bg-burgundy text-ink">
-            {initials(currentUser.name)}
+            {initials(me?.name ?? "?")}
           </span>
           <span className="hidden text-left leading-tight sm:block">
-            <span className="block text-sm text-ink">{currentUser.name}</span>
-            <span className="mono-label block">{currentUser.role}</span>
+            <span className="block text-sm text-ink">{me?.name ?? "Signed in"}</span>
+            <span className="mono-label block">{me?.access ?? ""}</span>
           </span>
           <ChevronIcon className="h-4 w-4 text-muted" />
         </button>
         {openMenu === "user" && (
           <div className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-media border border-line bg-black-raised py-2">
             <Link
-              href="/admin/settings"
+              href="/admin/account"
               className="block px-4 py-2 text-sm text-cream hover:bg-burgundy/40"
             >
-              Settings
+              Your account
             </Link>
-            <Link
-              href="/admin/users"
-              className="block px-4 py-2 text-sm text-cream hover:bg-burgundy/40"
-            >
-              Console users
-            </Link>
+            {/* Both owner-only. The routes redirect anyway, but offering a link
+                that bounces you back to the dashboard reads as broken. */}
+            {canSee(access, "settings") && (
+              <Link
+                href="/admin/settings"
+                className="block px-4 py-2 text-sm text-cream hover:bg-burgundy/40"
+              >
+                Settings
+              </Link>
+            )}
+            {canSee(access, "users") && (
+              <Link
+                href="/admin/users"
+                className="block px-4 py-2 text-sm text-cream hover:bg-burgundy/40"
+              >
+                Console users
+              </Link>
+            )}
             <Link
               href="/"
               className="block px-4 py-2 text-sm text-cream hover:bg-burgundy/40"

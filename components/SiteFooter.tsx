@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { brand, business, hours, services, social } from "@/lib/site";
+import { brand, services } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 
 const PHONE_ICON = (
   <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
@@ -61,10 +62,11 @@ const TIKTOK_ICON = (
 /**
  * SiteFooter (V5 — Habibi Tires & Wheels reference) — logo + blurb, pill
  * contact buttons with icons, circular social icon buttons, service/company/
- * hours columns, a credits row, and the oversized wordmark bleeding off the
+ * shop.hours columns, a credits row, and the oversized wordmark bleeding off the
  * bottom edge on a Deep Burgundy plate.
  */
-export default function SiteFooter() {
+export default async function SiteFooter() {
+  const shop = await getShop();
   return (
     <footer className="border-t border-line" style={{ paddingInline: "var(--gutter)" }}>
       <div className="grid grid-cols-1 gap-10 py-16 md:grid-cols-3 lg:grid-cols-5">
@@ -72,7 +74,7 @@ export default function SiteFooter() {
           <div className="relative h-12 w-32">
             <Image
               src={brand.markTight}
-              alt={business.name}
+              alt={shop.business.name}
               fill
               sizes="140px"
               className="object-contain object-left"
@@ -85,29 +87,29 @@ export default function SiteFooter() {
 
           <div className="mt-6 flex flex-col items-start gap-2.5">
             <a
-              href={business.phoneHref}
+              href={shop.business.phoneHref}
               className="flex items-center gap-2.5 rounded-full border border-line px-4 py-2.5 text-sm text-ink transition-colors hover:border-maroon"
             >
               {PHONE_ICON}
-              {business.phone}
+              {shop.business.phone}
             </a>
             <a
-              href={`mailto:${business.email}`}
+              href={`mailto:${shop.business.email}`}
               className="flex items-center gap-2.5 rounded-full border border-line px-4 py-2.5 text-sm text-ink transition-colors hover:border-maroon"
             >
               {MAIL_ICON}
-              {business.email}
+              {shop.business.email}
             </a>
             <span className="flex items-center gap-2.5 rounded-full border border-line px-4 py-2.5 text-sm text-ink">
               {PIN_ICON}
-              {business.address.street}, {business.address.locality}, {business.address.region}{" "}
-              {business.address.postalCode}
+              {shop.business.address.street}, {shop.business.address.locality}, {shop.business.address.region}{" "}
+              {shop.business.address.postalCode}
             </span>
           </div>
 
           <div className="mt-6 flex items-center gap-3">
             <a
-              href={social.instagram}
+              href={shop.social.instagram}
               aria-label="Instagram"
               className="btn-sweep flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink"
               style={{ ["--sweep" as string]: "var(--color-black-raised)" }}
@@ -115,7 +117,7 @@ export default function SiteFooter() {
               {INSTAGRAM_ICON}
             </a>
             <a
-              href={social.facebook}
+              href={shop.social.facebook}
               aria-label="Facebook"
               className="btn-sweep flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink"
               style={{ ["--sweep" as string]: "var(--color-black-raised)" }}
@@ -123,7 +125,7 @@ export default function SiteFooter() {
               {FACEBOOK_ICON}
             </a>
             <a
-              href={social.tiktok}
+              href={shop.social.tiktok}
               aria-label="TikTok"
               className="btn-sweep flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink"
               style={{ ["--sweep" as string]: "var(--color-black-raised)" }}
@@ -180,7 +182,7 @@ export default function SiteFooter() {
         <div>
           <p className="mono-label">Hours</p>
           <ul className="mt-4 space-y-2 text-muted">
-            {hours.map((h) => (
+            {shop.hours.map((h) => (
               <li key={h.day} className="flex justify-between gap-6">
                 <span>{h.day}</span>
                 <span>{h.value}</span>
@@ -193,7 +195,7 @@ export default function SiteFooter() {
       {/* Credits row */}
       <div className="flex flex-col items-start justify-between gap-4 border-t border-line py-6 text-sm text-muted md:flex-row md:items-center">
         <span>
-          © {new Date().getFullYear()} {business.name}. All Rights Reserved.
+          © {new Date().getFullYear()} {shop.business.name}. All Rights Reserved.
         </span>
         <a
           href="https://webwidesolutions.com"
@@ -214,7 +216,7 @@ export default function SiteFooter() {
       {/* Oversized wordmark — Deep Burgundy plate, bleeds subtly off the bottom edge */}
       <div className="pointer-events-none overflow-hidden bg-burgundy" aria-hidden="true">
         <p className="translate-y-[15%] whitespace-nowrap font-display font-semibold leading-none tracking-[-0.03em] text-black-raised text-[clamp(2.5rem,15vw,13rem)]">
-          {business.wordmark}
+          {shop.business.wordmark}
         </p>
       </div>
     </footer>

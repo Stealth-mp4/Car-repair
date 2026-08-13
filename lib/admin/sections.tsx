@@ -10,7 +10,7 @@
  */
 
 import type { ReactNode } from "react";
-import type { AdminStore, Collections } from "@/lib/admin/store";
+import type { AdminStore, RowCollections } from "@/lib/admin/store";
 import {
   GridIcon,
   CalendarIcon,
@@ -31,12 +31,22 @@ import {
 import { currency, shortDate, timeLabel } from "@/lib/admin/format";
 import { TODAY } from "@/lib/admin/data";
 import StatusPill, { type Tone } from "@/components/admin/StatusPill";
+import CopyCode from "@/components/admin/CopyCode";
+import ReplyLinks from "@/components/admin/ReplyLinks";
+import ReadToggle from "@/components/admin/ReadToggle";
 
 export type Row = { id: string };
 
 export type Column = {
   label: string;
   cell: (row: Row) => ReactNode;
+  /**
+   * Section slug the viewer must be able to see for this column to render.
+   * For columns derived from another table: a technician can't read invoices,
+   * so a customer's lifetime value comes back 0 for them — and a confident $0
+   * is worse than no column.
+   */
+  needs?: string;
   /** return a sortable primitive to make the column sortable; omit to disable */
   sortBy?: (row: Row) => string | number;
   /** right-align numeric columns */
@@ -51,10 +61,36 @@ export type Field = {
   label: string;
   type: "text" | "number" | "date" | "time" | "datetime-local" | "select" | "textarea" | "checkbox";
   options?: readonly string[];
+  /**
+   * Options read from the store instead of a fixed list — for foreign keys,
+   * where the valid values are whatever rows exist right now.
+   */
+  optionsFrom?: (s: AdminStore) => { value: string; label: string }[];
+  /**
+   * Copy the chosen option's label into this key too. Appointments and projects
+   * store `customerName` alongside `customerId`; picking an owner has to set
+   * both or the row shows one customer's name against another's id.
+   */
+  syncLabelTo?: string;
   required?: boolean;
   /** takes the full row width instead of half */
   wide?: boolean;
 };
+
+/**
+ * The owner picker. `customerId` is `not null references customers` on
+ * appointments, projects and vehicles, so a form without it can create rows
+ * that the database refuses — which is exactly what it did: every "New
+ * appointment" failed on the foreign key, silently.
+ */
+const customerField = (syncLabelTo?: string): Field => ({
+  key: "customerId",
+  label: "Customer",
+  type: "select",
+  required: true,
+  optionsFrom: (s) => s.customers.map((c) => ({ value: c.id, label: c.name })),
+  syncLabelTo,
+});
 
 export type SectionDef = {
   slug: string;
@@ -68,12 +104,17 @@ export type SectionDef = {
     noun: string;
     blurb: string;
     /** which store collection edits write back to */
-    collection: keyof Collections;
+    collection: keyof RowCollections;
     rows: (s: AdminStore) => Row[];
     columns: Column[];
     fields: Field[];
     /** defaults for a newly created row */
     blank: () => Row;
+    /**
+     * Set false where hand-creating a row makes no sense. Messages are things
+     * that ARRIVED — typing one in invents an enquiry nobody sent.
+     */
+    create?: boolean;
     /** fields concatenated for the console search box */
     searchText: (row: Row) => string;
     /** optional status filter chips */
@@ -90,11 +131,12 @@ function def<T extends Row>(cfg: {
     title: string;
     noun: string;
     blurb: string;
-    collection: keyof Collections;
+    collection: keyof RowCollections;
     rows: (s: AdminStore) => T[];
     columns: {
       label: string;
       cell: (row: T) => ReactNode;
+      needs?: string;
       sortBy?: (row: T) => string | number;
       right?: boolean;
       secondary?: boolean;
@@ -104,6 +146,7 @@ function def<T extends Row>(cfg: {
     // ("pending", 0, "") that would otherwise narrow T and fight `rows`, which
     // is where the row type should come from.
     blank: () => Row;
+    create?: boolean;
     searchText: (row: T) => string;
     filters?: { label: string; match: (row: T) => boolean }[];
   };
@@ -180,7 +223,7 @@ export const sections: SectionDef[] = [
       }),
       fields: [
         { key: "vehicle", label: "Vehicle", type: "text", required: true, wide: true },
-        { key: "customerName", label: "Customer", type: "text", required: true },
+        customerField("customerName"),
         { key: "service", label: "Service", type: "text", required: true },
         { key: "date", label: "Date", type: "date", required: true },
         { key: "time", label: "Time", type: "time", required: true },
@@ -255,8 +298,21 @@ export const sections: SectionDef[] = [
           ),
         },
         { label: "Phone", cell: (c) => c.phone, secondary: true },
+        {
+          // Read straight off the row rather than out of the edit dialog — see
+          // CopyCode. Null for anyone the view withholds it from.
+          label: "Passport code",
+          sortBy: (c) => c.accessCode ?? "",
+          cell: (c) => <CopyCode value={c.accessCode ?? null} />,
+        },
         { label: "Vehicles", sortBy: (c) => c.vehicleCount, cell: (c) => c.vehicleCount, right: true, secondary: true },
-        { label: "Lifetime", sortBy: (c) => c.lifetimeValue, cell: (c) => currency(c.lifetimeValue), right: true },
+        {
+          label: "Lifetime",
+          sortBy: (c) => c.lifetimeValue,
+          cell: (c) => currency(c.lifetimeValue),
+          needs: "invoices",
+          right: true,
+        },
         { label: "Joined", sortBy: (c) => c.joined, cell: (c) => shortDate(c.joined), right: true, secondary: true },
       ],
     },
@@ -273,7 +329,7 @@ export const sections: SectionDef[] = [
       blurb: "Every vehicle on file, with the finish currently on it.",
       collection: "vehicles",
       rows: (s) => s.vehicles,
-      searchText: (v) => `${v.year} ${v.make} ${v.model} ${v.customerName} ${v.vin ?? ""}`,
+      searchText: (v) => `${v.year} ${v.make} ${v.model} ${v.customerName ?? ""} ${v.vin ?? ""}`,
       blank: () => ({
         id: newId("veh"),
         customerId: "",
@@ -290,7 +346,9 @@ export const sections: SectionDef[] = [
         { key: "year", label: "Year", type: "number", required: true },
         { key: "make", label: "Make", type: "text", required: true },
         { key: "model", label: "Model", type: "text", required: true },
-        { key: "customerName", label: "Owner", type: "text", required: true },
+        // No syncLabelTo: on vehicles `customerName` comes from the
+        // admin_vehicles view, and writable() strips it before the write.
+        { ...customerField(), label: "Owner" },
         { key: "vin", label: "VIN", type: "text" },
         { key: "wrapColor", label: "Finish", type: "text" },
         { key: "ppf.coverage", label: "PPF coverage", type: "text" },
@@ -308,7 +366,14 @@ export const sections: SectionDef[] = [
             </div>
           ),
         },
-        { label: "Owner", sortBy: (v) => v.customerName, cell: (v) => v.customerName },
+        {
+          label: "Owner",
+          // Null when the viewer can't read customers — admin_vehicles left-joins
+          // them, so a technician gets the car without the owner's name. A dash
+          // says "withheld"; a blank cell reads as missing data.
+          sortBy: (v) => v.customerName ?? "",
+          cell: (v) => v.customerName ?? <span className="text-muted">&mdash;</span>,
+        },
         { label: "Finish", cell: (v) => v.wrapColor || "—", secondary: true },
         {
           label: "PPF / Tint",
@@ -347,7 +412,7 @@ export const sections: SectionDef[] = [
       }),
       fields: [
         { key: "vehicle", label: "Vehicle", type: "text", required: true, wide: true },
-        { key: "customerName", label: "Customer", type: "text", required: true },
+        customerField("customerName"),
         { key: "service", label: "Service", type: "text", required: true },
         { key: "assignedTo", label: "Assigned to", type: "text" },
         { key: "status", label: "Status", type: "select", options: PROJECT_STATUS },
@@ -445,6 +510,91 @@ export const sections: SectionDef[] = [
   }),
 
   def({
+    slug: "promos",
+    label: "Promos",
+    group: "main",
+    icon: StarIcon,
+    table: {
+      title: "Promos",
+      noun: "promo",
+      blurb: "Offers on /promos and in the bar above the nav. Claimed from a customer account.",
+      collection: "promos",
+      // Soonest deadline first, matching activePromos() on the public site.
+      rows: (s) => [...s.promos].sort((a, b) => a.endsAt.localeCompare(b.endsAt)),
+      searchText: (p) => `${p.headline} ${p.label} ${p.id}`,
+      blank: () => ({
+        id: newId("promo"),
+        barText: "",
+        label: "LIMITED",
+        headline: "",
+        detail: "",
+        image: "/VINYL_WRAP.webp",
+        endsAt: `${TODAY}T23:59`,
+        cta: { label: "Claim this offer", href: "/quote" },
+        payUrl: "",
+      }),
+      filters: [
+        { label: "Live", match: (p) => p.endsAt > TODAY },
+        { label: "Expired", match: (p) => p.endsAt <= TODAY },
+      ],
+      fields: [
+        { key: "headline", label: "Headline", type: "text", required: true, wide: true },
+        { key: "detail", label: "Detail", type: "textarea", wide: true },
+        { key: "label", label: "Window label", type: "text" },
+        { key: "barText", label: "Promo bar text", type: "text" },
+        { key: "endsAt", label: "Ends", type: "datetime-local", required: true },
+        { key: "image", label: "Image path", type: "text" },
+        { key: "spotsTotal", label: "Spots total", type: "number" },
+        { key: "spotsLeft", label: "Spots left", type: "number" },
+        { key: "cta.label", label: "Button label", type: "text" },
+        { key: "cta.href", label: "Button link", type: "text" },
+        // Square (square.link/...) or Stripe (buy.stripe.com/...). Empty falls
+        // back to the booking link above — see Promo.payUrl in lib/site.ts.
+        { key: "payUrl", label: "Payment link", type: "text", wide: true },
+      ],
+      columns: [
+        {
+          label: "Offer",
+          sortBy: (p) => p.headline,
+          cell: (p) => (
+            <span>
+              <span className="block text-ink">{p.headline}</span>
+              <span className="mono-label">{p.label}</span>
+            </span>
+          ),
+        },
+        {
+          label: "Ends",
+          sortBy: (p) => p.endsAt,
+          cell: (p) => shortDate(p.endsAt.slice(0, 10)),
+          secondary: true,
+        },
+        {
+          label: "Spots",
+          sortBy: (p) => p.spotsLeft ?? -1,
+          cell: (p) =>
+            p.spotsTotal && p.spotsLeft !== undefined
+              ? `${p.spotsLeft} / ${p.spotsTotal}`
+              : "\u2014",
+          right: true,
+          secondary: true,
+        },
+        {
+          label: "Payment",
+          cell: (p) => pill(p.payUrl ? "active" : "pending", p.payUrl ? "link set" : "no link"),
+          right: true,
+          secondary: true,
+        },
+        {
+          label: "Status",
+          cell: (p) => pill(p.endsAt > TODAY ? "published" : "hidden", p.endsAt > TODAY ? "live" : "expired"),
+          right: true,
+        },
+      ],
+    },
+  }),
+
+  def({
     slug: "invoices",
     label: "Invoices",
     group: "main",
@@ -465,7 +615,6 @@ export const sections: SectionDef[] = [
         dueDate: TODAY,
         description: "",
         amount: 0,
-        fileUrl: "",
         status: "due" as const,
       }),
       fields: [
@@ -475,7 +624,6 @@ export const sections: SectionDef[] = [
         { key: "status", label: "Status", type: "select", options: INVOICE_STATUS },
         { key: "date", label: "Issued", type: "date" },
         { key: "dueDate", label: "Due", type: "date" },
-        { key: "fileUrl", label: "PDF path", type: "text" },
       ],
       filters: [
         { label: "Paid", match: (i) => i.status === "paid" },
@@ -690,31 +838,29 @@ export const sections: SectionDef[] = [
       noun: "message",
       blurb: "Enquiries from the web form, chat widget, email, and SMS.",
       collection: "messages",
+      create: false,
       rows: (s) => [...s.messages].sort((a, b) => b.date.localeCompare(a.date)),
-      searchText: (m) => `${m.from} ${m.subject} ${m.preview} ${m.channel}`,
+      searchText: (m) => `${m.from} ${m.subject} ${m.preview} ${m.channel} ${m.phone ?? ""} ${m.email}`,
       blank: () => ({
         id: newId("msg"),
         from: "",
         email: "",
+        phone: "",
         subject: "",
         preview: "",
         date: TODAY,
         read: false,
         channel: "Web form" as const,
       }),
+      /*
+       * Contact details only, on purpose. What someone wrote, when it arrived
+       * and which channel it came through are facts about an event — editing
+       * them rewrites the record. A mistyped email is the one thing worth
+       * repairing here, because Reply and Call depend on it.
+       */
       fields: [
-        { key: "from", label: "From", type: "text", required: true },
         { key: "email", label: "Email", type: "text" },
-        { key: "subject", label: "Subject", type: "text", required: true, wide: true },
-        { key: "preview", label: "Message", type: "textarea", wide: true },
-        {
-          key: "channel",
-          label: "Channel",
-          type: "select",
-          options: ["Web form", "Chat", "Email", "SMS"],
-        },
-        { key: "date", label: "Received", type: "date" },
-        { key: "read", label: "Marked read", type: "checkbox" },
+        { key: "phone", label: "Phone", type: "text" },
       ],
       filters: [
         { label: "Unread", match: (m) => !m.read },
@@ -729,16 +875,21 @@ export const sections: SectionDef[] = [
               <p className={m.read ? "text-muted" : "text-ink"}>
                 {m.from} — {m.subject}
               </p>
-              <p className="mt-1 text-muted">{m.preview}</p>
+              <p className="mt-1 whitespace-pre-line text-muted">{m.preview}</p>
             </div>
           ),
         },
         { label: "Channel", sortBy: (m) => m.channel, cell: (m) => m.channel, secondary: true },
+        {
+          label: "Reply",
+          cell: (m) => <ReplyLinks email={m.email} phone={m.phone} subject={m.subject} />,
+          right: true,
+        },
         { label: "Received", sortBy: (m) => m.date, cell: (m) => shortDate(m.date), right: true, secondary: true },
         {
           label: "Status",
           sortBy: (m) => String(m.read),
-          cell: (m) => pill(m.read ? "completed" : "pending", m.read ? "Read" : "Unread"),
+          cell: (m) => <ReadToggle id={m.id} read={m.read} />,
           right: true,
         },
       ],

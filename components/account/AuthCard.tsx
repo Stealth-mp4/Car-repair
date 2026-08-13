@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { brand, business } from "@/lib/site";
+import { brand } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 
 /**
  * Shared chrome for the sign-in and sign-up pages — brand mark, a bordered
@@ -25,13 +26,14 @@ export default function AuthCard({
   /** sign-up has twice the fields, so it gets a wider card */
   wide?: boolean;
 }) {
+  const shop = useShop();
   return (
     <main className="flex min-h-svh items-center justify-center px-[var(--gutter)] py-16">
       <div className={`w-full ${wide ? "max-w-xl" : "max-w-sm"}`}>
         <div className="relative mx-auto mb-8 h-12 w-36">
           <Image
             src={brand.markTight}
-            alt={business.name}
+            alt={shop.business.name}
             fill
             sizes="144px"
             priority
@@ -50,7 +52,7 @@ export default function AuthCard({
           {footer}
           <p className="mono-label">
             <Link href="/" className="link-underline hover:text-cream">
-              Back to {business.name}
+              Back to {shop.business.name}
             </Link>
           </p>
         </div>

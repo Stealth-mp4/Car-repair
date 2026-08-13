@@ -1,42 +1,70 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { LOGIN_PATH, SESSION_COOKIE, readConfig, sessionValid } from "@/lib/admin/auth";
 
 /**
- * Gate on /admin. Checks the signed session cookie and redirects to the login
- * screen when it's missing, forged, or expired — no browser Basic-auth prompt.
+ * Gate on /admin, plus Supabase session refresh.
  *
- * The login route itself is excluded (it's where unauthenticated users are
- * sent), as is logout (which must stay reachable to clear a stale cookie).
+ * Two jobs, and the refresh is the non-obvious one: access tokens are
+ * short-lived, and Server Components can't set cookies. Without a rotation
+ * here, a console tab left open would quietly fall out of its session and start
+ * rendering empty tables instead of redirecting to login.
  *
- * Fails closed: with ADMIN_USER / ADMIN_PASSWORD / SESSION_SECRET unset, the
- * console is unreachable rather than open — the login page then renders setup
- * instructions instead of a form. See README-admin.md.
+ * WHAT THIS CHECKS: that the request carries a valid Supabase session. It does
+ * NOT check staff membership — that needs a database round trip, and doing one
+ * in middleware costs it on every asset request. The console layout checks it
+ * once per page instead, and RLS enforces it on every query regardless, so a
+ * signed-in non-staff user reaches a redirect, never data.
  */
 
-export const config = { matcher: ["/admin/:path*", "/api/admin/:path*"] };
+export const config = {
+  matcher: [
+    // Everything except Next internals and static files — the session needs
+    // refreshing on ordinary page loads too, not only on /admin.
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|woff2?)$).*)",
+  ],
+};
 
-const PUBLIC_PATHS = new Set([LOGIN_PATH, "/api/admin/logout"]);
+export const LOGIN_PATH = "/admin/login";
 
 export async function middleware(req: NextRequest) {
+  let res = NextResponse.next({ request: req });
+
+  const db = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll: () => req.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          // Written to BOTH the request (so anything later in this pass sees
+          // the fresh token) and the response (so the browser keeps it).
+          for (const { name, value } of cookiesToSet) {
+            req.cookies.set(name, value);
+          }
+          res = NextResponse.next({ request: req });
+          for (const { name, value, options } of cookiesToSet) {
+            res.cookies.set(name, value, options);
+          }
+        },
+      },
+    },
+  );
+
+  // Must run, and must be getUser(): this call is what performs the refresh,
+  // and it verifies the token rather than decoding it. Removing it turns the
+  // gate below into a check of whether a cookie merely EXISTS.
+  const { data: { user } } = await db.auth.getUser();
+
   const { pathname } = req.nextUrl;
-  const cfg = readConfig();
+  if (!pathname.startsWith("/admin")) return res;
 
-  if (!cfg) {
-    if (pathname === LOGIN_PATH) return NextResponse.next();
-    return NextResponse.redirect(new URL(LOGIN_PATH, req.url));
+  if (pathname === LOGIN_PATH) {
+    // Already signed in? Skip the form.
+    if (user) return NextResponse.redirect(new URL("/admin", req.url));
+    return res;
   }
 
-  const authed = await sessionValid(req.cookies.get(SESSION_COOKIE)?.value, cfg);
-
-  if (PUBLIC_PATHS.has(pathname)) {
-    // Already signed in? Skip the login form.
-    if (pathname === LOGIN_PATH && authed) {
-      return NextResponse.redirect(new URL("/admin", req.url));
-    }
-    return NextResponse.next();
-  }
-
-  if (authed) return NextResponse.next();
+  if (user) return res;
 
   // Remember where they were headed so login can send them back.
   const login = new URL(LOGIN_PATH, req.url);

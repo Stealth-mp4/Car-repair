@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { business } from "@/lib/site";
+import { useShop } from "@/components/ShopProvider";
 import { emptyLead, validateContact, submitLead, type Lead } from "@/lib/lead";
 
 const fieldClass =
@@ -31,6 +31,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
  * the tire specifics carried in the note so nothing needs a second schema.
  */
 export default function TireQuoteForm() {
+  const shop = useShop();
   const [year, setYear] = useState("");
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
@@ -119,8 +120,8 @@ export default function TireQuoteForm() {
                 We&apos;ll come back with a tire recommendation for your{" "}
                 {[year, make, model].filter(Boolean).join(" ") || "vehicle"}. For anything
                 urgent, call{" "}
-                <a href={business.phoneHref} className="link-underline text-ink">
-                  {business.phone}
+                <a href={shop.business.phoneHref} className="link-underline text-ink">
+                  {shop.business.phone}
                 </a>
                 .
               </p>
@@ -220,7 +221,7 @@ export default function TireQuoteForm() {
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder={business.phone}
+                    placeholder={shop.business.phone}
                     inputMode="tel"
                     autoComplete="tel"
                     className={fieldClass}

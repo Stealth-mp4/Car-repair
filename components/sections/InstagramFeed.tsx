@@ -1,5 +1,5 @@
 import InstagramGrid, { type SocialPost } from "@/components/sections/InstagramGrid";
-import { social } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 import RevealLines from "@/components/ui/RevealLines";
 import Reveal from "@/components/ui/Reveal";
 
@@ -43,7 +43,8 @@ const POSTS: SocialPost[] = [
  * graded to match the site's photo treatment, plus follow links out to all
  * three live socials (Instagram, Facebook, TikTok).
  */
-export default function InstagramFeed() {
+export default async function InstagramFeed() {
+  const shop = await getShop();
   const posts = POSTS;
 
   return (
@@ -60,13 +61,13 @@ export default function InstagramFeed() {
           />
         </div>
         <Reveal delay={0.1} className="flex flex-wrap items-center gap-x-8 gap-y-2">
-          <a href={social.instagram} className="link-underline text-sm text-cream">
+          <a href={shop.social.instagram} className="link-underline text-sm text-cream">
             Instagram
           </a>
-          <a href={social.facebook} className="link-underline text-sm text-cream">
+          <a href={shop.social.facebook} className="link-underline text-sm text-cream">
             Facebook
           </a>
-          <a href={social.tiktok} className="link-underline text-sm text-cream">
+          <a href={shop.social.tiktok} className="link-underline text-sm text-cream">
             TikTok
           </a>
         </Reveal>

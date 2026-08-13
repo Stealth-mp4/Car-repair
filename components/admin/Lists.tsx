@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useAdmin, upcomingAppointments } from "@/lib/admin/store";
 import { dayMonth, feedStamp, initials, shortDate, timeLabel } from "@/lib/admin/format";
 import { Panel, ScrollX, ViewAll } from "@/components/admin/Panel";
+import { Empty, Guard } from "@/components/admin/States";
 import StatusPill from "@/components/admin/StatusPill";
 import { toneFor } from "@/lib/admin/sections";
 import {
@@ -32,6 +33,8 @@ export function RecentAppointments() {
       className="h-full"
       action={<ViewAll href="/admin/appointments" />}
     >
+      <Guard of="appointments" what="appointments" rows={5}>
+      {rows.length === 0 && <Empty what="appointments" />}
       <ScrollX>
         <ul>
           {rows.map((a) => (
@@ -72,6 +75,7 @@ export function RecentAppointments() {
           ))}
         </ul>
       </ScrollX>
+      </Guard>
     </Panel>
   );
 }
@@ -88,6 +92,8 @@ export function UpcomingAppointments() {
       className="h-full"
       action={<ViewAll href="/admin/appointments" label="View Calendar" />}
     >
+      <Guard of="appointments" what="appointments" rows={4}>
+      {rows.length === 0 && <Empty what="upcoming appointments" />}
       <ScrollX>
         <ul>
           {rows.map((a) => (
@@ -119,6 +125,7 @@ export function UpcomingAppointments() {
           ))}
         </ul>
       </ScrollX>
+      </Guard>
     </Panel>
   );
 }
@@ -137,6 +144,8 @@ export function RecentCustomers() {
       className="h-full"
       action={<ViewAll href="/admin/customers" />}
     >
+      <Guard of="customers" what="customers" rows={5}>
+      {rows.length === 0 && <Empty what="customers" />}
       <ul>
         {rows.map((c) => (
           <li
@@ -163,6 +172,7 @@ export function RecentCustomers() {
           </li>
         ))}
       </ul>
+      </Guard>
     </Panel>
   );
 }
@@ -188,6 +198,8 @@ export function RecentActivity() {
       className="h-full"
       action={<ViewAll href="/admin/activity" />}
     >
+      <Guard of="activity" what="activity" rows={5}>
+      {rows.length === 0 && <Empty what="activity" />}
       <ScrollX>
         <ul>
           {rows.map((a) => {
@@ -207,6 +219,7 @@ export function RecentActivity() {
           })}
         </ul>
       </ScrollX>
+      </Guard>
     </Panel>
   );
 }

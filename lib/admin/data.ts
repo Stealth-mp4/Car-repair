@@ -13,8 +13,22 @@ import type { Customer, Vehicle, Invoice } from "@/lib/builds";
 import { customers as seedCustomers, vehicles as seedVehicles, invoices as seedInvoices } from "@/lib/passport";
 import { services as catalog } from "@/lib/site";
 
-/** The dashboard's "today". Replace with the server clock once data is live. */
-export const TODAY = "2026-08-03";
+/**
+ * The dashboard's "today", as a calendar date in the shop's own timezone.
+ *
+ * Pinned to America/Chicago, not the viewer's zone and not UTC: at 8pm in
+ * Houston, UTC is already tomorrow, and "upcoming appointments" would silently
+ * drop the evening's jobs. `en-CA` formats as YYYY-MM-DD, which is the shape
+ * every comparison in the store and sections already expects.
+ *
+ * ponytail: module constant, so it's fixed when the bundle loads. A console tab
+ * left open across midnight shows yesterday's date until reload, and a browser
+ * clock set to the wrong day will disagree with the server render. Both are
+ * cosmetic. Thread a per-request date through the store if that stops being true.
+ */
+export const TODAY = new Date().toLocaleDateString("en-CA", {
+  timeZone: "America/Chicago",
+});
 
 /* ---- Types --------------------------------------------------------------- */
 
@@ -58,7 +72,12 @@ export type AdminCustomer = Customer & {
   lifetimeValue: number;
 };
 
-export type AdminInvoice = Invoice & {
+/**
+ * No `fileUrl`: the payment processors hold the actual invoice documents, so
+ * the shop's own record is a ledger line, not a pointer to a PDF. Omitted from
+ * the passport `Invoice` rather than left to dangle at a dead link.
+ */
+export type AdminInvoice = Omit<Invoice, "fileUrl"> & {
   customerId: string;
   customerName: string;
   status: InvoiceStatus;
@@ -100,6 +119,8 @@ export type Message = {
   id: string;
   from: string;
   email: string;
+  /** Optional: seeded rows predate the column, and email-only enquiries have none. */
+  phone?: string | null;
   subject: string;
   preview: string;
   date: string;
@@ -361,14 +382,6 @@ export const revenueBreakdown = {
   avgOrderValue: 2450,
 };
 
-/** Week-over-week deltas for the stat row. Server-computed in production. */
-export const deltas = {
-  appointments: 12,
-  projects: 8,
-  revenue: 15,
-  customers: 20,
-  revenueVsPrior: 15.3,
-};
 
 export const notifications = [
   { id: "ntf-001", text: "Invoice 105 is 22 days overdue", at: "2026-08-03T08:00:00", read: false },

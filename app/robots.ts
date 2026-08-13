@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
-import { business } from "@/lib/site";
+import { getShop } from "@/lib/shop";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const { business } = await getShop();
+
   return {
     rules: {
       userAgent: "*",

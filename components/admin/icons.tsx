@@ -12,6 +12,7 @@ export {
   UserIcon,
   ClockIcon,
   MailIcon,
+  PhoneIcon,
   StarIcon,
   WrenchIcon,
   CheckCircleIcon,
