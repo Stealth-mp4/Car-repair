@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useClaims } from "@/lib/account/customer";
 import { claimPromo } from "@/app/account/actions";
-import type { Promo } from "@/lib/site";
+import { isPayable, type Promo } from "@/lib/site";
 import {
   Panel,
   StatTile,
@@ -108,11 +108,17 @@ export default function PromosView({ live }: { live: Promo[] }) {
                       </span>
                       {/* Gone once the shop confirms the payment — still offering
                           "Finish paying" to someone who already paid is how you
-                          get charged twice. */}
-                      {!claimed.paid && promo.payUrl ? (
-                        <Link href={promo.payUrl}>
-                          <GhostButton type="button">Finish paying</GhostButton>
-                        </Link>
+                          get charged twice.
+
+                          Through the action, not a <Link> to payUrl: a priced
+                          offer has no fixed URL to link to, its link is built
+                          per customer at the moment of the click. Re-claiming is
+                          a no-op, so pressing this twice is safe. */}
+                      {!claimed.paid && isPayable(promo) ? (
+                        <form action={claimPromo}>
+                          <input type="hidden" name="promoId" value={promo.id} />
+                          <GhostButton type="submit">Finish paying</GhostButton>
+                        </form>
                       ) : null}
                     </span>
                   ) : (
@@ -123,7 +129,7 @@ export default function PromosView({ live }: { live: Promo[] }) {
                     <form action={claimPromo} className="shrink-0">
                       <input type="hidden" name="promoId" value={promo.id} />
                       <PrimaryButton type="submit" className="rounded-full">
-                        {promo.payUrl ? "Pay & claim" : "Claim offer"}
+                        {isPayable(promo) ? "Pay & claim" : "Claim offer"}
                       </PrimaryButton>
                     </form>
                   )}

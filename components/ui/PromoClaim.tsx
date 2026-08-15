@@ -4,7 +4,7 @@ import Link from "next/link";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { useMaybeCustomer, firstName } from "@/lib/account/customer";
 import { claimPromo } from "@/app/account/actions";
-import type { Promo } from "@/lib/site";
+import { isPayable, type Promo } from "@/lib/site";
 
 /**
  * PromoClaim — the account gate on a promo CTA (client note: a promo is claimed
@@ -64,7 +64,14 @@ export default function PromoClaim({ promo }: { promo: Promo }) {
           style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
           className="btn-sweep mono-label inline-flex items-center justify-center bg-red px-6 py-3 text-ink"
         >
-          {claimed ? "Finish paying" : promo.payUrl ? "Pay & claim your spot" : promo.cta.label}
+          {isPayable(promo)
+            ? claimed
+              ? "Finish paying"
+              : "Pay & claim your spot"
+            : // No checkout behind this offer yet, so the button must not say
+              // "pay" — it books, and it says so. This is the state every offer
+              // starts in.
+              promo.cta.label}
         </button>
       </form>
 
@@ -81,14 +88,16 @@ export default function PromoClaim({ promo }: { promo: Promo }) {
         )}
       </p>
 
-      {!promo.payUrl && process.env.NODE_ENV !== "production" ? (
+      {!isPayable(promo) && process.env.NODE_ENV !== "production" ? (
         <p className="mono-label mt-3">
           <span className="text-warn">Online payment not connected</span>
           <br />
           <span className="normal-case tracking-normal text-cream/80">
-            Paste the offer&apos;s Square payment link into{" "}
-            <code className="text-ink">Console → Promos → Payment link</code>.
-            Until then this button falls through to the quote form.
+            Either set <code className="text-ink">Console → Promos → Price (cents)</code>,
+            which generates a Square link per customer and confirms itself, or
+            paste a fixed link into <code className="text-ink">Payment link</code>{" "}
+            and confirm payments by hand. Until one of them is set, this button
+            falls through to the quote form.
           </span>
         </p>
       ) : null}
