@@ -205,6 +205,18 @@ export type Promo = {
 };
 
 /**
+ * Can this offer actually take money online? Either a price (a link is generated
+ * per customer) or a fixed `payUrl` will do; neither means claiming falls
+ * through to the booking form, which is a real and supported state — it is how
+ * every offer behaves until the shop fills one of them in.
+ *
+ * Exists so the buttons can't promise a checkout that isn't there. Labelling a
+ * button "Pay" and landing someone on a quote form is the bug this prevents.
+ */
+export const isPayable = (p: Pick<Promo, "payUrl" | "priceCents">): boolean =>
+  Boolean(p.payUrl || p.priceCents);
+
+/**
  * Live promotions (build.md section 4). Meta ads point at /promos, and the
  * first entry also drives the countdown bar above the nav. Edit here — nothing
  * else hard-codes an offer. An entry whose `endsAt` has passed drops out on its

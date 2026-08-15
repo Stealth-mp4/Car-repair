@@ -9,6 +9,7 @@ import {
   useAppointments,
   useClaims,
 } from "@/lib/account/customer";
+import { claimPromo } from "@/app/account/actions";
 import { activityFeed } from "@/lib/account/activity";
 import { warrantyStatus } from "@/lib/account/warranty";
 import { TODAY } from "@/lib/admin/data";
@@ -29,6 +30,7 @@ import {
   UserIcon,
   CheckCircleIcon,
   ArrowRightIcon,
+  StarIcon,
 } from "@/components/account/icons";
 
 const ACTIVITY_ICON: Record<ActivityKind, typeof WrenchIcon> = {
@@ -47,6 +49,13 @@ export default function AccountOverviewPage() {
   // Derived, not stored — see lib/account/activity.ts for why there is no
   // activity table.
   const activity = activityFeed({ customer, serviceRecords, appointments, claims });
+
+  // Offers claimed but not yet confirmed as paid. Surfaced on the overview
+  // because a half-finished checkout is the one thing on this page the member
+  // can still act on — everything else is a record of something that already
+  // happened. Whether the offer is still live doesn't matter: they hold a claim
+  // on it either way.
+  const unpaid = claims.filter((c) => !c.paid);
 
   // Next service = the soonest appointment this member has requested that
   // hasn't been cancelled or completed. Nothing booked is the common case.
@@ -111,6 +120,44 @@ export default function AccountOverviewPage() {
           detail={`${invoices.length} invoice${invoices.length === 1 ? "" : "s"}`}
         />
       </div>
+
+      {unpaid.length > 0 ? (
+        <Panel
+          title="Awaiting payment"
+          action={
+            <Link href="/account/promos" className="mono-label link-underline text-red">
+              All offers ↗
+            </Link>
+          }
+        >
+          <ul className="space-y-1">
+            {unpaid.map((claim) => (
+              <li
+                key={claim.id}
+                className="flex flex-wrap items-center gap-4 border-b border-line py-3 last:border-b-0"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-maroon/25">
+                  <StarIcon className="h-4 w-4 text-red" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm text-ink">{claim.headline}</span>
+                  <span className="mono-label">Claimed {formatDate(claim.claimedAt)}</span>
+                </span>
+                {/*
+                  The same action the offer's own button uses, so the checkout
+                  link is looked up server-side and a priced offer gets one built
+                  for this customer. Re-claiming an offer already claimed is a
+                  no-op, so this is safe to press from two places.
+                */}
+                <form action={claimPromo} className="shrink-0">
+                  <input type="hidden" name="promoId" value={claim.promoId} />
+                  <GhostButton type="submit">Finish paying</GhostButton>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Panel
