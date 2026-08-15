@@ -59,7 +59,21 @@ export type Column = {
 export type Field = {
   key: string;
   label: string;
-  type: "text" | "number" | "date" | "time" | "datetime-local" | "select" | "textarea" | "checkbox";
+  /**
+   * "image" is the one type that isn't a plain input: it uploads to the
+   * `promo-images` bucket and stores the resulting public URL in the row. See
+   * components/admin/ImageField.tsx.
+   */
+  type:
+    | "text"
+    | "number"
+    | "date"
+    | "time"
+    | "datetime-local"
+    | "select"
+    | "textarea"
+    | "checkbox"
+    | "image";
   options?: readonly string[];
   /**
    * Options read from the store instead of a fixed list — for foreign keys,
@@ -626,8 +640,12 @@ export const sections: SectionDef[] = [
         label: "LIMITED",
         headline: "",
         detail: "",
-        image: "/VINYL_WRAP.webp",
+        image: "",
         endsAt: `${TODAY}T23:59`,
+        // `href` is not on the form: an offer with a price sends people to a
+        // Square checkout built per customer, and one without a price sends them
+        // to the quote form. Neither is a URL worth asking the office to type,
+        // and a typo in it used to mean a dead claim button.
         cta: { label: "Claim this offer", href: "/quote" },
         payUrl: "",
       }),
@@ -641,7 +659,7 @@ export const sections: SectionDef[] = [
         { key: "label", label: "Window label", type: "text" },
         { key: "barText", label: "Promo bar text", type: "text" },
         { key: "endsAt", label: "Ends", type: "datetime-local", required: true },
-        { key: "image", label: "Image path", type: "text" },
+        { key: "image", label: "Image", type: "image", wide: true },
         { key: "spotsTotal", label: "Spots total", type: "number" },
         { key: "spotsLeft", label: "Spots left", type: "number" },
         // In cents, because that's what Square charges in and dollars-as-float
@@ -651,10 +669,6 @@ export const sections: SectionDef[] = [
         // confirmed by hand. Both work — see 0016.
         { key: "priceCents", label: "Price (cents)", type: "number" },
         { key: "cta.label", label: "Button label", type: "text" },
-        { key: "cta.href", label: "Button link", type: "text" },
-        // Square (square.link/...) or Stripe (buy.stripe.com/...). Empty falls
-        // back to the booking link above — see Promo.payUrl in lib/site.ts.
-        { key: "payUrl", label: "Payment link", type: "text", wide: true },
       ],
       columns: [
         {
@@ -684,8 +698,14 @@ export const sections: SectionDef[] = [
           secondary: true,
         },
         {
-          label: "Payment",
-          cell: (p) => pill(p.payUrl ? "active" : "pending", p.payUrl ? "link set" : "no link"),
+          // Priced offers take money online; the rest send people to the quote
+          // form, which is a legitimate way to run an offer and not a fault.
+          label: "Price",
+          sortBy: (p) => p.priceCents ?? -1,
+          cell: (p) =>
+            p.priceCents
+              ? `$${(p.priceCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+              : pill("pending", "by quote"),
           right: true,
           secondary: true,
         },

@@ -5,6 +5,7 @@ import { useAdmin } from "@/lib/admin/store";
 import { canEdit } from "@/lib/admin/access";
 import type { Field, Row, SectionDef } from "@/lib/admin/sections";
 import { CloseIcon } from "@/components/admin/icons";
+import ImageField from "@/components/admin/ImageField";
 
 /* ---- Dotted-path get/set --------------------------------------------------
  * Vehicles nest `ppf.coverage` and `tint.shade`; everything else is flat. Ten
@@ -24,6 +25,14 @@ function set(obj: Obj, path: string, value: unknown): Obj {
   return { ...obj, [head]: set(child, rest.join("."), value) };
 }
 
+/**
+ * The row's own key, which uploads use as their folder. `blank()` mints the id
+ * before the dialog opens, so this is stable for a new promo as well as an
+ * existing one — an image uploaded before the first save still lands in the
+ * right place.
+ */
+const rowKeyOf = (r: Obj) => String(r.id ?? r.slug ?? "");
+
 /* ---- Controls ------------------------------------------------------------ */
 
 const controlClass =
@@ -33,6 +42,7 @@ function Control({
   id,
   field,
   value,
+  rowId,
   options,
   disabled,
   onChange,
@@ -40,12 +50,25 @@ function Control({
   id: string;
   field: Field;
   value: unknown;
+  /** the row's own id, so an upload knows which folder it belongs to */
+  rowId: string;
   /** resolved from field.optionsFrom by the caller, which has the store */
   options?: { value: string; label: string }[];
   /** shown, but not changeable — see `locked` in the dialog below */
   disabled?: boolean;
   onChange: (v: unknown) => void;
 }) {
+  if (field.type === "image") {
+    return (
+      <ImageField
+        id={id}
+        value={String(value ?? "")}
+        rowId={rowId}
+        onChange={onChange}
+      />
+    );
+  }
+
   if (field.type === "checkbox") {
     return (
       <label className="flex items-center gap-3 rounded-input border border-line px-3 py-2.5">
@@ -217,6 +240,7 @@ export default function RowForm({
                 id={`f-${f.key}`}
                 field={f}
                 value={get(draft, f.key)}
+                rowId={rowKeyOf(draft)}
                 options={f.optionsFrom?.(store)}
                 disabled={locked(f)}
                 onChange={(v) =>
