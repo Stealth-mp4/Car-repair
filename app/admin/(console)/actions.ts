@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer, currentStaff } from "@/lib/supabase/server";
 import { READ_FROM, WRITE_TO, pkOf, writable } from "@/lib/admin/tables";
+import { BUCKET } from "@/lib/admin/images";
 import type { Collections, RowCollections, ChartPeriod, RevenuePoint } from "@/lib/admin/store";
 
 export type SaveResult = { error?: string };
@@ -49,6 +50,30 @@ export async function saveRow(
   }
 }
 
+/**
+ * Everything uploaded for one promo, removed.
+ *
+ * Uploads are keyed `{promoId}/{uuid}.{ext}` (see ImageField), so the promo's id
+ * is the folder and listing it is the whole cleanup. Doing it by prefix rather
+ * than by the row's current `image` URL also collects anything a replace failed
+ * to tidy up — a bucket nobody can see is exactly where orphans accumulate.
+ *
+ * Deliberately best-effort: a storage failure must not stop a promo being
+ * deleted. A leftover image costs a few kilobytes; an offer the shop can't take
+ * down is a customer holding them to a price.
+ */
+async function deletePromoImages(
+  db: Awaited<ReturnType<typeof guard>>,
+  promoId: string,
+) {
+  const { data, error } = await db.storage.from(BUCKET).list(promoId);
+  if (error || !data?.length) return;
+  const { error: removeError } = await db.storage
+    .from(BUCKET)
+    .remove(data.map((f) => `${promoId}/${f.name}`));
+  if (removeError) console.error("[admin] promo image cleanup:", removeError.message);
+}
+
 /** Mirrors the store's `removeRow`. */
 export async function deleteRow(
   collection: keyof RowCollections,
@@ -56,6 +81,11 @@ export async function deleteRow(
 ): Promise<SaveResult> {
   try {
     const db = await guard();
+
+    // Before the row goes, while there is still something to look the images up
+    // from — and only for promos, the one collection that owns uploads.
+    if (collection === "promos") await deletePromoImages(db, id);
+
     const { error } = await db
       .from(WRITE_TO[collection])
       .delete()

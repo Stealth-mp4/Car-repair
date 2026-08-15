@@ -22,11 +22,20 @@ const db = createClient(
   { auth: { persistSession: false } },
 );
 
+/**
+ * Shown when an offer has no image yet. next/image throws on an empty `src`,
+ * which would take down the whole promos page — and a new offer legitimately
+ * has no image for the minute between the office creating it and uploading one.
+ * A stock wrap photo is a better answer than a crash.
+ */
+const PLACEHOLDER = "/VINYL_WRAP.webp";
+
 /** Same rule as the old activePromos(): unexpired, soonest deadline first. */
 const live = (rows: Promo[]) =>
   rows
     .filter((p) => new Date(p.endsAt) > new Date())
-    .sort((a, b) => a.endsAt.localeCompare(b.endsAt));
+    .sort((a, b) => a.endsAt.localeCompare(b.endsAt))
+    .map((p) => (p.image ? p : { ...p, image: PLACEHOLDER }));
 
 export async function getPromos(): Promise<Promo[]> {
   const { data, error } = await db.from("promos").select("*");

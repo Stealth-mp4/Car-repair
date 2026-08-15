@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.cdninstagram.com" },
       { protocol: "https", hostname: "**.fbcdn.net" },
       { protocol: "https", hostname: "graph.instagram.com" },
+      // Promo images the office uploads through the console live in the
+      // `promo-images` bucket. Without this every uploaded offer renders as a
+      // broken image on the public site — next/image refuses unlisted hosts.
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
     ],
   },
 };

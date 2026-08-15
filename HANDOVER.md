@@ -107,7 +107,37 @@ pages stay statically rendered. Console edits call
 
   Needs `SQUARE_*` and `NEXT_PUBLIC_SITE_URL` (see `.env.example`) and a
   **deployed HTTPS URL** for the webhook subscription; Square cannot reach a
-  laptop. Untested against a live Square account as of writing.
+  laptop. **Verified end to end against Square sandbox on Vercel** — link
+  generated, test card paid, webhook delivered, claim ticked, spot counter moved.
+
+  Two things that cost a deploy cycle each, both now handled in code but worth
+  knowing when this is pointed at a new environment:
+
+  - **A trailing slash on `NEXT_PUBLIC_SITE_URL` breaks the webhook and nothing
+    else.** The URL is part of the string the signature is hashed over, so
+    `//api/square/webhook` verifies as a forgery — a payment that succeeds in
+    Square and never arrives here, with no error anywhere the operator looks.
+    `siteOrigin()` in `lib/site.ts` strips it now; `lib/site.test.ts` keeps it
+    stripped.
+  - **`quick_pay` cannot carry a `reference_id`.** The link must be created with
+    the `order` shape, or the webhook has no way to name the claim. See the
+    comment in `lib/square.ts`.
+
+  The subscription needs BOTH `payment.created` and `payment.updated` — a
+  sandbox test card fires only `updated`.
+
+  **`payUrl` and `cta.href` are off the console form.** Both columns still exist
+  and are still honoured for any row that has them, so nothing broke — but an
+  offer is now priced or not, and nobody types a URL. `isPayable()` in
+  `lib/site.ts` is the single check. Drop the columns whenever it's convenient;
+  they're inert.
+
+  **Promo images upload.** `Console → Promos → Image` writes straight to the
+  `promo-images` bucket on the staff member's own session (the policy for it has
+  been in 0001 since the beginning, unused until now), stores the public URL, and
+  deletes the old file when one is replaced. Deleting a promo deletes its whole
+  `{promoId}/` folder. Files in `public/` are never touched — `lib/admin/images.ts`
+  draws that line and `images.test.ts` keeps it drawn.
 
   Claiming is **signed-in customers only** (client's rule). `claimPromo` sends
   anyone else to `/account/login?next=/promos` rather than on to Square — a sale
@@ -127,8 +157,7 @@ pages stay statically rendered. Console edits call
 
 ## Migrations
 
-All are applied except `0016`, which is **pending** — paste it into the Supabase
-SQL editor. `supabase/migrations/`:
+All are applied. `supabase/migrations/`:
 
 | | |
 |---|---|
