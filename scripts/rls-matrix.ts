@@ -39,6 +39,9 @@ const EXPECT: Record<string, string[]> = {
   projects: ["Super Admin", "Manager", "Technician", "Front desk"],
   vehicles: ["Super Admin", "Manager", "Technician", "Front desk"],
   admin_vehicles: ["Super Admin", "Manager", "Technician", "Front desk"],
+  // Shop-floor, like vehicles — see staff_manages_service_records in 0013.
+  service_records: ["Super Admin", "Manager", "Technician", "Front desk"],
+  admin_service_records: ["Super Admin", "Manager", "Technician", "Front desk"],
   notifications: ["Super Admin", "Manager", "Technician", "Front desk"],
   customers: ["Super Admin", "Manager", "Front desk"],
   admin_customers: ["Super Admin", "Manager", "Front desk"],
@@ -48,6 +51,9 @@ const EXPECT: Record<string, string[]> = {
   inventory: ["Super Admin", "Manager", "Technician"],
   services: ["Super Admin", "Manager"],
   promos: ["Super Admin", "Manager"],
+  // Wider than `promos`: front desk confirms the payments — see 0014/0015.
+  promo_claims: ["Super Admin", "Manager", "Front desk"],
+  admin_promo_claims: ["Super Admin", "Manager", "Front desk"],
   payments: ["Super Admin", "Manager"],
   finance: ["Super Admin", "Manager"],
   activity: ["Super Admin", "Manager"],

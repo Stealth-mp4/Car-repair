@@ -92,6 +92,24 @@ const customerField = (syncLabelTo?: string): Field => ({
   syncLabelTo,
 });
 
+/**
+ * Vehicle picker. Unlike customerField there is no syncLabelTo: a service
+ * record stores only `vehicleId`, and the label is rebuilt from the vehicles
+ * collection at render time. Copying a denormalised name would go stale the
+ * first time the shop corrects a model.
+ */
+const vehicleField = (): Field => ({
+  key: "vehicleId",
+  label: "Vehicle",
+  type: "select",
+  required: true,
+  optionsFrom: (s) =>
+    s.vehicles.map((v) => ({
+      value: v.id,
+      label: `${v.year} ${v.make} ${v.model}${v.customerName ? ` — ${v.customerName}` : ""}`,
+    })),
+});
+
 export type SectionDef = {
   slug: string;
   label: string;
@@ -386,6 +404,86 @@ export const sections: SectionDef[] = [
   }),
 
   def({
+    slug: "service-records",
+    label: "Service records",
+    group: "main",
+    icon: WrenchIcon,
+    table: {
+      title: "Service records",
+      noun: "service record",
+      blurb: "What was done to each car, and what it's covered by.",
+      collection: "serviceRecords",
+      rows: (s) => s.serviceRecords,
+      searchText: (r) => `${r.service} ${r.notes ?? ""} ${r.warrantyProvider ?? ""}`,
+      blank: () => ({
+        id: newId("sr"),
+        vehicleId: "",
+        service: "",
+        date: TODAY,
+        notes: "",
+        buildSlug: "",
+        warrantyExpires: "",
+        warrantyProvider: "",
+        warrantyTerms: "",
+      }),
+      fields: [
+        vehicleField(),
+        // Free text, not a select over serviceFacets: the catalogue is the
+        // marketing site's five headline services, and the shop records jobs
+        // that don't map onto them ("Wheels", a one-off repair).
+        { key: "service", label: "Service", type: "text", required: true },
+        { key: "date", label: "Date", type: "date", required: true },
+        { key: "notes", label: "Notes", type: "textarea", wide: true },
+        { key: "buildSlug", label: "Gallery build slug", type: "text" },
+        // Leave the expiry blank for work that carries no warranty. Blank means
+        // "none", which is not the same as expired and doesn't render as cover.
+        { key: "warrantyExpires", label: "Warranty until", type: "date" },
+        { key: "warrantyProvider", label: "Warranty provider", type: "text" },
+        { key: "warrantyTerms", label: "Warranty terms", type: "textarea", wide: true },
+      ],
+      columns: [
+        {
+          label: "Service",
+          sortBy: (r) => r.service,
+          cell: (r) => (
+            <div>
+              <p className="text-ink">{r.service}</p>
+              <p className="mono-label mt-1">{r.notes || "No notes"}</p>
+            </div>
+          ),
+        },
+        {
+          label: "Vehicle",
+          // Derived by the admin_service_records view, not stored — correcting
+          // a car's model shouldn't leave stale labels across its history. Null
+          // when the viewer can't read the vehicle; a dash says "withheld",
+          // where a blank cell would read as missing data.
+          sortBy: (r) => r.vehicleLabel ?? "",
+          cell: (r) => r.vehicleLabel ?? <span className="text-muted">&mdash;</span>,
+        },
+        { label: "Date", sortBy: (r) => r.date, cell: (r) => shortDate(r.date) },
+        {
+          label: "Warranty",
+          sortBy: (r) => r.warrantyExpires ?? "",
+          cell: (r) => {
+            if (!r.warrantyExpires) return <span className="text-muted">none</span>;
+            // Compared against the shop's own TODAY, not the viewer's clock —
+            // same reason the dashboard pins it.
+            const expired = r.warrantyExpires < TODAY;
+            return (
+              <span className={expired ? "text-muted" : "text-ok"}>
+                {expired ? `expired ${shortDate(r.warrantyExpires)}` : `to ${shortDate(r.warrantyExpires)}`}
+                {r.warrantyProvider ? ` · ${r.warrantyProvider}` : ""}
+              </span>
+            );
+          },
+          secondary: true,
+        },
+      ],
+    },
+  }),
+
+  def({
     slug: "projects",
     label: "Projects",
     group: "main",
@@ -546,6 +644,12 @@ export const sections: SectionDef[] = [
         { key: "image", label: "Image path", type: "text" },
         { key: "spotsTotal", label: "Spots total", type: "number" },
         { key: "spotsLeft", label: "Spots left", type: "number" },
+        // In cents, because that's what Square charges in and dollars-as-float
+        // is how someone gets billed $19.989999999. Set it and the claim button
+        // generates a Square link per customer whose payment confirms itself;
+        // leave it blank and the offer uses the fixed Payment link below and is
+        // confirmed by hand. Both work — see 0016.
+        { key: "priceCents", label: "Price (cents)", type: "number" },
         { key: "cta.label", label: "Button label", type: "text" },
         { key: "cta.href", label: "Button link", type: "text" },
         // Square (square.link/...) or Stripe (buy.stripe.com/...). Empty falls
@@ -589,6 +693,93 @@ export const sections: SectionDef[] = [
           label: "Status",
           cell: (p) => pill(p.endsAt > TODAY ? "published" : "hidden", p.endsAt > TODAY ? "live" : "expired"),
           right: true,
+        },
+      ],
+    },
+  }),
+
+  def({
+    slug: "promo-claims",
+    label: "Promo claims",
+    group: "main",
+    icon: CardIcon,
+    table: {
+      title: "Promo claims",
+      noun: "claim",
+      blurb: "Who went to checkout for an offer. Tick Paid once you see it in Square.",
+      collection: "promoClaims",
+      // Unconfirmed first: this list exists to be worked through, and the rows
+      // needing a decision are the ones that should be at the top.
+      rows: (s) =>
+        [...s.promoClaims].sort(
+          (a, b) =>
+            Number(a.paid) - Number(b.paid) || b.claimedAt.localeCompare(a.claimedAt),
+        ),
+      // Order id included so a payment can be found from either direction: paste
+      // the Square order number in here, or copy this one into Square.
+      searchText: (c) => `${c.headline} ${c.customerName ?? ""} ${c.squareOrderId ?? ""}`,
+      // Claims are made by customers pressing a button, or by the shop from the
+      // customer's own record. Inventing one from a blank form means typing raw
+      // ids for both ends, which is how you attach a sale to the wrong person.
+      create: false,
+      blank: () => ({ id: "", customerId: "", promoId: "", headline: "", claimedAt: "", paid: false }),
+      fields: [
+        // The only editable thing. Everything else is a record of what happened
+        // and the database refuses to change it — see guard_claim_edit in 0015.
+        { key: "paid", label: "Paid (confirmed in Square)", type: "checkbox", wide: true },
+      ],
+      filters: [
+        { label: "Awaiting payment", match: (c) => !c.paid },
+        { label: "Paid", match: (c) => c.paid },
+      ],
+      columns: [
+        {
+          label: "Customer",
+          sortBy: (c) => c.customerName ?? "",
+          cell: (c) => (
+            <div>
+              <p className="text-ink">{c.customerName ?? <span className="text-muted">&mdash;</span>}</p>
+              <p className="mono-label mt-1">{c.headline}</p>
+            </div>
+          ),
+        },
+        {
+          label: "Claimed",
+          sortBy: (c) => c.claimedAt,
+          cell: (c) => shortDate(c.claimedAt.slice(0, 10)),
+          secondary: true,
+        },
+        {
+          label: "Payment",
+          sortBy: (c) => Number(c.paid),
+          // "Awaiting" rather than "unpaid": nothing here knows they didn't pay,
+          // only that nobody has confirmed they did.
+          cell: (c) =>
+            c.paid
+              ? pill("paid", c.paidAt ? `paid ${shortDate(c.paidAt.slice(0, 10))}` : "paid")
+              : pill("pending", "awaiting"),
+          right: true,
+        },
+        {
+          // Who did the confirming. A tick with a Square order behind it came
+          // from the webhook; one without it was somebody's judgement — which is
+          // the difference between "Square says so" and "Dave says so" when a
+          // customer rings up disputing it. It is also how you tell the
+          // integration is actually working rather than being quietly bypassed.
+          label: "Source",
+          sortBy: (c) => (c.squareOrderId ? 1 : 0),
+          cell: (c) =>
+            !c.paid ? (
+              <span className="text-muted">&mdash;</span>
+            ) : c.squareOrderId ? (
+              <span className="mono-label" title={c.squareOrderId}>
+                square {c.squareOrderId.slice(0, 8)}
+              </span>
+            ) : (
+              <span className="mono-label text-muted">by hand</span>
+            ),
+          right: true,
+          secondary: true,
         },
       ],
     },

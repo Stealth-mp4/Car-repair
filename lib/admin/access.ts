@@ -31,6 +31,10 @@ export const SECTION_ACCESS: Record<string, Access[]> = {
   appointments: ALL,
   projects: ALL,
   vehicles: ALL,
+  // Shop-floor, like vehicles: recording what was done to a car is the
+  // technician's job as much as the front desk's. Mirrors
+  // staff_manages_service_records in 0013.
+  "service-records": ALL,
 
   // Read-only for technicians (see READ_ONLY below) — they need owner names on
   // the cars they work on, and the picker in the vehicle form needs a list.
@@ -43,6 +47,10 @@ export const SECTION_ACCESS: Record<string, Access[]> = {
 
   services: BOOKS,
   promos: BOOKS,
+  // Wider than `promos` itself: confirming a payment is front-desk work, and
+  // whoever takes the call shouldn't need a manager to tick the box. Mirrors
+  // staff_reads_claims / staff_confirms_payment in 0014 and 0015.
+  "promo-claims": OFFICE,
   payments: BOOKS,
   finance: BOOKS,
   activity: BOOKS,

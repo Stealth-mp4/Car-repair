@@ -2,14 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useAccount, currentUser } from "@/lib/account/store";
-import {
-  getVehiclesForCustomer,
-  getServiceHistory,
-  getInvoices,
-  getWarranties,
-  warrantyStatus,
-} from "@/lib/passport";
+import { useVehicles, useInvoices, useServiceRecords } from "@/lib/account/customer";
+import { warrantyStatus } from "@/lib/account/warranty";
+import { TODAY } from "@/lib/admin/data";
 import {
   Panel,
   StatTile,
@@ -26,25 +21,35 @@ const STATUS_STYLE = {
 } as const;
 
 /**
- * Service history — the account-area view of the Vehicle Passport. Reads the
- * same content/{vehicles,service-records,invoices,warranties}/*.json through
- * lib/passport, so there is exactly one set of records behind the access-code
- * page at /passport and the signed-in page here.
+ * Service history — the account-area view of the Vehicle Passport.
+ *
+ * Every row here is now a live Postgres row scoped by RLS — vehicles,
+ * invoices, and service records with their warranties folded in (0013). The
+ * access-code page at /passport still reads content/*.json; migrating that is
+ * its own job, since it has no session to scope by.
  */
 export default function AccountHistoryPage() {
-  const user = useAccount(currentUser);
-  if (!user) return null;
+  const vehicles = useVehicles();
+  const invoices = useInvoices();
+  const serviceRecords = useServiceRecords();
 
-  const vehicles = user.customerId ? getVehiclesForCustomer(user.customerId) : [];
-  const records = vehicles.flatMap((v) =>
-    getServiceHistory(v.id).map((r) => ({ ...r, vehicle: v })),
-  );
-  const allRecords = [...records].sort((a, b) => b.date.localeCompare(a.date));
-  const invoices = vehicles.flatMap((v) => getInvoices(v.id));
-  const lifetimeSpend = invoices.reduce((sum, i) => sum + i.amount, 0);
-  const liveWarranties = vehicles
-    .flatMap((v) => getWarranties(v.id))
-    .filter((w) => warrantyStatus(w) !== "expired");
+  // Already newest-first from the query; the join is only to put the car's name
+  // on each row. A record whose vehicle is missing is dropped rather than
+  // rendered against "undefined" — RLS returns both or neither, so this is
+  // defensive, not expected.
+  const allRecords = serviceRecords.flatMap((r) => {
+    const vehicle = vehicles.find((v) => v.id === r.vehicleId);
+    return vehicle ? [{ ...r, vehicle }] : [];
+  });
+  const lifetimeSpend = invoices
+    .filter((i) => i.status === "paid")
+    .reduce((sum, i) => sum + Number(i.amount), 0);
+  // Only records that actually carry cover. `warrantyStatus` returns null for
+  // work sold without a warranty, which is why this can't just be a date test.
+  const liveWarranties = serviceRecords.filter((r) => {
+    const status = warrantyStatus(r.warrantyExpires, TODAY);
+    return status !== null && status !== "expired";
+  });
 
   if (vehicles.length === 0) {
     return (
@@ -100,7 +105,9 @@ export default function AccountHistoryPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {vehicles.map((v) => {
           const cover = v.media.find((m) => m.type === "image");
-          const warranties = getWarranties(v.id);
+          const warranties = serviceRecords.filter(
+            (r) => r.vehicleId === v.id && r.warrantyExpires,
+          );
           return (
             <div
               key={v.id}
@@ -155,15 +162,19 @@ export default function AccountHistoryPage() {
                 {warranties.length > 0 ? (
                   <ul className="mt-5 space-y-1.5 border-t border-line pt-4">
                     {warranties.map((w) => {
-                      const status = warrantyStatus(w);
+                      // Non-null: the filter above kept only rows with an
+                      // expiry, which is exactly when warrantyStatus returns one.
+                      const status = warrantyStatus(w.warrantyExpires, TODAY)!;
                       return (
                         <li key={w.id} className="flex items-center justify-between gap-4 text-sm">
                           <span className="text-cream/80">
                             {w.service}
-                            {w.provider ? ` · ${w.provider}` : ""}
+                            {w.warrantyProvider ? ` · ${w.warrantyProvider}` : ""}
                           </span>
                           <span className={`mono-label ${STATUS_STYLE[status]}`}>
-                            {status === "expired" ? "expired" : `to ${formatDate(w.expires)}`}
+                            {status === "expired"
+                              ? "expired"
+                              : `to ${formatDate(w.warrantyExpires!)}`}
                           </span>
                         </li>
                       );

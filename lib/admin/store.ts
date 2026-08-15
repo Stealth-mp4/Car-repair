@@ -35,6 +35,8 @@ import type {
   StaffMember,
   InventoryItem,
   RevenuePoint,
+  AdminServiceRecord,
+  AdminPromoClaim,
 } from "@/lib/admin/data";
 
 export type ChartPeriod = "week" | "month" | "year";
@@ -51,6 +53,12 @@ export type RowCollections = {
   customers: typeof seed.customers;
   vehicles: typeof seed.vehicles;
   invoices: AdminInvoice[];
+  /**
+   * What was done to a car, and what it's covered by. Warranty lives on the
+   * same row rather than its own collection — see 0013 for why the two
+   * hand-authored JSON sets collapsed into one table.
+   */
+  serviceRecords: AdminServiceRecord[];
   payments: typeof seed.payments;
   services: ServiceItem[];
   reviews: Review[];
@@ -64,6 +72,8 @@ export type RowCollections = {
    * backend the rest of the console is waiting on; see README-admin.md.
    */
   promos: Promo[];
+  /** Who went to a promo's checkout, and whether the shop confirmed they paid. */
+  promoClaims: AdminPromoClaim[];
   finance: typeof seed.finance;
   activity: typeof seed.activity;
 };
@@ -196,6 +206,7 @@ const EMPTY: Collections = {
   customers: [],
   vehicles: [],
   invoices: [],
+  serviceRecords: [],
   payments: [],
   services: [],
   reviews: [],
@@ -203,6 +214,7 @@ const EMPTY: Collections = {
   staff: [],
   inventory: [],
   promos: [],
+  promoClaims: [],
   finance: [],
   activity: [],
   revenueSeries: { week: [], month: [], year: [] },

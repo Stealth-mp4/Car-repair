@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useAccount, currentUser } from "@/lib/account/store";
-import { useHydrated } from "@/lib/account/useHydrated";
+import { usePathname } from "next/navigation";
+import { useCustomer, firstName } from "@/lib/account/customer";
+import { signOut } from "@/app/account/actions";
 import { sections, accountHref, getSection } from "@/lib/account/sections";
 import { brand } from "@/lib/site";
 import { useShop } from "@/components/ShopProvider";
@@ -54,9 +54,6 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
 }
 
 function SidebarFooter({ onNavigate }: { onNavigate: () => void }) {
-  const signOut = useAccount((s) => s.signOut);
-  const router = useRouter();
-
   return (
     <div className="space-y-0.5 border-t border-line px-3 py-4">
       <Link
@@ -67,42 +64,39 @@ function SidebarFooter({ onNavigate }: { onNavigate: () => void }) {
         <ArrowRightIcon className="h-[18px] w-[18px] shrink-0 rotate-180" />
         <span className="text-[0.9375rem]">Back to site</span>
       </Link>
-      <button
-        type="button"
-        onClick={() => {
-          signOut();
-          router.push("/account/login");
-        }}
-        className="flex w-full items-center gap-3 rounded-input px-3 py-2.5 text-cream/75 transition-colors hover:bg-black-raised hover:text-ink"
-      >
-        <SignOutIcon className="h-[18px] w-[18px] shrink-0" />
-        <span className="text-[0.9375rem]">Sign out</span>
-      </button>
+      {/* A form, not an onClick: signing out has to clear an httpOnly cookie,
+          which only the server can do. The action redirects to the login page. */}
+      <form action={signOut}>
+        <button
+          type="submit"
+          className="flex w-full items-center gap-3 rounded-input px-3 py-2.5 text-cream/75 transition-colors hover:bg-black-raised hover:text-ink"
+        >
+          <SignOutIcon className="h-[18px] w-[18px] shrink-0" />
+          <span className="text-[0.9375rem]">Sign out</span>
+        </button>
+      </form>
     </div>
   );
 }
 
 /**
- * AccountShell — sidebar + page header for every signed-in account route, and
- * the gate in front of them.
+ * AccountShell — sidebar + page header for every signed-in account route.
  *
- * The gate is a redirect, not a security boundary: the store it reads lives in
- * the visitor's own localStorage. See the SECURITY block in lib/account/store.ts.
+ * No gate here any more, and no loading state: the layout above it is a Server
+ * Component that redirects anyone without a `customers` row before this renders
+ * at all, so by the time we're here there is definitely a customer. That's what
+ * removed the "Loading your account…" flash the localStorage session needed.
  */
 export default function AccountShell({ children }: { children: React.ReactNode }) {
   const shop = useShop();
-  const hydrated = useHydrated();
-  const user = useAccount(currentUser);
-  const navOpen = useAccount((s) => s.ui.navOpen);
-  const setNavOpen = useAccount((s) => s.setNavOpen);
+  const customer = useCustomer();
+  // Plain useState. This was a zustand store back when it also held a fake user
+  // table; everything else in it is a database row now, and one boolean used by
+  // one component doesn't need a store.
+  const [navOpen, setNavOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   const section = getSection(slugFromPath(pathname));
-
-  useEffect(() => {
-    if (hydrated && !user) router.replace("/account/login");
-  }, [hydrated, user, router]);
 
   // Lock body scroll behind the mobile drawer; close it on Escape.
   useEffect(() => {
@@ -116,14 +110,6 @@ export default function AccountShell({ children }: { children: React.ReactNode }
       window.removeEventListener("keydown", onKey);
     };
   }, [navOpen, setNavOpen]);
-
-  if (!hydrated || !user) {
-    return (
-      <main className="flex min-h-svh items-center justify-center px-[var(--gutter)]">
-        <p className="mono-label">{hydrated ? "Redirecting to sign in…" : "Loading your account…"}</p>
-      </main>
-    );
-  }
 
   /**
    * The mark is portrait (820x972), so it's sized by a fixed box + object-contain
@@ -210,7 +196,7 @@ export default function AccountShell({ children }: { children: React.ReactNode }
                   <span className="text-red">{section.eyebrow}</span>
                 </p>
                 <h1 className="mt-3 font-display text-3xl tracking-tight text-ink sm:text-4xl">
-                  {section.slug === "" ? `Hello, ${user.firstName}.` : section.title}
+                  {section.slug === "" ? `Hello, ${firstName(customer)}.` : section.title}
                 </h1>
                 <p className="mt-2 max-w-xl text-cream/80">{section.lede}</p>
               </header>

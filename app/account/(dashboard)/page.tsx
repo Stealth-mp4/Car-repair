@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useAccount, currentUser } from "@/lib/account/store";
-import type { ActivityKind } from "@/lib/account/data";
 import {
-  getVehiclesForCustomer,
-  getServiceHistory,
-  getInvoices,
-  getWarranties,
-  warrantyStatus,
-} from "@/lib/passport";
+  useCustomer,
+  useVehicles,
+  useInvoices,
+  useServiceRecords,
+  useAppointments,
+  useClaims,
+} from "@/lib/account/customer";
+import { activityFeed } from "@/lib/account/activity";
+import { warrantyStatus } from "@/lib/account/warranty";
+import { TODAY } from "@/lib/admin/data";
+import type { ActivityKind } from "@/lib/account/activity";
 import {
   Panel,
   StatTile,
@@ -34,22 +37,34 @@ const ACTIVITY_ICON: Record<ActivityKind, typeof WrenchIcon> = {
 };
 
 export default function AccountOverviewPage() {
-  const user = useAccount(currentUser);
-  if (!user) return null;
+  const customer = useCustomer();
+  const vehicles = useVehicles();
+  const invoices = useInvoices();
+  const serviceRecords = useServiceRecords();
+  const appointments = useAppointments();
+  const claims = useClaims();
+
+  // Derived, not stored — see lib/account/activity.ts for why there is no
+  // activity table.
+  const activity = activityFeed({ customer, serviceRecords, appointments, claims });
 
   // Next service = the soonest appointment this member has requested that
   // hasn't been cancelled or completed. Nothing booked is the common case.
-  const nextAppointment = [...user.appointments]
+  const nextAppointment = [...appointments]
     .filter((a) => a.status !== "cancelled" && a.status !== "completed")
-    .sort((a, b) => (a.date ?? "9999").localeCompare(b.date ?? "9999"))[0];
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
 
-  const vehicles = user.customerId ? getVehiclesForCustomer(user.customerId) : [];
-  const services = vehicles.flatMap((v) => getServiceHistory(v.id));
-  const invoices = vehicles.flatMap((v) => getInvoices(v.id));
-  const lifetimeSpend = invoices.reduce((sum, i) => sum + i.amount, 0);
-  const liveWarranties = vehicles
-    .flatMap((v) => getWarranties(v.id))
-    .filter((w) => warrantyStatus(w) !== "expired");
+  const services = serviceRecords;
+  // Paid only — an outstanding invoice is a bill, not spend. Matches Billing.
+  const lifetimeSpend = invoices
+    .filter((i) => i.status === "paid")
+    .reduce((sum, i) => sum + Number(i.amount), 0);
+  // null status = no cover was ever sold on that job, which must not count as
+  // an active warranty OR render as an expired one.
+  const liveWarranties = serviceRecords.filter((r) => {
+    const status = warrantyStatus(r.warrantyExpires, TODAY);
+    return status !== null && status !== "expired";
+  });
 
   return (
     <div className="space-y-6">
@@ -107,14 +122,14 @@ export default function AccountOverviewPage() {
             </Link>
           }
         >
-          {user.activity.length === 0 ? (
+          {activity.length === 0 ? (
             <EmptyState
               title="Nothing yet"
               body="Your appointments and completed work will show up here."
             />
           ) : (
             <ul className="space-y-1">
-              {user.activity.slice(0, 6).map((a) => {
+              {activity.slice(0, 6).map((a) => {
                 const Icon = ACTIVITY_ICON[a.kind];
                 return (
                   <li
@@ -150,7 +165,7 @@ export default function AccountOverviewPage() {
                     <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-red" />
                     <span>
                       <span className="block text-ink">{w.service}</span>
-                      <span className="mono-label">to {formatDate(w.expires)}</span>
+                      <span className="mono-label">to {formatDate(w.warrantyExpires!)}</span>
                     </span>
                   </li>
                 ))}

@@ -84,6 +84,60 @@ export type AdminInvoice = Omit<Invoice, "fileUrl"> & {
   dueDate: string;
 };
 
+/**
+ * A job done on a car, with its warranty on the same row.
+ *
+ * The warranty fields were `content/warranties/*.json`, a separate set that was
+ * 1:1 with the service records on every field — same vehicle, same service,
+ * start date always the service date, expiry always the record's own
+ * `warrantyExpires`. 0013 merged them; keeping two rows in sync by hand for one
+ * real-world event was the only thing the split bought.
+ *
+ * All four warranty fields are optional because plenty of work carries no
+ * cover, and `warrantyExpires` being null is what "no warranty" means — not an
+ * expired one.
+ */
+export type AdminServiceRecord = {
+  id: string;
+  vehicleId: string;
+  service: string;
+  date: string;
+  notes?: string;
+  /** links a private record to a public gallery build in content/builds */
+  buildSlug?: string;
+  warrantyExpires?: string;
+  warrantyProvider?: string;
+  warrantyTerms?: string;
+  /** from admin_service_records; null when the viewer can't read the vehicle */
+  vehicleLabel?: string | null;
+};
+
+/**
+ * A customer who went to a promo's checkout.
+ *
+ * `paid` is ticked one of two ways, depending on the offer. A promo with no
+ * price uses the shop's one static payment link, which carries no reference id,
+ * so nothing coming back from Square can say whose payment it was and somebody
+ * ticks the box (0015). A promo with a price gets a link generated per customer
+ * and the webhook ticks it (0016). A row with no `squareOrderId` was confirmed
+ * by a person.
+ */
+export type AdminPromoClaim = {
+  id: string;
+  customerId: string;
+  promoId: string;
+  /** copied at claim time, so it survives the offer being deleted */
+  headline: string;
+  claimedAt: string;
+  paid: boolean;
+  /** stamped by the database when `paid` is ticked; null while unconfirmed */
+  paidAt?: string | null;
+  /** from admin_promo_claims; null when the viewer can't read customers */
+  customerName?: string | null;
+  /** the Square order behind an automatic tick; null when a person ticked it */
+  squareOrderId?: string | null;
+};
+
 export type Payment = {
   id: string;
   invoiceId: string;
