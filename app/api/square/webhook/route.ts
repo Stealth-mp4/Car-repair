@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { orderReference } from "@/lib/square";
 import { verifySignature } from "@/lib/square-signature";
+import { siteOrigin } from "@/lib/site";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   // The signed URL is the one registered on the subscription, not whatever host
   // header this request happens to carry: an attacker controls the header, and a
   // hash over an attacker-supplied string verifies nothing.
-  const notificationUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/square/webhook`;
+  const notificationUrl = `${siteOrigin()}/api/square/webhook`;
 
   if (!verifySignature(raw, req.headers.get("x-square-hmacsha256-signature"), notificationUrl)) {
     console.error("[square/webhook] bad signature");

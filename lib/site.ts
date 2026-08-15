@@ -217,6 +217,23 @@ export const isPayable = (p: Pick<Promo, "payUrl" | "priceCents">): boolean =>
   Boolean(p.payUrl || p.priceCents);
 
 /**
+ * Where this site is served from, with any trailing slash removed.
+ *
+ * The trim is not cosmetic. This origin is concatenated with paths in two
+ * places, and one of them is the notification URL that Square's webhook
+ * signature is computed over — so a trailing slash in the environment variable
+ * produces `//api/square/webhook`, which hashes to something that does not match
+ * the subscription, and every delivery is rejected as a forgery. It cost a full
+ * deploy-and-test cycle to find, because the only symptom was a payment that
+ * succeeded in Square and never arrived here.
+ *
+ * Normalising once here is cheaper than trusting whoever fills in the variable
+ * next time, in an environment where nobody can see the failure.
+ */
+export const siteOrigin = (): string =>
+  (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/+$/, "");
+
+/**
  * Live promotions (build.md section 4). Meta ads point at /promos, and the
  * first entry also drives the countdown bar above the nav. Edit here — nothing
  * else hard-codes an offer. An entry whose `endsAt` has passed drops out on its
