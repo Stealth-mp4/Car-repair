@@ -8,6 +8,7 @@ import { validatePassword } from "@/lib/auth/password";
 import { safeNext } from "@/lib/account/redirect";
 import { fullName } from "@/lib/account/name";
 import { createPaymentLink, squareConfigured } from "@/lib/square";
+import { siteOrigin } from "@/lib/site";
 
 /**
  * app/account/actions.ts — real customer auth, replacing the localStorage
@@ -337,7 +338,7 @@ export async function claimPromo(form: FormData): Promise<never> {
       // Back to their own offers page, which will already show Paid if the
       // webhook beat them home. The redirect is a courtesy — the webhook is
       // what records the payment, precisely because people close the tab.
-      redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/account/promos`,
+      redirectUrl: `${siteOrigin()}/account/promos`,
     });
   } catch (e) {
     // A Square outage or a mis-set token. The claim is already recorded, so the
