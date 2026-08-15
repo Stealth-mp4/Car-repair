@@ -2,34 +2,34 @@
 
 import Link from "next/link";
 import MagneticButton from "@/components/ui/MagneticButton";
-import { useAccount, currentUser } from "@/lib/account/store";
-import { useHydrated } from "@/lib/account/useHydrated";
+import { useMaybeCustomer, firstName } from "@/lib/account/customer";
+import { claimPromo } from "@/app/account/actions";
 import type { Promo } from "@/lib/site";
 
 /**
  * PromoClaim — the account gate on a promo CTA (client note: a promo is claimed
  * by an account, not by an anonymous visitor).
  *
- * Signed out (and on the server, which can't read the persisted session) the
- * button sends people to sign-up with `?next=/promos`, so they land back on the
- * offer they came for. Signed in, clicking records the claim against their
+ * Signed out — and on the server, which can't know: this page is statically
+ * rendered and stays that way — the button sends people to sign-up with
+ * `?next=/promos`, so they land back on the offer they came for. Signed in, clicking records the claim against their
  * account and hands off to the offer's hosted checkout — `promo.payUrl`, a
  * Square or Stripe payment link. Card details never touch this site.
  *
  * What the claim means is "this member went to pay", not "this member paid":
  * the outcome happens on the provider's page and nothing reports it back. See
- * ClaimedPromo in lib/account/data.ts.
+ * promo_claims in migration 0014.
  *
  * Until the client sends the payment link, a signed-in claim still records and
  * then falls through to the normal booking flow rather than dead-ending.
  */
 export default function PromoClaim({ promo }: { promo: Promo }) {
-  const hydrated = useHydrated();
-  const user = useAccount(currentUser);
-  const claimPromo = useAccount((s) => s.claimPromo);
+  // undefined while the browser is still asking, null when signed out — both
+  // render the signed-out branch, which is what a static page shows first.
+  const { customer, claimedPromoIds } = useMaybeCustomer();
   const next = encodeURIComponent("/promos");
 
-  if (!hydrated || !user) {
+  if (!customer) {
     return (
       <div>
         <MagneticButton href={`/account/signup?next=${next}`} variant="primary">
@@ -46,18 +46,27 @@ export default function PromoClaim({ promo }: { promo: Promo }) {
     );
   }
 
-  const claimed = user.claims.find((c) => c.promoId === promo.id);
-  const record = () => claimPromo({ id: promo.id, headline: promo.headline });
+  const claimed = claimedPromoIds.has(promo.id);
 
   return (
     <div>
-      <MagneticButton
-        href={promo.payUrl || promo.cta.href}
-        variant="primary"
-        onClick={record}
-      >
-        {claimed ? "Finish paying" : promo.payUrl ? "Pay & claim your spot" : promo.cta.label}
-      </MagneticButton>
+      {/*
+        A form, not a magnetic link. The claim must be written BEFORE the
+        navigation — recording it alongside a <Link> wrote nothing, because the
+        navigation cancels the request in flight. The action redirects to the
+        offer's checkout itself, from the promos table, so the destination is
+        never a client-supplied URL.
+      */}
+      <form action={claimPromo}>
+        <input type="hidden" name="promoId" value={promo.id} />
+        <button
+          type="submit"
+          style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
+          className="btn-sweep mono-label inline-flex items-center justify-center bg-red px-6 py-3 text-ink"
+        >
+          {claimed ? "Finish paying" : promo.payUrl ? "Pay & claim your spot" : promo.cta.label}
+        </button>
+      </form>
 
       <p className="mono-label mt-4">
         {claimed ? (
@@ -68,7 +77,7 @@ export default function PromoClaim({ promo }: { promo: Promo }) {
             </Link>
           </>
         ) : (
-          <>Claiming as {user.firstName} · secure checkout, card details never touch this site</>
+          <>Claiming as {firstName(customer)} · secure checkout, card details never touch this site</>
         )}
       </p>
 
@@ -77,8 +86,9 @@ export default function PromoClaim({ promo }: { promo: Promo }) {
           <span className="text-warn">Online payment not connected</span>
           <br />
           <span className="normal-case tracking-normal text-cream/80">
-            Add this offer&apos;s payment link in{" "}
-            <code className="text-ink">lib/site.ts → promos[].payUrl</code>.
+            Paste the offer&apos;s Square payment link into{" "}
+            <code className="text-ink">Console → Promos → Payment link</code>.
+            Until then this button falls through to the quote form.
           </span>
         </p>
       ) : null}

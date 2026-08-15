@@ -15,6 +15,7 @@ export const READ_FROM = {
   customers: "admin_customers",
   vehicles: "admin_vehicles",
   invoices: "invoices",
+  serviceRecords: "admin_service_records",
   payments: "payments",
   services: "services",
   reviews: "reviews",
@@ -22,6 +23,7 @@ export const READ_FROM = {
   staff: "staff",
   inventory: "inventory",
   promos: "promos",
+  promoClaims: "admin_promo_claims",
   finance: "finance",
   activity: "activity",
   // `notifications` is intentionally absent: the table exists but nothing ever
@@ -29,11 +31,13 @@ export const READ_FROM = {
   // See `attention()` in lib/admin/store.ts.
 } as const satisfies Record<keyof RowCollections, string>;
 
-/** Where each collection is WRITTEN to. Only the two view-backed ones differ. */
+/** Where each collection is WRITTEN to. Only the view-backed ones differ. */
 export const WRITE_TO = {
   ...READ_FROM,
   customers: "customers",
   vehicles: "vehicles",
+  serviceRecords: "service_records",
+  promoClaims: "promo_claims",
 } as const;
 
 /**
@@ -44,6 +48,11 @@ export const WRITE_TO = {
 export const DERIVED: Partial<Record<keyof RowCollections, string[]>> = {
   customers: ["vehicleCount", "lifetimeValue"],
   vehicles: ["customerName"],
+  serviceRecords: ["vehicleLabel"],
+  // paidAt is stamped by the trigger in 0015 and squareOrderId is written by the
+  // webhook (0016) — neither is typed. Sending the client's copy back would let
+  // a form loaded before a payment landed overwrite both with nulls.
+  promoClaims: ["customerName", "paidAt", "squareOrderId"],
 };
 
 /** Row identity. Everything is keyed by `id` except the service catalogue. */

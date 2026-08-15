@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useAccount, currentUser } from "@/lib/account/store";
+import { useClaims } from "@/lib/account/customer";
+import { claimPromo } from "@/app/account/actions";
 import type { Promo } from "@/lib/site";
 import {
   Panel,
@@ -21,14 +22,11 @@ import { StarIcon, CheckCircleIcon, ClockIcon } from "@/components/account/icons
  *
  * A claim records that the member went to checkout. Whether they paid happens
  * on the provider's hosted page and never reaches this site, so nothing here
- * claims to know — see ClaimedPromo in lib/account/data.ts.
+ * claims to know — see promo_claims in 0014.
  */
 export default function PromosView({ live }: { live: Promo[] }) {
-  const user = useAccount(currentUser);
-  const claimPromo = useAccount((s) => s.claimPromo);
-  if (!user) return null;
-
-  const claimedIds = new Set(user.claims.map((c) => c.promoId));
+  const claims = useClaims();
+  const claimedIds = new Set(claims.map((c) => c.promoId));
   // "offer live" on a past claim means the offer is still running now, which is
   // exactly what `live` holds — the old check used the full promo list, so a
   // long-expired offer still read as live.
@@ -41,8 +39,8 @@ export default function PromosView({ live }: { live: Promo[] }) {
           feature
           icon={StarIcon}
           label="Offers claimed"
-          value={String(user.claims.length)}
-          detail={user.claims.length === 1 ? "1 offer on your account" : "on your account"}
+          value={String(claims.length)}
+          detail={claims.length === 1 ? "1 offer on your account" : "on your account"}
         />
         <StatTile
           icon={ClockIcon}
@@ -74,7 +72,7 @@ export default function PromosView({ live }: { live: Promo[] }) {
         ) : (
           <ul className="px-5">
             {live.map((promo) => {
-              const claimed = user.claims.find((c) => c.promoId === promo.id);
+              const claimed = claims.find((c) => c.promoId === promo.id);
               return (
                 <li
                   key={promo.id}
@@ -94,31 +92,40 @@ export default function PromosView({ live }: { live: Promo[] }) {
                     <span className="block truncate text-sm text-ink">{promo.headline}</span>
                     <span className="mono-label">
                       {promo.label} · ends {formatDate(promo.endsAt.slice(0, 10))}
-                      {promo.spotsLeft !== undefined ? ` · ${promo.spotsLeft} spots left` : ""}
+                      {/* `!= null` catches both null and undefined: the promos table
+                          returns null for an offer with no cap, and the old
+                          `!== undefined` check rendered "null spots left". */}
+                      {promo.spotsLeft != null ? ` · ${promo.spotsLeft} spots left` : ""}
                     </span>
                   </span>
 
                   {claimed ? (
                     <span className="flex shrink-0 items-center gap-3">
-                      <span className="mono-label text-ok">
-                        Claimed {formatDate(claimed.claimedAt)}
+                      <span className={claimed.paid ? "mono-label text-ok" : "mono-label"}>
+                        {claimed.paid
+                          ? `Paid · ${formatDate(claimed.claimedAt)}`
+                          : `Claimed ${formatDate(claimed.claimedAt)}`}
                       </span>
-                      {promo.payUrl ? (
+                      {/* Gone once the shop confirms the payment — still offering
+                          "Finish paying" to someone who already paid is how you
+                          get charged twice. */}
+                      {!claimed.paid && promo.payUrl ? (
                         <Link href={promo.payUrl}>
                           <GhostButton type="button">Finish paying</GhostButton>
                         </Link>
                       ) : null}
                     </span>
                   ) : (
-                    <Link
-                      href={promo.payUrl || promo.cta.href}
-                      onClick={() => claimPromo({ id: promo.id, headline: promo.headline })}
-                      className="shrink-0"
-                    >
-                      <PrimaryButton type="button" className="rounded-full">
+                    // A form, not a link: the claim has to be written before
+                    // the navigation, or the navigation cancels it. The action
+                    // records the claim and redirects to the offer's own
+                    // checkout URL, looked up server-side.
+                    <form action={claimPromo} className="shrink-0">
+                      <input type="hidden" name="promoId" value={promo.id} />
+                      <PrimaryButton type="submit" className="rounded-full">
                         {promo.payUrl ? "Pay & claim" : "Claim offer"}
                       </PrimaryButton>
-                    </Link>
+                    </form>
                   )}
                 </li>
               );
@@ -128,16 +135,16 @@ export default function PromosView({ live }: { live: Promo[] }) {
       </Panel>
 
       <Panel title="Claim history">
-        {user.claims.length === 0 ? (
+        {claims.length === 0 ? (
           <EmptyState
             title="Nothing claimed yet"
             body="Claim a live offer above and it's held against your account."
           />
         ) : (
           <ul className="px-5">
-            {user.claims.map((claim) => (
+            {claims.map((claim) => (
               <li
-                key={claim.promoId}
+                key={claim.id}
                 className="flex items-center gap-4 border-b border-line py-3.5 last:border-b-0"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-maroon/25">

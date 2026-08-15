@@ -1,75 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import AuthCard from "@/components/account/AuthCard";
 import { Field, fieldClass, PrimaryButton } from "@/components/account/ui";
 import { MailIcon, LockIcon, PhoneIcon, UserIcon, CarIcon } from "@/components/account/icons";
 import PasswordInput from "@/components/ui/PasswordInput";
-import { useAccount } from "@/lib/account/store";
-import { safeNext } from "@/lib/account/redirect";
+import { MIN_PASSWORD_LENGTH } from "@/lib/auth/password";
+import { signUp, type AccountAuthState } from "@/app/account/actions";
 
-/** Mirrors validateContact in lib/lead.ts — same rules the booking form uses. */
-function validate(f: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirm: string;
-}): string | null {
-  if (!f.firstName.trim()) return "Please add your first name.";
-  if (!f.lastName.trim()) return "Please add your last name.";
-  if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) return "That email doesn't look right.";
-  if (f.phone.replace(/\D/g, "").length < 10) return "Please add a valid phone number.";
-  if (f.password.length < 8) return "Use at least 8 characters for your password.";
-  if (f.password !== f.confirm) return "Those passwords don't match.";
+/**
+ * Validation lives in the server action, not here. The old client-side copy of
+ * the rules was the only check there was; now it would just be a second set to
+ * keep in sync with the one that actually decides. `required` and `type=email`
+ * still do the cheap browser-level pass.
+ */
+
+function Submit() {
+  const { pending } = useFormStatus();
+  return (
+    <PrimaryButton type="submit" disabled={pending} className="w-full rounded-full">
+      {pending ? "Creating your account…" : "Create account →"}
+    </PrimaryButton>
+  );
+}
+
+function Message({ state }: { state: AccountAuthState }) {
+  const { pending } = useFormStatus();
+  if (pending) return null;
+  if (state.error) {
+    return (
+      <p role="alert" className="mono-label text-red">
+        {state.error}
+      </p>
+    );
+  }
+  if (state.notice) {
+    return (
+      <p role="status" className="mono-label text-warn">
+        {state.notice}
+      </p>
+    );
+  }
   return null;
 }
 
 export default function SignUpForm() {
-  const signUp = useAccount((s) => s.signUp);
-  const router = useRouter();
+  const [state, action] = useActionState<AccountAuthState, FormData>(signUp, {});
   // ?next= — set by the promos page, so a claim lands back on the offer.
   const next = useSearchParams().get("next");
-
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [vehicle, setVehicle] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const invalid = validate({ firstName, lastName, email, phone, password, confirm });
-    if (invalid) {
-      setError(invalid);
-      return;
-    }
-
-    setStatus("submitting");
-    setError(null);
-
-    // Simulated network round-trip — the store is synchronous, but an instant
-    // jump to the dashboard reads like the form did nothing.
-    await new Promise((r) => setTimeout(r, 700));
-
-    const res = signUp({ firstName, lastName, email, phone, password, vehicle });
-    if (!res.ok) {
-      setError(res.error ?? "Couldn't create that account.");
-      setStatus("idle");
-      return;
-    }
-
-    // signUp signs the new member straight in.
-    setStatus("done");
-    router.push(safeNext(next));
-  };
 
   return (
     <AuthCard
@@ -80,89 +61,89 @@ export default function SignUpForm() {
       footer={
         <p className="mono-label">
           Already a member?{" "}
-          <Link href={`/account/login${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="link-underline text-red">
+          <Link
+            href={`/account/login${next ? `?next=${encodeURIComponent(next)}` : ""}`}
+            className="link-underline text-red"
+          >
             Sign in
           </Link>
         </p>
       }
     >
-      <form onSubmit={submit} className="space-y-5">
+      <form action={action} className="space-y-5">
+        <input type="hidden" name="next" value={next ?? ""} />
+
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="First name" icon={UserIcon}>
             <input
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              name="firstName"
               placeholder="Marcus"
               autoComplete="given-name"
+              required
               className={fieldClass}
             />
           </Field>
           <Field label="Last name">
             <input
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              name="lastName"
               placeholder="Delgado"
               autoComplete="family-name"
+              required
               className={fieldClass}
             />
           </Field>
           <Field label="Email" icon={MailIcon}>
             <input
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
+              required
+              key={state.email ?? ""}
+              defaultValue={state.email ?? ""}
               className={fieldClass}
             />
           </Field>
           <Field label="Phone" icon={PhoneIcon}>
             <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              name="phone"
               placeholder="(832) 208-1071"
               inputMode="tel"
               autoComplete="tel"
+              required
               className={fieldClass}
             />
           </Field>
           <Field label="Vehicle (optional)" icon={CarIcon}>
             <input
-              value={vehicle}
-              onChange={(e) => setVehicle(e.target.value)}
+              name="vehicle"
               placeholder="2023 Tesla Model 3"
               className={fieldClass}
             />
           </Field>
           <Field label="Password" icon={LockIcon}>
             <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
+              name="password"
+              placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
               autoComplete="new-password"
+              required
               className={fieldClass}
             />
           </Field>
           <Field label="Confirm password" icon={LockIcon}>
             <PasswordInput
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
+              name="confirm"
               placeholder="Repeat it"
               autoComplete="new-password"
+              required
               className={fieldClass}
             />
           </Field>
         </div>
 
-        {error ? <p className="mono-label text-red">{error}</p> : null}
+        <Message state={state} />
 
-        <PrimaryButton
-          type="submit"
-          disabled={status !== "idle"}
-          className="w-full rounded-full"
-        >
-          {status === "idle" ? "Create account →" : "Creating your account…"}
-        </PrimaryButton>
+        <Submit />
 
         <p className="text-center text-xs text-muted">
           By creating an account you agree to be contacted about your builds and

@@ -155,26 +155,16 @@ export const serviceNavItems: ServiceNavItem[] = [
   ...services.map((s) => ({ label: s.title, href: s.href, short: s.short })),
 ];
 
-/**
- * Payments. Stripe is the only method the shop takes online, so the account's
- * Billing page links straight out to it rather than collecting a card here —
- * no card number ever touches this site.
+/*
+ * The `payments` export that sat here (a Stripe portal URL) is gone. There is
+ * no Stripe account: invoices are raised in the console and settled in person
+ * or by a link the shop sends. The one online payment path is a Square payment
+ * link pasted onto a promo in the console — per-offer checkout, not a billing
+ * portal — so there is nothing site-wide to configure.
  *
- * PLACEHOLDER: `portalUrl` is empty until the client sends their real link.
- * Paste it here and the Billing button goes live with no code change; while
- * it's empty the page says so instead of linking somewhere broken.
- *
- * Which link to paste depends on what they want it to do:
- *   - a Stripe **customer portal** link (billing.stripe.com/p/login/...) lets a
- *     customer manage their own payment methods and receipts;
- *   - a Stripe **payment link** (buy.stripe.com/...) is a straight "pay now".
- * Either drops in here; the button copy below is written to suit the portal.
+ * Note the Stripe logo on /financing is unrelated: that is a financing partner
+ * listing, not a payment processor the site integrates with.
  */
-export const payments = {
-  portalUrl: "",
-  label: "Pay or manage billing in Stripe",
-} as const;
-
 export type Promo = {
   id: string;
   /** short line shown in the bar above the nav — keep it under ~60 chars */
@@ -202,6 +192,16 @@ export type Promo = {
    * Claiming is account-gated either way: see components/ui/PromoClaim.tsx.
    */
   payUrl?: string;
+  /**
+   * Price in cents. Set it and claiming generates a Square checkout link for
+   * that one customer, which confirms itself when they pay (0016). Leave it and
+   * the offer uses `payUrl` above, which is the same link for everyone and is
+   * confirmed by hand.
+   *
+   * Cents, not dollars: it's what Square's API takes, and float dollars are how
+   * somebody ends up charged $19.989999999.
+   */
+  priceCents?: number;
 };
 
 /**

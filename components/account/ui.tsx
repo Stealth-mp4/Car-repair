@@ -188,8 +188,18 @@ export function EmptyState({ title, body }: { title: string; body: string }) {
 }
 
 /** Dates are stored ISO; every page shows them the same way. */
+/**
+ * Accepts a date ("2025-01-22") or a timestamptz
+ * ("2026-08-14T17:13:47.695313+00:00") — `promo_claims.claimedAt` and
+ * `appointments.createdAt` are the latter, and passing one in used to render
+ * "Invalid Date" because the template below appended a second time component.
+ *
+ * The slice is also what keeps the day correct: parsing a bare "YYYY-MM-DD" is
+ * UTC, so anyone west of Greenwich would see the previous day. Forcing local
+ * midnight avoids that.
+ */
 export const formatDate = (iso: string) =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
+  new Date(`${iso.slice(0, 10)}T00:00:00`).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",

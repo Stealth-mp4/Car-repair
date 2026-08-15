@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAccount, currentUser } from "@/lib/account/store";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useCustomer, useVehicles } from "@/lib/account/customer";
+import { requestAppointment, type BookingState } from "@/app/account/actions";
 import { services as serviceList } from "@/lib/site";
 import { useShop } from "@/components/ShopProvider";
 import {
@@ -38,43 +41,36 @@ const today = () => new Date().toISOString().slice(0, 10);
  */
 export default function AccountBookPage() {
   const shop = useShop();
-  const user = useAccount(currentUser);
-  const requestAppointment = useAccount((s) => s.requestAppointment);
+  const customer = useCustomer();
+  const vehicles = useVehicles();
+  const router = useRouter();
+
+  // Their chosen default, falling back to the only car they have. Empty string
+  // when the shop hasn't put a vehicle on their record yet, which the summary
+  // below already renders as "—".
+  const primary =
+    vehicles.find((v) => v.id === customer.primaryVehicleId) ??
+    (vehicles.length === 1 ? vehicles[0] : undefined);
+  const vehicle = primary ? `${primary.year} ${primary.make} ${primary.model}` : "";
 
   const [service, setService] = useState("");
   const [detail, setDetail] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState(TIMES[0]);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  if (!user) return null;
+  // The action writes an `appointments` row the shop sees on its calendar, so
+  // the result comes back from the server rather than a local `done` flag.
+  const [state, book, booking] = useActionState<BookingState, FormData>(requestAppointment, {});
 
-  const vehicle = user.vehicle.makeModel;
+  // "Other" is a UI affordance, not a service the shop offers — what gets
+  // written is what they typed.
+  const chosen = service === OTHER ? detail.trim() : service;
+  const localError =
+    service === OTHER && !detail.trim()
+      ? "Tell us what you need and we'll take it from there."
+      : null;
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!service) {
-      setError("Pick a service so we know what we're quoting.");
-      return;
-    }
-    if (service === OTHER && !detail.trim()) {
-      setError("Tell us what you need and we'll take it from there.");
-      return;
-    }
-
-    requestAppointment({
-      service: service === OTHER ? detail.trim() : service,
-      date: date || undefined,
-      time: time || undefined,
-      vehicle: vehicle || undefined,
-      note: service === OTHER ? detail.trim() : undefined,
-    });
-    setError(null);
-    setDone(true);
-  };
-
-  if (done) {
+  if (state.ok) {
     return (
       <Panel>
         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-maroon/25">
@@ -82,7 +78,7 @@ export default function AccountBookPage() {
         </span>
         <h2 className="mt-4 font-display text-2xl text-ink">Request received.</h2>
         <p className="mt-3 max-w-lg text-cream/80">
-          We&apos;ll call you back on {user.phone || "your number on file"} to confirm
+          We&apos;ll call you back on {customer.phone || "your number on file"} to confirm
           {date ? ` ${formatDate(date)}` : ""}
           {time ? ` at ${time}` : ""}. It&apos;s on your overview now. For anything urgent,
           call{" "}
@@ -101,11 +97,10 @@ export default function AccountBookPage() {
           </Link>
           <button
             type="button"
-            onClick={() => {
-              setDone(false);
-              setService("");
-              setDate("");
-            }}
+            // A full navigation rather than local state: the action revalidated
+            // the layout, so this lands on a page that already knows about the
+            // request just made.
+            onClick={() => router.refresh()}
             className="mono-label rounded-full border border-line px-5 py-3 text-cream transition-colors hover:border-red hover:text-ink"
           >
             Book another
@@ -117,7 +112,10 @@ export default function AccountBookPage() {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-      <form onSubmit={submit} className="lg:col-span-7">
+      <form action={book} className="lg:col-span-7">
+        {/* The action reads these, not the React state — the state is only here
+            so the summary panel can mirror what's typed. */}
+        <input type="hidden" name="service" value={chosen} />
         <Panel>
           <p className="mono-label flex items-center gap-2 text-red">
             <WrenchIcon className="h-3.5 w-3.5" />
@@ -160,16 +158,22 @@ export default function AccountBookPage() {
 
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label="Preferred date" icon={CalendarIcon}>
+              {/* Required: `appointments.date` is not null — the shop's
+                  calendar has nowhere to put a request with no day on it. Still
+                  only a preference; the shop confirms the real slot. */}
               <input
                 type="date"
+                name="date"
                 min={today()}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                required
                 className={`${fieldClass} [color-scheme:dark]`}
               />
             </Field>
             <Field label="Preferred time" icon={ClockIcon}>
               <select
+                name="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 className={fieldClass}
@@ -208,10 +212,18 @@ export default function AccountBookPage() {
             </div>
           </div>
 
-          {error ? <p className="mono-label mt-5 text-red">{error}</p> : null}
+          {localError ?? state.error ? (
+            <p role="alert" className="mono-label mt-5 text-red">
+              {localError ?? state.error}
+            </p>
+          ) : null}
 
-          <PrimaryButton type="submit" className="mt-7 w-full rounded-full">
-            Request appointment →
+          <PrimaryButton
+            type="submit"
+            disabled={booking || !chosen}
+            className="mt-7 w-full rounded-full"
+          >
+            {booking ? "Sending your request…" : "Request appointment →"}
           </PrimaryButton>
         </Panel>
       </form>
@@ -225,7 +237,7 @@ export default function AccountBookPage() {
           <Row label="Date" value={date ? formatDate(date) : "—"} />
           <Row label="Time" value={time || "—"} />
           <Row label="Vehicle" value={vehicle || "—"} />
-          <Row label="Contact" value={user.phone || "—"} />
+          <Row label="Contact" value={customer.phone || "—"} />
         </Panel>
 
         <div className="rounded-media border border-maroon/60 bg-burgundy p-6">

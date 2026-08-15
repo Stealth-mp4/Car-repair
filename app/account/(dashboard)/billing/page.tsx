@@ -1,8 +1,6 @@
 "use client";
 
-import { useAccount, currentUser } from "@/lib/account/store";
-import { getVehiclesForCustomer, getInvoices } from "@/lib/passport";
-import { payments } from "@/lib/site";
+import { useInvoices } from "@/lib/account/customer";
 import { useShop } from "@/components/ShopProvider";
 import {
   Panel,
@@ -19,23 +17,36 @@ import {
   ArrowRightIcon,
 } from "@/components/account/icons";
 
+/** Matches the console's own invoice colours. */
+const STATUS_TONE = {
+  paid: "text-ok",
+  due: "text-warn",
+  overdue: "text-red",
+} as const;
+
 export default function AccountBillingPage() {
   const shop = useShop();
-  const user = useAccount(currentUser);
-  if (!user) return null;
-
-  const vehicles = user.customerId ? getVehiclesForCustomer(user.customerId) : [];
-  const invoices = vehicles
-    .flatMap((v) => getInvoices(v.id))
-    .sort((a, b) => b.date.localeCompare(a.date));
+  // Straight off the session — RLS already scoped these to the signed-in
+  // customer, newest first.
+  const invoices = useInvoices();
 
   const thisYear = new Date().getFullYear();
-  const paidThisYear = invoices
-    .filter((i) => new Date(i.date).getFullYear() === thisYear)
-    .reduce((sum, i) => sum + i.amount, 0);
-  const lifetime = invoices.reduce((sum, i) => sum + i.amount, 0);
 
-  const stripeReady = payments.portalUrl.length > 0;
+  // Every one of these used to be a lie. "Outstanding" was a hardcoded $0 over
+  // "0 invoices due", and each row printed "paid" regardless — because the JSON
+  // these came from had no status column at all. It does now.
+  const outstanding = invoices.filter((i) => i.status !== "paid");
+  const owed = outstanding.reduce((sum, i) => sum + Number(i.amount), 0);
+
+  const paidThisYear = invoices
+    .filter((i) => i.status === "paid" && new Date(i.date).getFullYear() === thisYear)
+    .reduce((sum, i) => sum + Number(i.amount), 0);
+
+  // Lifetime spend counts what was actually paid, not what was billed —
+  // an unpaid invoice isn't spend.
+  const lifetime = invoices
+    .filter((i) => i.status === "paid")
+    .reduce((sum, i) => sum + Number(i.amount), 0);
 
   return (
     <div className="space-y-6">
@@ -50,8 +61,8 @@ export default function AccountBillingPage() {
         <StatTile
           icon={FileIcon}
           label="Outstanding"
-          value={formatMoney(0)}
-          detail="0 invoices due"
+          value={formatMoney(owed)}
+          detail={`${outstanding.length} invoice${outstanding.length === 1 ? "" : "s"} due`}
         />
         <StatTile
           icon={CheckCircleIcon}
@@ -61,58 +72,36 @@ export default function AccountBillingPage() {
         />
       </div>
 
-      {/* Stripe — the only online payment method */}
+      {/*
+        How the shop actually takes money, stated plainly.
+
+        This used to promise a Stripe billing portal with a "manage payment
+        methods" button — and there is no Stripe account, no portal, and no
+        stored cards. Invoices are raised in the console and settled in person
+        or by a link the shop sends. The one online payment path is a Square
+        link on a promo, which is a checkout for that offer, not an account
+        portal. Copy that describes a payment system the shop doesn't run is
+        worse than no copy: it invites a customer to go looking for a login that
+        was never created.
+      */}
       <div className="rounded-media border border-maroon/60 bg-burgundy p-8">
         <div className="flex items-start gap-4">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/40">
             <CardIcon className="h-5 w-5 text-red" />
           </span>
           <div className="min-w-0">
-            <h2 className="font-display text-xl text-ink">Payments run through Stripe</h2>
+            <h2 className="font-display text-xl text-ink">How to settle an invoice</h2>
             <p className="mt-2 max-w-xl text-cream/85">
-              Card details never touch this site. Stripe handles the payment and holds the
-              card on file, so you manage payment methods and download receipts in their
-              secure portal.
+              Pay at the shop by card or cash when you collect the vehicle, or ask
+              us to send a payment link. Card details never touch this site.
+            </p>
+            <p className="mt-4 text-cream/85">
+              Questions about a bill?{" "}
+              <a href={shop.business.phoneHref} className="link-underline text-ink">
+                {shop.business.phone}
+              </a>
             </p>
           </div>
-        </div>
-
-        <div className="mt-7">
-          {stripeReady ? (
-            <a
-              href={payments.portalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ ["--sweep" as string]: "var(--color-red-deep)" } as React.CSSProperties}
-              className="btn-sweep mono-label inline-flex items-center gap-2 bg-red px-6 py-3.5 text-ink"
-            >
-              {payments.label}
-              <ArrowRightIcon className="h-3.5 w-3.5 -rotate-45" />
-            </a>
-          ) : (
-            <>
-              <span
-                aria-disabled="true"
-                className="mono-label inline-flex cursor-not-allowed items-center gap-2 rounded-full bg-red/40 px-6 py-3.5 text-ink/60"
-              >
-                {payments.label}
-                <ArrowRightIcon className="h-3.5 w-3.5 -rotate-45" />
-              </span>
-              <p className="mono-label mt-3 leading-relaxed">
-                <span className="text-warn">Not connected yet</span>
-                <br />
-                <span className="normal-case tracking-normal text-cream/80">
-                  Add the shop&apos;s Stripe link in{" "}
-                  <code className="text-ink">lib/site.ts → payments.portalUrl</code> and this
-                  button goes live. Until then, pay in person or call{" "}
-                  <a href={shop.business.phoneHref} className="link-underline text-ink">
-                    {shop.business.phone}
-                  </a>
-                  .
-                </span>
-              </p>
-            </>
-          )}
         </div>
       </div>
 
@@ -140,7 +129,11 @@ export default function AccountBillingPage() {
                 </span>
                 <span className="shrink-0 text-right">
                   <span className="block text-sm text-ink">{formatMoney(invoice.amount)}</span>
-                  <span className="mono-label text-ok">paid</span>
+                  <span className={`mono-label ${STATUS_TONE[invoice.status]}`}>
+                    {invoice.status === "paid"
+                      ? "paid"
+                      : `${invoice.status} ${formatDate(invoice.dueDate)}`}
+                  </span>
                 </span>
               </li>
             ))}

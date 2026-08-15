@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Gate on /admin, plus Supabase session refresh.
+ * Gate on /admin and /account, plus Supabase session refresh.
  *
  * Two jobs, and the refresh is the non-obvious one: access tokens are
  * short-lived, and Server Components can't set cookies. Without a rotation
@@ -18,13 +18,17 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export const config = {
   matcher: [
-    // Everything except Next internals and static files — the session needs
-    // refreshing on ordinary page loads too, not only on /admin.
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|woff2?)$).*)",
+    // Everything except Next internals, static files, and the Square webhook —
+    // the session needs refreshing on ordinary page loads too, not only on
+    // /admin. Square's requests carry no session, so refreshing one would be a
+    // pointless round trip to Supabase on an endpoint that has to answer
+    // promptly or get retried; the signature is what authorises it.
+    "/((?!_next/static|_next/image|favicon.ico|api/square|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|woff2?)$).*)",
   ],
 };
 
 export const LOGIN_PATH = "/admin/login";
+export const ACCOUNT_LOGIN_PATH = "/account/login";
 
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: req });
@@ -56,6 +60,26 @@ export async function middleware(req: NextRequest) {
   const { data: { user } } = await db.auth.getUser();
 
   const { pathname } = req.nextUrl;
+
+  // The customer dashboard, same two-line rule as the console: a valid session
+  // or nothing. Whether that session belongs to a CUSTOMER rather than a staff
+  // member needs a database round trip, so the account layout checks it once
+  // per page and RLS enforces it on every query — see app/account/(dashboard).
+  if (pathname.startsWith("/account")) {
+    // No "already signed in? skip the form" redirect here, deliberately — the
+    // console has one and it's safe there, but this pair loops: a staff session
+    // is a valid session with no `customers` row, so login would bounce it to
+    // /account and the layout would bounce it straight back. Rendering the form
+    // to someone who doesn't need it costs nothing.
+    if (pathname === ACCOUNT_LOGIN_PATH || pathname === "/account/signup") return res;
+
+    if (user) return res;
+
+    const login = new URL(ACCOUNT_LOGIN_PATH, req.url);
+    if (pathname !== "/account") login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
+  }
+
   if (!pathname.startsWith("/admin")) return res;
 
   if (pathname === LOGIN_PATH) {

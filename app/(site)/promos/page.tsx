@@ -64,8 +64,12 @@ export default async function PromosPage() {
       ) : (
         <section className="space-y-6 pb-24" style={{ paddingInline: "var(--gutter)" }}>
           {live.map((promo, i) => {
+            // `!= null` on both: the promos table returns null for an offer
+            // with no cap, and `!== undefined` let a null through — which
+            // rendered the word "null" on the account page and would have
+            // computed `spotsTotal - null` here.
             const claimed =
-              promo.spotsTotal && promo.spotsLeft !== undefined
+              promo.spotsTotal != null && promo.spotsLeft != null
                 ? promo.spotsTotal - promo.spotsLeft
                 : null;
 
@@ -93,7 +97,7 @@ export default async function PromosPage() {
                     </h2>
                     <p className="mt-4 max-w-md text-cream/80">{promo.detail}</p>
 
-                    {promo.spotsTotal && promo.spotsLeft !== undefined ? (
+                    {promo.spotsTotal != null && promo.spotsLeft != null ? (
                       <div className="mt-7 max-w-sm">
                         <div className="flex items-baseline justify-between">
                           <span className="mono-label text-ink">
